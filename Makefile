@@ -1,7 +1,8 @@
 LIBS := -lm -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
 CPPFLAGS := -O2 -flto -ggdb -Wall -Wextra
-OBJS := $(addprefix build/objs/,Game.o Main.o Objects.o)
-HEADERS := $(addprefix src/,Game.h Objects.h Settings.h Sphere.h Vector.h)
+OBJS := $(addprefix build/objs/,Game.o Main.o Objects.o Universe.o)
+HEADERS := $(addprefix src/,Game.h Objects.h Settings.h Sphere.h \
+	Universe.h Vector.h)
 
 all: dist/grawell
 

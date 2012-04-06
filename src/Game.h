@@ -1,13 +1,9 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-#include <list>
-#include <vector>
-
 #include <SFML/Graphics.hpp>
 
-#include "Objects.h"
-#include "Settings.h"
+#include "Universe.h"
 
 class Game {
 
@@ -27,10 +23,7 @@ private:
 
 	sf::RenderWindow *screen;
 	sf::Clock clock;
-	Settings settings;
-	std::vector<Planet> planets;
-	std::vector<Ship>   ships;
-	std::list<Bullet> bullets;
+	Universe universe;
 	int controlled;
 
 };

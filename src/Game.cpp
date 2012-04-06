@@ -11,8 +11,6 @@ Game::Game() {
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", style, settings);
 	controlled = 0;
-	ships.push_back(Ship(Point(100,100)));
-	planets.push_back(Planet(Point(400,300),20,30000000));
 }
 
 Game::~Game() {
@@ -45,9 +43,15 @@ void Game::input() {
 			case Event::KeyPressed:
 				switch (event.Key.Code) {
 					case Key::Escape: screen->Close(); break;
-					case Key::Left:  ships[controlled].dir -= 200; break;
-					case Key::Right: ships[controlled].dir += 200; break;
-					case Key::Space: bullets.push_back(ships[controlled].shoot()); break;
+					case Key::Left:
+						universe.ships[controlled].dir -= 200;
+						break;
+					case Key::Right:
+						universe.ships[controlled].dir += 200;
+						break;
+					case Key::Space:
+						universe.bullets.push_back(universe.ships[controlled].shoot());
+						break;
 					default: break;
 				}
 				break;
@@ -59,22 +63,19 @@ void Game::input() {
 }
 
 void Game::logic(double dt) {
-	list<Bullet>::iterator it = bullets.begin();
-	while (it != bullets.end()) {
-		if (it->update(planets, dt)) {
-			list<Bullet>::iterator it2 = it; ++it2;
-			bullets.erase(it);
-			it = it2;
-		} else ++it;
-	}
+	universe.update(dt);
 }
 
 void Game::display() {
 	screen->Clear();
-	for (size_t i  = 0; i < planets.size(); ++i) planets[i].draw(*screen);
-	for (size_t i  = 0; i < ships  .size(); ++i) ships  [i].draw(*screen);
-	list<Bullet>::iterator it = bullets.begin();
-	while (it != bullets.end()) {
+	for (size_t i  = 0; i < universe.planets.size(); ++i) {
+		universe.planets[i].draw(*screen);
+	}
+	for (size_t i  = 0; i < universe.ships.size(); ++i) {
+		universe.ships[i].draw(*screen);
+	}
+	list<Bullet>::iterator it = universe.bullets.begin();
+	while (it != universe.bullets.end()) {
 		it->draw(*screen); ++it;
 	}
 	screen->Display();
