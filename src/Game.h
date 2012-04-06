@@ -22,7 +22,7 @@ private:
 	const Game &operator = (const Game&);
 
 	void input();
-	void logic();
+	void logic(double dt);
 	void display();
 
 	sf::RenderWindow *screen;

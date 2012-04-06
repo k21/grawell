@@ -36,7 +36,7 @@ public:
 	Bullet(const Point &pos, const Vector &speed_):
 		Sphere(pos, 2), speed(speed_) {}
 
-	bool update(const std::vector<Planet> &planets);
+	bool update(const std::vector<Planet> &planets, double dt);
 	void draw(sf::RenderTarget &target) const;
 
 	Vector speed;

@@ -19,13 +19,14 @@ Game::~Game() {
 }
 
 void Game::run() {
+	const double dt = 1.0/1024;
 	double lastUpdate = clock.GetElapsedTime();
 	while (screen->IsOpened()) {
 		double now = clock.GetElapsedTime();
 		input();
 		while (lastUpdate < now) {
-			logic();
-			lastUpdate += 0.01;
+			logic(dt);
+			lastUpdate += dt;
 		}
 		display();
 	}
@@ -50,10 +51,10 @@ void Game::input() {
 	}
 }
 
-void Game::logic() {
+void Game::logic(double dt) {
 	list<Bullet>::iterator it = bullets.begin();
 	while (it != bullets.end()) {
-		if (it->update(planets)) {
+		if (it->update(planets, dt)) {
 			list<Bullet>::iterator it2 = it; ++it2;
 			bullets.erase(it);
 			it = it2;

@@ -43,10 +43,17 @@ static Vector acceleration(const Point &pos, const vector<Planet> &planets) {
 	return v;
 }
 
-bool Bullet::update(const vector<Planet> &planets) {
-	Vector acc = acceleration(center, planets);
-	speed += acc;
-	center += speed;
+bool Bullet::update(const vector<Planet> &planets, double dt) {
+	Vector kv1 = acceleration(center, planets);
+	Vector kr1 = speed;
+	Vector kv2 = acceleration(center+dt/2*kr1, planets);
+	Vector kr2 = speed+dt/2*kv1;
+	Vector kv3 = acceleration(center+dt/2*kr2, planets);
+	Vector kr3 = speed+dt/2*kv2;
+	Vector kv4 = acceleration(center+dt*kr3, planets);
+	Vector kr4 = speed+dt*kv3;
+	speed += dt/6 * (kv1 + 2*kv2 + 2*kv3 + kv4);
+	center += dt/6 * (kr1 + 2*kr2 + 2*kr3 + kr4);
 	for (size_t i = 0; i < planets.size(); ++i) {
 		if (planets[i].intersects(center)) return true;
 	}
