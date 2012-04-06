@@ -10,15 +10,12 @@
 class Planet : public Sphere {
 
 public:
-	Planet(const Point &pos, double radius, double mass):
-		Sphere(pos, radius), mass_(mass) {}
-	double mass() const { return mass_; }
-	void mass(double m) { mass_ = m; }
+	Planet(const Point &pos, double radius, double mass_):
+		Sphere(pos, radius), mass(mass_) {}
 
 	void draw(sf::RenderTarget &target) const;
 
-private:
-	double mass_;
+	double mass;
 
 };
 
@@ -29,22 +26,20 @@ public:
 
 	void draw(sf::RenderTarget &target) const;
 
-private:
-	double dir;
+	int dir;
 
 };
 
 class Bullet : public Sphere {
 
 public:
-	Bullet(const Point &pos, const Vector &speed):
-		Sphere(pos, 2), speed_(speed) {}
+	Bullet(const Point &pos, const Vector &speed_):
+		Sphere(pos, 2), speed(speed_) {}
 
 	bool update(const std::vector<Planet> &planets);
 	void draw(sf::RenderTarget &target) const;
 
-private:
-	Vector speed_;
+	Vector speed;
 
 };
 

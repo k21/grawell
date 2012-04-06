@@ -6,7 +6,7 @@ using namespace sf;
 void Planet::draw(RenderTarget &target) const {
 	Color transparent(0, 0, 0, 0), green(0, 255, 0);
 	Shape circle = Shape::Circle(
-			x(), y(), radius(),
+			center.x, center.y, radius,
 			transparent, 1, green);
 	target.Draw(circle);
 }
@@ -14,7 +14,7 @@ void Planet::draw(RenderTarget &target) const {
 void Ship::draw(RenderTarget &target) const {
 	Color transparent(0, 0, 0, 0), blue(0, 0, 255);
 	Shape circle = Shape::Circle(
-			x(), y(), radius(),
+			center.x, center.y, radius,
 			transparent, 1, blue);
 	target.Draw(circle);
 }
@@ -22,16 +22,16 @@ void Ship::draw(RenderTarget &target) const {
 void Bullet::draw(RenderTarget &target) const {
 	Color transparent(0, 0, 0, 0), red(255, 0, 0);
 	Shape circle = Shape::Circle(
-			x(), y(), radius(),
+			center.x, center.y, radius,
 			transparent, 1, red);
 	target.Draw(circle);
 }
 
 static Vector acceleration(const Point &pos, const Planet &pl) {
-	Vector v = pl.center() - pos;
+	Vector v = pl.center - pos;
 	double dist = v.size();
 	v.normalize();
-	double size = pl.mass() / (dist * dist);
+	double size = pl.mass / (dist * dist);
 	return size * v;
 }
 
@@ -44,11 +44,11 @@ static Vector acceleration(const Point &pos, const vector<Planet> &planets) {
 }
 
 bool Bullet::update(const vector<Planet> &planets) {
-	Vector acc = acceleration(center(), planets);
-	speed_ += acc;
-	center() += speed_;
+	Vector acc = acceleration(center, planets);
+	speed += acc;
+	center += speed;
 	for (size_t i = 0; i < planets.size(); ++i) {
-		if (planets[i].intersects(center())) return true;
+		if (planets[i].intersects(center)) return true;
 	}
 	return false;
 }

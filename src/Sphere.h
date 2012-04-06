@@ -6,28 +6,18 @@
 class Sphere {
 
 public:
-	Sphere(const Point &center, double radius): c(center), r(radius) {}
-	inline Point &center() { return c; }
-	inline const Point &center() const { return c; }
-	inline void center(const Point &center) { c = center; }
-	inline double radius() const { return r; }
-	inline void radius(double radius) { r = radius; }
-	inline double x() const { return c.x(); }
-	inline void x(double x) { c.x(x); }
-	inline double y() const { return c.y(); }
-	inline void y(double y) { c.y(y); }
+	Sphere(const Point &center_, double radius_):
+		center(center_), radius(radius_) {}
 
 	bool intersects(Point &p) const {
-		return (c - p).size() <= r;
+		return (center - p).size() <= radius;
 	}
 	bool intersects(Sphere &s) const {
-		return (c - s.c).size() <= r + s.r;
+		return (center - s.center).size() <= radius + s.radius;
 	}
 
-
-private:
-	Point c;
-	double r;
+	Point center;
+	double radius;
 
 };
 

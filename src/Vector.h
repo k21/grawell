@@ -6,57 +6,53 @@
 class Vector {
 
 public:
-	Vector(): x_(0), y_(0) {}
-	Vector(double x, double y): x_(x), y_(y) {}
-	inline double x() const { return x_; }
-	inline double y() const { return y_; }
-	inline void x(double nx) { x_ = nx; }
-	inline void y(double ny) { y_ = ny; }
+	Vector(): x(0), y(0) {}
+	Vector(double x_, double y_): x(x_), y(y_) {}
 
 	inline Vector operator + (const Vector &v) const {
-		return Vector(x_+v.x_, y_+v.y_);
+		return Vector(x+v.x, y+v.y);
 	}
 	inline Vector operator - (const Vector &v) const {
-		return Vector(x_-v.x_, y_-v.y_);
+		return Vector(x-v.x, y-v.y);
 	}
 	inline Vector operator - () const {
-		return Vector(-x_, -y_);
+		return Vector(-x, -y);
 	}
 	inline Vector operator * (double a) const {
-		return Vector(x_*a, y_*a);
+		return Vector(x*a, y*a);
 	}
 	inline Vector operator / (double a) const {
-		return Vector(x_/a, y_/a);
+		return Vector(x/a, y/a);
 	}
 
 	inline const Vector &operator += (const Vector &v) {
-		x_ += v.x_; y_ += v.y_; return *this;
+		x += v.x; y += v.y; return *this;
 	}
 	inline const Vector &operator -= (const Vector &v) {
-		x_ -= v.x_; y_ -= v.y_; return *this;
+		x -= v.x; y -= v.y; return *this;
 	}
 	inline const Vector &operator *= (double a) {
-		x_ *= a; y_ *= a; return *this;
+		x *= a; y *= a; return *this;
 	}
 	inline const Vector &operator /= (double a) {
-		x_ /= a; y_ /= a; return *this;
+		x /= a; y /= a; return *this;
 	}
 
 	inline double sizeSqr() const {
-		return x_*x_ + y_*y_;
+		return x*x + y*y;
 	}
 	inline double size() const {
-		return sqrt(x_*x_ + y_*y_);
+		return sqrt(x*x + y*y);
 	}
 	inline double dir() const {
-		return atan2(y_, x_);
+		return atan2(y, x);
 	}
 
 	inline double dot(const Vector &v) const {
-		return x_*v.x_ + y_*v.y_;
+		return x*v.x + y*v.y;
 	}
 	inline double cross(const Vector &v) const {
-		return x_*v.y_ - y_*v.x_;
+		return x*v.y - y*v.x;
 	}
 
 	inline double cos(const Vector &v) const {
@@ -73,8 +69,7 @@ public:
 		(*this) /= size();
 	}
 
-private:
-	double x_, y_;
+	double x, y;
 
 };
 
