@@ -1,6 +1,7 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include <list>
 #include <vector>
 
 #include <SFML/Graphics.hpp>
@@ -29,7 +30,7 @@ private:
 	Settings settings;
 	std::vector<Planet> planets;
 	std::vector<Ship>   ships;
-	std::vector<Bullet> bullets;
+	std::list<Bullet> bullets;
 
 };
 
