@@ -69,6 +69,10 @@ public:
 		(*this) /= size();
 	}
 
+	static Vector direction(double dir) {
+		return Vector(::cos(dir), ::sin(dir));
+	}
+
 	double x, y;
 
 };

@@ -31,6 +31,7 @@ private:
 	std::vector<Planet> planets;
 	std::vector<Ship>   ships;
 	std::list<Bullet> bullets;
+	int controlled;
 
 };
 

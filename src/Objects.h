@@ -19,11 +19,14 @@ public:
 
 };
 
+class Bullet;
+
 class Ship : public Sphere {
 
 public:
 	Ship(const Point &pos): Sphere(pos, 15), dir(0) {}
 
+	Bullet shoot() const;
 	void draw(sf::RenderTarget &target) const;
 
 	int dir;

@@ -10,8 +10,9 @@ Game::Game() {
 	unsigned long style = Style::Close;
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", style, settings);
-	planets.push_back(Planet(Point(400,300),40,3000));
-	bullets.push_back(Bullet(Point(400,550), Vector(3,0)));
+	controlled = 0;
+	ships.push_back(Ship(Point(100,100)));
+	planets.push_back(Planet(Point(400,300),20,30000000));
 }
 
 Game::~Game() {
@@ -42,7 +43,13 @@ void Game::input() {
 				break;
 
 			case Event::KeyPressed:
-				if (event.Key.Code == sf::Key::Escape) screen->Close();
+				switch (event.Key.Code) {
+					case Key::Escape: screen->Close(); break;
+					case Key::Left:  ships[controlled].dir -= 200; break;
+					case Key::Right: ships[controlled].dir += 200; break;
+					case Key::Space: bullets.push_back(ships[controlled].shoot()); break;
+					default: break;
+				}
 				break;
 
 			default:

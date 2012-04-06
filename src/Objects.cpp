@@ -16,7 +16,10 @@ void Ship::draw(RenderTarget &target) const {
 	Shape circle = Shape::Circle(
 			center.x, center.y, radius,
 			transparent, 1, blue);
+	Vector d = center + radius * Vector::direction(dir/18000.0*M_PI);
+	Shape line = Shape::Line(center.x, center.y, d.x, d.y, 1, blue);
 	target.Draw(circle);
+	target.Draw(line);
 }
 
 void Bullet::draw(RenderTarget &target) const {
@@ -25,6 +28,10 @@ void Bullet::draw(RenderTarget &target) const {
 			center.x, center.y, radius,
 			transparent, 1, red);
 	target.Draw(circle);
+}
+
+Bullet Ship::shoot() const {
+	return Bullet(center, 200*Vector::direction(dir/18000.0*M_PI));
 }
 
 static Vector acceleration(const Point &pos, const Planet &pl) {
