@@ -11,9 +11,7 @@ void Universe::update(double dt) {
 	list<Bullet>::iterator it = bullets.begin();
 	while (it != bullets.end()) {
 		if (it->update(planets, dt)) {
-			list<Bullet>::iterator it2 = it; ++it2;
-			bullets.erase(it);
-			it = it2;
+			it = bullets.erase(it);
 		} else ++it;
 	}
 }

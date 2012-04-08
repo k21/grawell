@@ -74,9 +74,8 @@ void Game::display() {
 	for (size_t i  = 0; i < universe.ships.size(); ++i) {
 		universe.ships[i].draw(*screen);
 	}
-	list<Bullet>::iterator it = universe.bullets.begin();
-	while (it != universe.bullets.end()) {
-		it->draw(*screen); ++it;
+	for (Bullet &b : universe.bullets) {
+		b.draw(*screen);
 	}
 	screen->Display();
 }
