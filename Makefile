@@ -5,7 +5,7 @@ LIBS := \
 	-lsfml-audio \
 	-lsfml-system \
 
-CPPFLAGS := -O2 -flto -ggdb -Wall -Wextra
+CPPFLAGS := -O2 -flto -ggdb -Wall -Wextra -std=c++0x
 OBJS := $(addprefix build/objs/, \
 	Game.o \
 	Main.o \
