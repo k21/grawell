@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Universe.h"
+#include "Server.h"
 
 class Game {
 
@@ -25,6 +26,7 @@ private:
 	sf::Clock clock;
 	Universe universe;
 	int controlled;
+	Server *server;
 
 };
 

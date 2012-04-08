@@ -11,10 +11,16 @@ Game::Game():
 	unsigned long style = Style::Close;
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", style, settings);
+	server = new Server(4920);
+	server->Launch();
 }
 
 Game::~Game() {
 	delete screen;
+	if (server) {
+		server->exit();
+		delete server;
+	}
 }
 
 void Game::run() {

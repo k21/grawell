@@ -1,0 +1,92 @@
+Packet Structure
+================
+
+u16: length
+u8: type
+u8: count
+	... type specific data
+
+
+String Encoding:
+u8: length
+	chars...
+
+Packet Types
+============
+
+C join request
+	u16: version
+	string: player name
+
+S join response
+	u16: version
+	u8: accepted
+	u16: player id
+
+S game settings
+	u8: zero
+	// will be specified later
+
+S ship info
+	u16: player id
+	point2i32: position
+
+S planet info
+	u16: planet id
+	point2i32: position
+	u32: size
+	u32: mass
+
+S players
+	u16: player id
+	string: name
+
+S scores
+	u16: player id
+	u32: score
+
+S new round
+	u32: round
+
+C action
+	u16(angle): direction
+	u32: strength
+
+S player ready
+	u16: player id
+
+S round action info
+	u16: player id
+	u16(angle): direction
+	u32: strength of shot
+
+C round checksum
+	u32: round
+	u32: checksum
+
+S checksum mismatch
+	u16: player id
+
+
+Protocol
+========
+
+C join request
+S join response
+S game settings
+S players
+S scores
+S planet info
+S ship position
+...
+[
+	? S ship position
+	S new round
+	[
+		C action
+		S player ready
+	]
+	S round action info
+	C round summary
+	? S checksum mismatch
+]

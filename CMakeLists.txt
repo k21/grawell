@@ -19,8 +19,9 @@ add_dependencies(dist/grawell dist_directory)
 add_custom_target(grawell ALL)
 add_dependencies(grawell dist/grawell)
 
+set(TESTED_SOURCES src/Encoder.cpp src/Decoder.cpp)
 aux_source_directory(test TEST_SOURCES)
-add_executable(grawell_test EXCLUDE_FROM_ALL ${TEST_SOURCES})
+add_executable(grawell_test EXCLUDE_FROM_ALL ${TESTED_SOURCES} ${TEST_SOURCES})
 target_link_libraries(grawell_test
 	pthread
 )
