@@ -6,4 +6,4 @@ cd `dirname $0`
 rm -rf build
 mkdir build
 cd build
-cmake -D'CMAKE_CXX_FLAGS=-std=gnu++0x' ..
+cmake -D'CMAKE_CXX_FLAGS=-std=gnu++0x -Wall -Wextra' ..

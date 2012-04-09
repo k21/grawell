@@ -5,12 +5,12 @@
 using namespace std;
 using namespace sf;
 
-Game::Game() {
+Game::Game():
+		screen(0), clock(), universe(), controlled(0) {
 	VideoMode mode(800, 600);
 	unsigned long style = Style::Close;
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", style, settings);
-	controlled = 0;
 }
 
 Game::~Game() {

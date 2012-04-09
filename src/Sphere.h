@@ -8,6 +8,7 @@ class Sphere {
 public:
 	Sphere(const Point &center_, double radius_):
 		center(center_), radius(radius_) {}
+	virtual ~Sphere() {}
 
 	bool intersects(const Point &p) const {
 		return (center - p).size() <= radius;
