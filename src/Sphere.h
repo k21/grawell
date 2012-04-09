@@ -9,10 +9,10 @@ public:
 	Sphere(const Point &center_, double radius_):
 		center(center_), radius(radius_) {}
 
-	bool intersects(Point &p) const {
+	bool intersects(const Point &p) const {
 		return (center - p).size() <= radius;
 	}
-	bool intersects(Sphere &s) const {
+	bool intersects(const Sphere &s) const {
 		return (center - s.center).size() <= radius + s.radius;
 	}
 
