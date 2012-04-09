@@ -13,7 +13,8 @@ class Client : public sf::Thread {
 
 public:
 	Client(const sf::IPAddress &address_, short port_, const std::string &name_):
-		address(address_), port(port_), name(name_), exit_(false) {}
+		address(address_), port(port_), socket(), name(name_), exit_(false),
+		mutexIn(), mutexOut(), incoming(), outgoing(), encoder(), decoder() {}
 
 	void Run();
 	void exit() { exit_ = true; this->Wait(); }

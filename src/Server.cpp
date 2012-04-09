@@ -38,7 +38,7 @@ void Server::Run() {
 				it = clients.erase(it);
 			} else ++it;
 		}
-		if (nothing) Sleep(0.05);
+		if (nothing) Sleep(0.05f);
 	}
 	serverSocket.Close();
 }

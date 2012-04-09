@@ -22,7 +22,7 @@ void Client::Run() {
 			//TODO: error
 			return;
 		} else if (s == 1) nothing = false;
-		if (nothing) Sleep(0.05);
+		if (nothing) Sleep(0.05f);
 	}
 }
 

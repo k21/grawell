@@ -49,20 +49,20 @@ public:
 
 	bool fromServer() const { return type() >= 128; }
 
-	short      type() const { return data[TYPE     ]; }
-	short   version() const { return data[VERSION  ]; }
-	bool   accepted() const { return data[ACCEPTED ]; }
-	short        id() const { return data[ID       ]; }
-	long          x() const { return data[X        ]; }
-	long          y() const { return data[Y        ]; }
-	long       size() const { return data[SIZE     ]; }
-	long       mass() const { return data[MASS     ]; }
-	long      score() const { return data[SCORE    ]; }
-	long      round() const { return data[ROUND    ]; }
-	short direction() const { return data[DIRECTION]; }
-	long   strength() const { return data[STRENGTH ]; }
+	short      type() const { return (short)data[TYPE     ]; }
+	short   version() const { return (short)data[VERSION  ]; }
+	bool   accepted() const { return (bool) data[ACCEPTED ]; }
+	short        id() const { return (short)data[ID       ]; }
+	long          x() const { return (long) data[X        ]; }
+	long          y() const { return (long) data[Y        ]; }
+	long       size() const { return (long) data[SIZE     ]; }
+	long       mass() const { return (long) data[MASS     ]; }
+	long      score() const { return (long) data[SCORE    ]; }
+	long      round() const { return (long) data[ROUND    ]; }
+	short direction() const { return (short)data[DIRECTION]; }
+	long   strength() const { return (long) data[STRENGTH ]; }
 	unsigned long
-	       checksum() const { return data[CHECKSUM ]; }
+	       checksum() const { return (unsigned long)data[CHECKSUM]; }
 
 	void      type(short v) { data[TYPE     ] = v; }
 	void   version(short v) { data[VERSION  ] = v; }
@@ -86,7 +86,7 @@ public:
 class Encoder {
 
 public:
-	Encoder(): currentSize(0), current(0), lastSize(0), last(0) {}
+	Encoder(): currentSize(0), current(0), lastSize(0), last(0), data() {}
 	~Encoder();
 
 	void encode(const std::vector<Message> &messages);
@@ -111,7 +111,7 @@ private:
 class Decoder {
 
 public:
-	Decoder(): current(0), error_(false) {}
+	Decoder(): current(0), data(), error_(false) {}
 	~Decoder();
 	void decode(char *buffer, size_t size);
 	bool error() const { return error_; }

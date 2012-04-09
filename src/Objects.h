@@ -10,8 +10,8 @@
 class Planet : public Sphere {
 
 public:
-	Planet(const Point &pos, double radius, double mass_):
-		Sphere(pos, radius), mass(mass_) {}
+	Planet(const Point &pos_, double radius_, double mass_):
+		Sphere(pos_, radius_), mass(mass_) {}
 
 	void draw(sf::RenderTarget &target) const;
 

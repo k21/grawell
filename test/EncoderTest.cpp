@@ -6,6 +6,9 @@ using namespace std;
 
 class EncoderTest : public ::testing::Test {
 public:
+	EncoderTest(): encoder(), m1(), m2(), v1(), v2(), v3(), v4(), v5(),
+			buffer(0), size(-1) {}
+
 	Encoder encoder;
 	Message m1, m2;
 	vector<Message> v1, v2, v3, v4, v5;
@@ -44,19 +47,24 @@ public:
 	}
 
 	unsigned char at(size_t i) const { return buffer[i]; }
-	unsigned long get(size_t begin, size_t size) const {
+	unsigned long get(size_t begin, size_t len) const {
 		unsigned long res = 0;
-		for (size_t i = 0; i < size; ++i) {
+		for (size_t i = 0; i < len; ++i) {
 			res |= at(begin+i)<<(8*i);
 		}
 		return res;
 	}
 
-	void loadMultiple(int expectedSize);
-	void checkM1Result(int cnt);
+	void loadMultiple(size_t expectedSize);
+	void checkM1Result(size_t cnt);
+
+private:
+	EncoderTest(const EncoderTest &);
+	const EncoderTest& operator = (const EncoderTest &);
+
 };
 
-void EncoderTest::loadMultiple(int expectedSize) {
+void EncoderTest::loadMultiple(size_t expectedSize) {
 	char *b = new char[expectedSize];
 	size_t loaded = 0;
 	while (loaded < expectedSize) {
@@ -73,7 +81,7 @@ void EncoderTest::loadMultiple(int expectedSize) {
 	buffer = b;
 }
 
-void EncoderTest::checkM1Result(int cnt) {
+void EncoderTest::checkM1Result(size_t cnt) {
 	loadMultiple(10*cnt);
 	for (size_t i = 0; i < cnt; ++i) {
 		size_t begin = 10*i;

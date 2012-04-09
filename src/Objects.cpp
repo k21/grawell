@@ -6,7 +6,7 @@ using namespace sf;
 void Planet::draw(RenderTarget &target) const {
 	Color transparent(0, 0, 0, 0), green(0, 255, 0);
 	Shape circle = Shape::Circle(
-			center.x, center.y, radius,
+			(float)center.x, (float)center.y, (float)radius,
 			transparent, 1, green);
 	target.Draw(circle);
 }
@@ -14,10 +14,11 @@ void Planet::draw(RenderTarget &target) const {
 void Ship::draw(RenderTarget &target) const {
 	Color transparent(0, 0, 0, 0), blue(0, 0, 255);
 	Shape circle = Shape::Circle(
-			center.x, center.y, radius,
+			(float)center.x, (float)center.y, (float)radius,
 			transparent, 1, blue);
 	Vector d = center + radius * Vector::direction(dir/18000.0*M_PI);
-	Shape line = Shape::Line(center.x, center.y, d.x, d.y, 1, blue);
+	Shape line = Shape::Line((float)center.x, (float)center.y,
+			(float)d.x, (float)d.y, 1, blue);
 	target.Draw(circle);
 	target.Draw(line);
 }
@@ -25,7 +26,7 @@ void Ship::draw(RenderTarget &target) const {
 void Bullet::draw(RenderTarget &target) const {
 	Color transparent(0, 0, 0, 0), red(255, 0, 0);
 	Shape circle = Shape::Circle(
-			center.x, center.y, radius,
+			(float)center.x, (float)center.y, (float)radius,
 			transparent, 1, red);
 	target.Draw(circle);
 }

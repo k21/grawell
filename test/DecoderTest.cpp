@@ -6,6 +6,9 @@ using namespace std;
 
 class DecoderTest : public ::testing::Test {
 public:
+	DecoderTest(): encoder(), decoder(), m1(), m2(),
+			v1(), v2(), v3(), v4(), v5() {}
+
 	Encoder encoder;
 	Decoder decoder;
 	Message m1, m2;

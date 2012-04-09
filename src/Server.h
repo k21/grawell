@@ -13,6 +13,7 @@
 class ClientInfo {
 
 public:
+	ClientInfo(): address(), socket(), id(-1) {}
 	sf::IPAddress address;
 	sf::SocketTCP socket;
 	int id;
@@ -22,7 +23,8 @@ public:
 class Server : public sf::Thread {
 
 public:
-	Server(short port_): port(port_), exit_(false) {}
+	Server(short port_): clients(), port(port_), exit_(false),
+			serverSocket(), universe() {}
 
 	void Run();
 	void exit() { exit_ = true; this->Wait(); }

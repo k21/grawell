@@ -13,7 +13,7 @@ Encoder::~Encoder() {
 
 static void set(char *dest, unsigned long data, size_t size) {
 	for (size_t i = 0; i < size; ++i) {
-		dest[i] = data & 0xFF;
+		dest[i] = (char)(data & 0xFF);
 		data >>= 8;
 	}
 }
@@ -112,7 +112,7 @@ void Encoder::append(const char *what, size_t size) {
 void Encoder::append(unsigned long what, size_t size) {
 	char c[size];
 	for (size_t i = 0; i < size; ++i) {
-		c[i] = what & 0xFF;
+		c[i] = (char)(what & 0xFF);
 		what >>= 8;
 	}
 	append(c, size);
