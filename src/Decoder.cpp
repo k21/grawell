@@ -18,7 +18,6 @@ bool Decoder::next(Message *&message) {
 		data.pop();
 	} else {
 		current = 0;
-		return false;
 	}
 	message = current;
 	return hasNext;

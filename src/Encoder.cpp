@@ -162,7 +162,6 @@ bool Encoder::next(char *&buffer, size_t &size) {
 	} else {
 		currentSize = 0;
 		current = 0;
-		return false;
 	}
 	buffer = current; size = currentSize;
 	return hasNext;
