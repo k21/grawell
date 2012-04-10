@@ -31,8 +31,8 @@ int Client::sendPending() {
 	vector<Message> toSend;
 	{
 		Lock lock(mutexOut);
-		if (outgoing.size()) something = true;
-		while (outgoing.size()) {
+		if (!outgoing.empty()) something = true;
+		while (!outgoing.empty()) {
 			toSend.push_back(outgoing.front());
 			outgoing.pop();
 		}
@@ -84,7 +84,7 @@ void Client::send(queue<Message> &messages) {
 
 void Client::recv(queue<Message> &messages) {
 	Lock lock(mutexIn);
-	while (incoming.size()) {
+	while (!incoming.empty()) {
 		messages.push(incoming.front());
 		incoming.pop();
 	}
