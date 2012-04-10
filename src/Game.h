@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Client.h"
 #include "Universe.h"
 #include "Server.h"
 
@@ -27,6 +28,7 @@ private:
 	Universe universe;
 	int controlled;
 	Server *server;
+	Client *client;
 
 };
 
