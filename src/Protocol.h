@@ -111,7 +111,8 @@ private:
 class Decoder {
 
 public:
-	Decoder(): current(0), data(), error_(false) {}
+	Decoder(): header(), headerSize(0), expected(0), loaded(0), incoming(0),
+			current(0), data(), error_(false) {}
 	~Decoder();
 	void decode(char *buffer, size_t size);
 	bool error() const { return error_; }
@@ -121,6 +122,12 @@ private:
 	Decoder(const Decoder &);
 	Decoder& operator = (const Decoder &);
 
+	size_t decodeMessage(char *buffer, size_t len);
+	void decodePacket();
+
+	char header[4]; size_t headerSize;
+	size_t expected, loaded;
+	char *incoming;
 	Message *current;
 	std::queue<Message *> data;
 	bool error_;
