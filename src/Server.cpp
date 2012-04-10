@@ -17,6 +17,7 @@ void Server::Run() {
 		bool nothing = true;
 		if (status == Socket::Done) {
 			nothing = false;
+			clientSocket.SetBlocking(false);
 			info.address = address;
 			info.socket = clientSocket;
 			info.id = 0;
