@@ -205,3 +205,5 @@ TEST_F(EncoderTest, MultipleMessagesMixed) {
 	delete [] buffer;
 	buffer = 0; size = -1;
 }
+
+//TODO: test encoding strings

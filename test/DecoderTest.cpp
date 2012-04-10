@@ -43,23 +43,29 @@ public:
 	void check(const vector<Message>& messages, size_t cnt = 1);
 };
 
-static bool same(const Message& m1, const Message& m2) {
+static void expect_same(const Message& exp, const Message& act) {
 	for (size_t i = 0; i < Message::FIELD_COUNT; ++i) {
-		if (m1.data[i] != m2.data[i]) return false;
+		EXPECT_EQ(exp.data[i], act.data[i]) << "i = " << i;
 	}
-	if (m1.text != m2.text) return false;
-	return true;
+	EXPECT_EQ(exp.text, act.text);
 }
 
 void DecoderTest::check(const vector<Message>& messages, size_t cnt) {
 	for (size_t i = 0; i < cnt; ++i) encoder.encode(messages);
 	char *buffer; size_t size;
-	while (encoder.next(buffer, size)) decoder.decode(buffer, size);
+	while (encoder.next(buffer, size)) {
+		decoder.decode(buffer, size);
+		ASSERT_FALSE(decoder.error());
+	}
 	Message *m;
 	for (size_t j = 0; j < cnt; ++j) {
 		for (size_t i = 0; i < messages.size(); ++i) {
+			SCOPED_TRACE(i);
+			SCOPED_TRACE("Inner loop index");
+			SCOPED_TRACE(j);
+			SCOPED_TRACE("Outer loop index");
 			ASSERT_TRUE(decoder.next(m));
-			ASSERT_TRUE(same(messages[j], *m));
+			expect_same(messages[i], *m);
 		}
 	}
 	ASSERT_FALSE(decoder.next(m));
@@ -72,6 +78,7 @@ TEST_F(DecoderTest, SingleMessage) {
 TEST_F(DecoderTest, SingleMessageRepeated) {
 	for (size_t i = 0; i < 1024; ++i) {
 		check(v1);
+		if (HasFailure()) break;
 	}
 }
 
@@ -98,3 +105,6 @@ TEST_F(DecoderTest, MultipleMergedMessagesOverflow) {
 TEST_F(DecoderTest, MultipleMessagesMixed) {
 	check(v5);
 }
+
+//TODO: test invalid inputs
+//TODO: test decoding strings
