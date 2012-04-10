@@ -8,6 +8,7 @@ using namespace sf;
 void Client::Run() {
 	if (socket.Connect(port, address) != Socket::Done) {
 		//TODO: error
+		return;
 	}
 	socket.SetBlocking(false);
 	while (!exit_) {
