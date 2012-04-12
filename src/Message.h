@@ -76,6 +76,72 @@ public:
 	long data[FIELD_COUNT];
 	std::string text;
 
+	static Message joinRequest(ushort version, std::string name) {
+		Message m; m.type(JOIN_REQUEST);
+		m.version(version); m.text = name;
+		return m;
+	}
+	static Message action(ushort direction, ulong strength) {
+		Message m; m.type(ACTION);
+		m.direction(direction); m.strength(strength);
+		return m;
+	}
+	static Message roundChecksum(ulong round, ulong checksum) {
+		Message m; m.type(ROUND_CHECKSUM);
+		m.round(round); m.checksum(checksum);
+		return m;
+	}
+
+	static Message joinResponse(ushort version, bool accepted, ushort id) {
+		Message m; m.type(JOIN_RESPONSE);
+		m.version(version); m.accepted(accepted); m.id(id);
+		return m;
+	}
+	static Message gameSettings() {
+		Message m; m.type(GAME_SETTINGS);
+		return m;
+	}
+	static Message shipInfo(ushort id, long x, long y) {
+		Message m; m.type(SHIP_INFO);
+		m.id(id); m.x(x); m.y(y);
+		return m;
+	}
+	static Message planetInfo(ushort id, long x, long y, ulong size, ulong mass) {
+		Message m; m.type(PLANET_INFO);
+		m.id(id); m.x(x); m.y(y); m.size(size); m.mass(mass);
+		return m;
+	}
+	static Message playerInfo(ushort id, std::string name) {
+		Message m; m.type(PLAYER_INFO);
+		m.id(id); m.text = name;
+		return m;
+	}
+	static Message scoreInfo(ushort id, long score) {
+		Message m; m.type(SCORE_INFO);
+		m.id(id); m.score(score);
+		return m;
+	}
+	static Message newRound(ulong round) {
+		Message m; m.type(NEW_ROUND);
+		m.round(round);
+		return m;
+	}
+	static Message playerReady(ushort id) {
+		Message m; m.type(PLAYER_READY);
+		m.id(id);
+		return m;
+	}
+	static Message actionInfo(ushort id, ushort direction, ulong strength) {
+		Message m; m.type(ACTION_INFO);
+		m.id(id); m.direction(direction); m.strength(strength);
+		return m;
+	}
+	static Message checksumMismatch(ushort id) {
+		Message m; m.type(CHECKSUM_MISMATCH);
+		m.id(id);
+		return m;
+	}
+
 };
 
 #endif
