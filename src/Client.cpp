@@ -6,7 +6,15 @@ using namespace std;
 using namespace sf;
 
 void Client::Run() {
-	if (socket.Connect(port, address) != Socket::Done) {
+	static const int RETRY = 10;
+	Socket::Status status = socket.Connect(port, address);
+	int r = 1;
+	while (status != Socket::Done && r < RETRY) {
+		Sleep(1.f);
+		status = socket.Connect(port, address);
+		++r;
+	}
+	if (status != Socket::Done) {
 		//TODO: error
 		return;
 	}
@@ -75,18 +83,15 @@ int Client::recvPending() {
 	return something;
 }
 
-void Client::send(queue<Message> &messages) {
+void Client::send(Message &message) {
 	Lock lock(mutexOut);
-	while (messages.size()) {
-		outgoing.push(messages.front());
-		messages.pop();
-	}
+	outgoing.push(message);
 }
 
-void Client::recv(queue<Message> &messages) {
+bool Client::recv(Message &message) {
 	Lock lock(mutexIn);
-	while (!incoming.empty()) {
-		messages.push(incoming.front());
-		incoming.pop();
-	}
+	if (incoming.empty()) return false;
+	message = incoming.front();
+	incoming.pop();
+	return true;
 }

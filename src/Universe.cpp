@@ -3,10 +3,7 @@
 using namespace std;
 
 Universe::Universe():
-		settings(), planets(), ships(), bullets() {
-	ships.push_back(Ship(Point(100,100)));
-	planets.push_back(Planet(Point(400,300),20,30000000));
-}
+		settings(), planets(), ships(), bullets() {}
 
 void Universe::update(double dt) {
 	list<Bullet>::iterator it = bullets.begin();

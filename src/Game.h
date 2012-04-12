@@ -22,13 +22,22 @@ private:
 	void input();
 	void logic(double dt);
 	void display();
+	void handleMessage(const Message &m);
+	void keyPressed(sf::Key::Code code);
+	void shoot();
+	void allocShips(size_t n);
 
 	sf::RenderWindow *screen;
 	sf::Clock clock;
 	Universe universe;
-	int controlled;
+	unsigned short id;
 	Server *server;
 	Client *client;
+	enum {
+		NOTHING, REQUEST_SENT, WAITING,
+		SELECT_ACTION, SELECT_DONE,
+		ROUND, ROUND_DONE
+	} state;
 
 };
 

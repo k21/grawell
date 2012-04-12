@@ -12,15 +12,15 @@
 class Client : public sf::Thread {
 
 public:
-	Client(const sf::IPAddress &address_, short port_, const std::string &name_):
-		address(address_), port(port_), socket(), name(name_), exit_(false),
+	Client(const sf::IPAddress &address_, short port_):
+		address(address_), port(port_), socket(), exit_(false),
 		mutexIn(), mutexOut(), incoming(), outgoing(), encoder(), decoder() {}
 
 	void Run();
 	void exit() { exit_ = true; this->Wait(); }
 
-	void send(std::queue<Message> &messages);
-	void recv(std::queue<Message> &messages);
+	void send(Message &message);
+	bool recv(Message &message);
 
 private:
 	int sendPending();
@@ -29,7 +29,6 @@ private:
 	sf::IPAddress address;
 	short port;
 	sf::SocketTCP socket;
-	std::string name;
 	volatile bool exit_;
 	sf::Mutex mutexIn, mutexOut;
 	std::queue<Message> incoming, outgoing;

@@ -18,7 +18,8 @@ public:
 			const sf::SocketTCP &socket_, unsigned short id_):
 			address(address_), socket(socket_), id(id_),
 			encoder(), decoder(),
-			state(NOTHING), ready(false) {}
+			state(NOTHING), ready(false),
+			pending(0), pendingSize(0) {}
 	sf::IPAddress address;
 	sf::SocketTCP socket;
 	unsigned short id;
@@ -28,6 +29,11 @@ public:
 		NOTHING, ACCEPTED, PLAYING
 	} state;
 	bool ready;
+	char *pending; size_t pendingSize;
+
+private:
+	ClientInfo(const ClientInfo &);
+	const ClientInfo &operator = (const ClientInfo &);
 
 };
 
@@ -52,7 +58,8 @@ private:
 	const Server& operator = (const Server&);
 
 	int handleMessage(ClientInfo &client, const Message &m);
-	void accept(ClientInfo &client, std::vector<Message> &toSend);
+	void accept(ClientInfo &client, const Message &m,
+			std::vector<Message> &toSend);
 	unsigned short allocID();
 	void freeID(unsigned short id);
 	void changeState();
