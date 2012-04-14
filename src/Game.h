@@ -3,9 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Client.h"
 #include "Universe.h"
-#include "Server.h"
+
+class Client;
+class Message;
+class Server;
 
 class Game {
 

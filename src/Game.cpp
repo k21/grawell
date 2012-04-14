@@ -1,5 +1,8 @@
 #include <SFML/Audio.hpp>
 
+#include "Client.h"
+#include "Server.h"
+
 #include "Game.h"
 
 using namespace std;
