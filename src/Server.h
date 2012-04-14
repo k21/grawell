@@ -8,6 +8,7 @@
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
 
+#include "Log.h"
 #include "Protocol.h"
 #include "Universe.h"
 
@@ -50,7 +51,12 @@ public:
 	}
 
 	void Run();
-	void exit() { exit_ = true; this->Wait(); }
+	void exit() {
+		exit_ = true;
+		LOG(INFO) << "Waiting for server to terminate...";
+		this->Wait();
+		LOG(INFO) << "Server terminated";
+	}
 
 private:
 	Server(const Server&);

@@ -114,6 +114,7 @@ void Server::sendToAll(const vector<Message> &m) {
 }
 
 int Server::handleMessage(ClientInfo &client, const Message &m) {
+	LOG(DEBUG) << "Server received packet type " << m.type();
 	if (m.fromServer()) {
 		return 1;
 	}
@@ -136,7 +137,10 @@ int Server::handleMessage(ClientInfo &client, const Message &m) {
 			universe.ships[client.id].strength = m.strength();
 		} else if (m.type() == Message::ROUND_CHECKSUM) {
 			if (state != ROUND) return 1;
-			if (m.checksum() != checksum) return 1; //TODO: log
+			if (m.checksum() != checksum) {
+				LOG(WARN) << "Client " << m.id() << "is out of sync";
+				return 1;
+			}
 		} else return 1;
 		universe.ships[client.id].ready = true;
 		++readyCnt;
@@ -146,8 +150,10 @@ int Server::handleMessage(ClientInfo &client, const Message &m) {
 }
 
 void Server::Run() {
+	LOG(INFO) << "Starting server";
 	if (!serverSocket.Listen(port)) {
 		//TODO: error
+		LOG(ERROR) << "Server cannot listen";
 		return;
 	}
 	serverSocket.SetBlocking(false);
@@ -157,12 +163,14 @@ void Server::Run() {
 		Socket::Status status = serverSocket.Accept(clientSocket, &address);
 		bool nothing = true;
 		if (status == Socket::Done) {
+			LOG(INFO) << "Client connected from " << address;
 			nothing = false;
 			clientSocket.SetBlocking(false);
 			ClientInfo *client = new ClientInfo(address, clientSocket, -1);
 			clients.push_back(client);
 		} else if (status != Socket::NotReady) {
 			//TODO: error
+			LOG(ERROR) << "An error occured when waiting for client";
 			return;
 		}
 		list<ClientInfo *>::iterator it = clients.begin();

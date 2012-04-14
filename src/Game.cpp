@@ -1,6 +1,7 @@
 #include <SFML/Audio.hpp>
 
 #include "Client.h"
+#include "Log.h"
 #include "Server.h"
 
 #include "Game.h"
@@ -99,10 +100,12 @@ void Game::allocShips(size_t n) {
 }
 
 void Game::handleMessage(const Message &m) {
+	LOG(DEBUG) << "Client received packet type " << m.type();
 	switch (m.type()) {
 		case Message::JOIN_RESPONSE:
 			if (!m.accepted()) {
 				//TODO: error message
+				LOG(ERROR) << "Server refused connection";
 				return;
 			}
 			id = m.id();
@@ -160,9 +163,7 @@ void Game::handleMessage(const Message &m) {
 			break;
 		case Message::CHECKSUM_MISMATCH:
 			//TODO
-			break;
-		default:
-			//TODO: error
+			LOG(WARN) << "Player " << m.id() << "is out of sync";
 			break;
 	}
 }
