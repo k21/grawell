@@ -18,7 +18,7 @@ public:
 			const sf::SocketTCP &socket_, unsigned short id_):
 			address(address_), socket(socket_), id(id_),
 			encoder(), decoder(),
-			state(NOTHING), ready(false),
+			state(NOTHING),
 			pending(0), pendingSize(0) {}
 	sf::IPAddress address;
 	sf::SocketTCP socket;
@@ -28,7 +28,6 @@ public:
 	enum {
 		NOTHING, ACCEPTED, PLAYING
 	} state;
-	bool ready;
 	char *pending; size_t pendingSize;
 
 private:
@@ -41,7 +40,7 @@ class Server : public sf::Thread {
 
 public:
 	Server(short port_): clients(), port(port_), exit_(false),
-			serverSocket(), universe(), state(SELECT_ACTION),
+			serverSocket(), universe(), state(ROUND),
 			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0) {}
 	~Server() {
 		while (!clients.empty()) {

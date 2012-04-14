@@ -22,7 +22,7 @@ private:
 	const Game &operator = (const Game&);
 
 	void input();
-	void logic(double dt);
+	void logic();
 	void display();
 	void handleMessage(const Message &m);
 	void keyPressed(sf::Key::Code code);
@@ -40,6 +40,8 @@ private:
 		SELECT_ACTION, SELECT_DONE,
 		ROUND, ROUND_DONE
 	} state;
+	long roundCntr;
+	double lastUpdate;
 
 };
 

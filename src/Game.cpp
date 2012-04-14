@@ -10,7 +10,7 @@ using namespace sf;
 
 Game::Game():
 		screen(0), clock(), universe(), id(0), server(0), client(0),
-		state(NOTHING) {
+		state(NOTHING), roundCntr(0), lastUpdate(0) {
 	VideoMode mode(800, 600);
 	unsigned long style = Style::Close;
 	WindowSettings settings(24, 8, 8);
@@ -34,15 +34,10 @@ Game::~Game() {
 }
 
 void Game::run() {
-	const double dt = 1.0/1024;
-	double lastUpdate = clock.GetElapsedTime();
+	lastUpdate = clock.GetElapsedTime();
 	while (screen->IsOpened()) {
-		double now = clock.GetElapsedTime();
 		input();
-		while (lastUpdate < now) {
-			logic(dt);
-			lastUpdate += dt;
-		}
+		logic();
 		display();
 	}
 }
@@ -139,14 +134,29 @@ void Game::handleMessage(const Message &m) {
 			break;
 		case Message::NEW_ROUND:
 			//TODO
+			for (size_t i = 0; i < universe.ships.size(); ++i) {
+				universe.ships[i].ready = false;
+			}
 			state = SELECT_ACTION;
 			break;
 		case Message::PLAYER_READY:
 			//TODO
 			break;
 		case Message::ACTION_INFO:
-			//TODO
-			state = ROUND;
+			{
+				//TODO
+				universe.ships[m.id()].direction = m.direction();
+				universe.ships[m.id()].strength = m.strength();
+				universe.bullets.push_back(universe.ships[m.id()].shoot());
+				universe.ships[m.id()].ready = true;
+				bool allReady = true;
+				for (size_t i = 0; i < universe.ships.size(); ++i) {
+					if (universe.ships[i].active && !universe.ships[i].ready) {
+						allReady = false;
+					}
+				}
+				if (allReady) { state = ROUND; roundCntr = 8192; }
+			}
 			break;
 		case Message::CHECKSUM_MISMATCH:
 			//TODO
@@ -157,7 +167,7 @@ void Game::handleMessage(const Message &m) {
 	}
 }
 
-void Game::logic(double dt) {
+void Game::logic() {
 	{
 		Message m;
 		while (client->recv(m)) {
@@ -170,8 +180,20 @@ void Game::logic(double dt) {
 		state = REQUEST_SENT;
 	}
 	if (state == ROUND) {
-		universe.update(dt);
+		static const double dt = 1.0/1024;
+		double now = clock.GetElapsedTime();
+		while (lastUpdate < now) {
+			universe.update(dt);
+			lastUpdate += dt;
+			--roundCntr;
+			if (roundCntr == 0) {
+				state = ROUND_DONE;
+				Message m = Message::roundChecksum(0,0);
+				client->send(m);
+			}
+		}
 	}
+	lastUpdate = clock.GetElapsedTime();
 }
 
 void Game::display() {
