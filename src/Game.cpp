@@ -157,7 +157,7 @@ void Game::handleMessage(const Message &m) {
 			break;
 		case Message::CHECKSUM_MISMATCH:
 			//TODO
-			LOG(WARN) << "Player " << m.id() << "is out of sync";
+			LOG(WARN) << "Client " << m.id() << " is out of sync";
 			break;
 	}
 }

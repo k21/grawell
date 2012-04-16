@@ -138,7 +138,7 @@ int Server::handleMessage(ClientInfo &client, const Message &m) {
 		} else if (m.type() == Message::ROUND_CHECKSUM) {
 			if (state != ROUND) return 1;
 			if (m.checksum() != checksum) {
-				LOG(WARN) << "Client " << m.id() << "is out of sync";
+				LOG(WARN) << "Client " << m.id() << " is out of sync";
 				return 1;
 			}
 		} else return 1;
