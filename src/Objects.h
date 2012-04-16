@@ -26,7 +26,7 @@ class Bullet;
 class Ship : public Sphere {
 
 public:
-	Ship(unsigned short id_, const Point &pos): Sphere(pos, 15), id(id_),
+	Ship(unsigned short id_): Sphere(Point(0,0), 15), id(id_),
 			direction(0), strength(20000),
 			active(false), name(), score(0), ready(true) {}
 

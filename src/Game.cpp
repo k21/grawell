@@ -89,10 +89,7 @@ void Game::input() {
 
 void Game::allocShips(size_t n) {
 	while (universe.ships.size() < n) {
-		universe.ships.push_back(Ship(
-				(unsigned short)universe.ships.size(),
-				Point(0,0)
-				));
+		universe.ships.push_back(Ship((unsigned short)universe.ships.size()));
 	}
 }
 

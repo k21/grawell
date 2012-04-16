@@ -12,7 +12,7 @@ unsigned short Server::allocID() {
 	} else {
 		res = cntIDs;
 		++cntIDs;
-		Ship nShip = Ship(res, Point(100,100));
+		Ship nShip = Ship(res);
 		universe.ships.push_back(nShip);
 	}
 	return res;
@@ -98,8 +98,8 @@ void Server::changeState() {
 			if (universe.bullets.empty()) break;
 		}
 		for (unsigned short i : destroyed) {
-			universe.ships[i].center.x = 700;
-			universe.ships[i].center.y = 100;
+			placer.remove(universe.ships[i]);
+			placer.place(universe.ships[i]);
 			Message m = Message::shipInfo(i,
 					(long)(universe.ships[i].center.x*1024),
 					(long)(universe.ships[i].center.y*1024)
@@ -113,6 +113,7 @@ void Server::changeState() {
 			if (c->state == ClientInfo::ACCEPTED) {
 				c->state = ClientInfo::PLAYING;
 				universe.ships[c->id].active = true;
+				placer.place(universe.ships[c->id]);
 				Message m = Message::shipInfo(c->id,
 						(long)(universe.ships[c->id].center.x*1024),
 						(long)(universe.ships[c->id].center.y*1024)
@@ -181,6 +182,8 @@ void Server::Run() {
 	serverSocket.SetBlocking(false);
 	IPAddress address;
 	SocketTCP clientSocket;
+	universe.planets.push_back(Planet(Point(0,0),40,8000000));
+	placer.place(universe.planets.back());
 	while (!exit_) {
 		Socket::Status status = serverSocket.Accept(clientSocket, &address);
 		bool nothing = true;

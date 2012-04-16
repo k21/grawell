@@ -9,6 +9,7 @@
 #include <SFML/System.hpp>
 
 #include "Log.h"
+#include "Placer.h"
 #include "Protocol.h"
 #include "Universe.h"
 
@@ -42,7 +43,8 @@ class Server : public sf::Thread {
 public:
 	Server(short port_): clients(), port(port_), exit_(false),
 			serverSocket(), universe(), state(ROUND), roundEnd(),
-			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0) {}
+			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0),
+			placer(200) {}
 	~Server() {
 		while (!clients.empty()) {
 			delete clients.front();
@@ -84,6 +86,7 @@ private:
 	unsigned short cntIDs;
 	size_t readyCnt;
 	size_t playersCnt;
+	Placer placer;
 
 };
 
