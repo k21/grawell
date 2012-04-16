@@ -119,8 +119,8 @@ void Game::handleMessage(const Message &m) {
 			}
 			universe.planets[m.id()].center.x = m.x()/1024.0;
 			universe.planets[m.id()].center.y = m.y()/1024.0;
-			universe.planets[m.id()].radius = m.size()/1024.0;
-			universe.planets[m.id()].mass = m.mass()/1024.0;
+			universe.planets[m.id()].radius = m.size();
+			universe.planets[m.id()].mass = m.mass();
 			break;
 		case Message::PLAYER_INFO:
 			allocShips(m.id()+1);
