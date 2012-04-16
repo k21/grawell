@@ -12,7 +12,7 @@ class Universe {
 public:
 	Universe();
 
-	void update(double dt);
+	void update(std::list<unsigned short> &destroyed, double dt);
 
 	Settings settings;
 	std::vector<Planet> planets;

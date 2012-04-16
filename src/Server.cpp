@@ -12,8 +12,7 @@ unsigned short Server::allocID() {
 	} else {
 		res = cntIDs;
 		++cntIDs;
-		Ship nShip = Ship(Point(100,100));
-		nShip.active = true;
+		Ship nShip = Ship(res, Point(100,100));
 		universe.ships.push_back(nShip);
 	}
 	return res;
@@ -35,9 +34,11 @@ void Server::accept(ClientInfo &client, const Message &req,
 	++playersCnt;
 	++readyCnt;
 	client.id = allocID();
-	client.state = ClientInfo::ACCEPTED;
 	universe.ships[client.id].name = req.text;
 	Message m;
+	m = Message::playerInfo(client.id, req.text);
+	sendToAll(vector<Message>(1,m));
+	client.state = ClientInfo::ACCEPTED;
 	m = Message::joinResponse(PROTOCOL_VERSION, true, client.id);
 	toSend.push_back(m);
 	m = Message::gameSettings();
@@ -91,18 +92,38 @@ void Server::changeState() {
 			if (!s.active) continue;
 			universe.bullets.push_back(s.shoot());
 		}
-		for (size_t i = 0; i < 8192; ++i) universe.update(1.0/1024);
+		list<unsigned short> destroyed;
+		for (size_t i = 0; i < 8192; ++i) {
+			universe.update(destroyed, 1.0/1024);
+			if (universe.bullets.empty()) break;
+		}
+		for (unsigned short i : destroyed) {
+			universe.ships[i].center.x = 700;
+			universe.ships[i].center.y = 100;
+			Message m = Message::shipInfo(i,
+					(long)(universe.ships[i].center.x*1024),
+					(long)(universe.ships[i].center.y*1024)
+					);
+			roundEnd.push_back(m);
+		}
 		state = ROUND;
 	} else {
 		//TODO: check checksums
 		for (ClientInfo *c : clients) {
 			if (c->state == ClientInfo::ACCEPTED) {
 				c->state = ClientInfo::PLAYING;
+				universe.ships[c->id].active = true;
+				Message m = Message::shipInfo(c->id,
+						(long)(universe.ships[c->id].center.x*1024),
+						(long)(universe.ships[c->id].center.y*1024)
+						);
+				roundEnd.push_back(m);
 			}
 		}
 		Message m = Message::newRound(0);
-		vector<Message> v; v.push_back(m);
-		sendToAll(v);
+		roundEnd.push_back(m);
+		sendToAll(roundEnd);
+		roundEnd.clear();
 		state = SELECT_ACTION;
 	}
 }
@@ -129,8 +150,9 @@ int Server::handleMessage(ClientInfo &client, const Message &m) {
 			Message mm = Message::joinResponse(PROTOCOL_VERSION, false, 0);
 			toSend.push_back(mm);
 		}
-	} else if (client.state == ClientInfo::PLAYING) {
-		if (universe.ships[client.id].ready) return 1;
+	} else {
+		if (client.state == ClientInfo::PLAYING
+				&& universe.ships[client.id].ready) return 1;
 		if (m.type() == Message::ACTION) {
 			if (state != SELECT_ACTION) return 1;
 			universe.ships[client.id].direction = m.direction();
@@ -144,7 +166,7 @@ int Server::handleMessage(ClientInfo &client, const Message &m) {
 		} else return 1;
 		universe.ships[client.id].ready = true;
 		++readyCnt;
-	} else return 1;
+	}
 	if (!toSend.empty()) client.encoder.encode(toSend);
 	return 0;
 }

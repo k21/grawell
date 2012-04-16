@@ -41,7 +41,7 @@ class Server : public sf::Thread {
 
 public:
 	Server(short port_): clients(), port(port_), exit_(false),
-			serverSocket(), universe(), state(ROUND),
+			serverSocket(), universe(), state(ROUND), roundEnd(),
 			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0) {}
 	~Server() {
 		while (!clients.empty()) {
@@ -78,6 +78,7 @@ private:
 	enum {
 		SELECT_ACTION, ROUND
 	} state;
+	std::vector<Message> roundEnd;
 	unsigned long checksum;
 	std::set<unsigned short> freeIDs;
 	unsigned short cntIDs;

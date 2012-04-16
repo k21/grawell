@@ -1,6 +1,7 @@
 #ifndef OBJECTS_H_
 #define OBJECTS_H_
 
+#include <list>
 #include <vector>
 #include <string>
 
@@ -25,7 +26,7 @@ class Bullet;
 class Ship : public Sphere {
 
 public:
-	Ship(const Point &pos): Sphere(pos, 15),
+	Ship(unsigned short id_, const Point &pos): Sphere(pos, 15), id(id_),
 			direction(0), strength(20000),
 			active(false), name(), score(0), ready(true) {}
 
@@ -47,6 +48,8 @@ public:
 		}
 	}
 
+	unsigned short id;
+
 	unsigned short direction;
 	unsigned long strength;
 
@@ -60,12 +63,15 @@ public:
 class Bullet : public Sphere {
 
 public:
-	Bullet(const Point &pos, const Vector &speed_):
-		Sphere(pos, 2), speed(speed_) {}
+	Bullet(unsigned short playerID_, const Point &pos,
+			const Vector &speed_):
+		Sphere(pos, 2), playerID(playerID_), speed(speed_) {}
 
-	bool update(const std::vector<Planet> &planets, double dt);
+	bool update(const std::vector<Planet> &planets, std::vector<Ship> &ships,
+			std::list<unsigned short> &destroyed, double dt);
 	void draw(sf::RenderTarget &target) const;
 
+	unsigned short playerID;
 	Vector speed;
 
 };

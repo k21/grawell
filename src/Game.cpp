@@ -89,7 +89,10 @@ void Game::input() {
 
 void Game::allocShips(size_t n) {
 	while (universe.ships.size() < n) {
-		universe.ships.push_back(Ship(Point(0,0)));
+		universe.ships.push_back(Ship(
+				(unsigned short)universe.ships.size(),
+				Point(0,0)
+				));
 	}
 }
 
@@ -112,6 +115,7 @@ void Game::handleMessage(const Message &m) {
 			allocShips(m.id()+1);
 			universe.ships[m.id()].center.x = m.x()/1024.0;
 			universe.ships[m.id()].center.y = m.y()/1024.0;
+			universe.ships[m.id()].active = true;
 			break;
 		case Message::PLANET_INFO:
 			while (universe.planets.size() < (size_t)(m.id()+1)) {
@@ -177,14 +181,19 @@ void Game::logic() {
 	if (state == ROUND) {
 		static const double dt = 1.0/1024;
 		double now = clock.GetElapsedTime();
+		list<unsigned short> destroyed;
 		while (lastUpdate < now) {
-			universe.update(dt);
+			universe.update(destroyed, dt);
+			for (unsigned short i : destroyed) {
+				universe.ships[i].active = false;
+			}
 			lastUpdate += dt;
 			--roundCntr;
-			if (roundCntr == 0) {
+			if (roundCntr == 0 || universe.bullets.empty()) {
 				state = ROUND_DONE;
 				Message m = Message::roundChecksum(0,0);
 				client->send(m);
+				break;
 			}
 		}
 	}
@@ -197,6 +206,7 @@ void Game::display() {
 		universe.planets[i].draw(*screen);
 	}
 	for (size_t i  = 0; i < universe.ships.size(); ++i) {
+		if (!universe.ships[i].active) continue;
 		universe.ships[i].draw(*screen);
 	}
 	for (Bullet &b : universe.bullets) {

@@ -32,7 +32,10 @@ void Bullet::draw(RenderTarget &target) const {
 }
 
 Bullet Ship::shoot() const {
-	return Bullet(center, 200*Vector::direction(direction/18000.0*M_PI));
+	Vector d = Vector::direction(direction/18000.0*M_PI);
+	Point pos = center + d*(radius+2);
+	Vector speed = 200*d;
+	return Bullet(id, pos, speed);
 }
 
 static Vector acceleration(const Point &pos, const Planet &pl) {
@@ -51,7 +54,8 @@ static Vector acceleration(const Point &pos, const vector<Planet> &planets) {
 	return v;
 }
 
-bool Bullet::update(const vector<Planet> &planets, double dt) {
+bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
+		list<unsigned short> &destroyed, double dt) {
 	Vector kv1 = acceleration(center, planets);
 	Vector kr1 = speed;
 	Vector kv2 = acceleration(center+dt/2*kr1, planets);
@@ -64,6 +68,13 @@ bool Bullet::update(const vector<Planet> &planets, double dt) {
 	center += dt/6 * (kr1 + 2*kr2 + 2*kr3 + kr4);
 	for (size_t i = 0; i < planets.size(); ++i) {
 		if (planets[i].intersects(center)) return true;
+	}
+	for (size_t i = 0; i < ships.size(); ++i) {
+		if (!ships[i].active) continue;
+		if (ships[i].intersects(center)) {
+			destroyed.push_back((unsigned short)i);
+			return true;
+		}
 	}
 	return false;
 }
