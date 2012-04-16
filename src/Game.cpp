@@ -9,25 +9,19 @@
 using namespace std;
 using namespace sf;
 
-Game::Game():
-		screen(0), clock(), universe(), id(0), server(0), client(0),
+Game::Game(const char *serverAddress, unsigned short port):
+		screen(0), clock(), universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0), lastUpdate(0) {
 	VideoMode mode(800, 600);
 	unsigned long style = Style::Close;
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", style, settings);
-	server = new Server(4920);
-	server->Launch();
-	client = new Client(IPAddress("localhost"), 4920);
+	client = new Client(IPAddress(serverAddress), port);
 	client->Launch();
 }
 
 Game::~Game() {
 	delete screen;
-	if (server) {
-		server->exit();
-		delete server;
-	}
 	if (client) {
 		client->exit();
 		delete client;

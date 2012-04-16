@@ -7,15 +7,13 @@
 
 class Client;
 class Message;
-class Server;
 
 class Game {
 
 public:
-	Game();
+	Game(const char *serverAddress, unsigned short port);
 	~Game();
 	void run();
-	void newGame(const Settings &settings);
 
 private:
 	Game(const Game&);
@@ -33,7 +31,6 @@ private:
 	sf::Clock clock;
 	Universe universe;
 	unsigned short id;
-	Server *server;
 	Client *client;
 	enum {
 		NOTHING, REQUEST_SENT, WAITING,
