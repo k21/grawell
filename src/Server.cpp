@@ -152,8 +152,7 @@ int Server::handleMessage(ClientInfo &client, const Message &m) {
 			toSend.push_back(mm);
 		}
 	} else {
-		if (client.state == ClientInfo::PLAYING
-				&& universe.ships[client.id].ready) return 1;
+		if (universe.ships[client.id].ready) return 1;
 		if (m.type() == Message::ACTION) {
 			if (state != SELECT_ACTION) return 1;
 			universe.ships[client.id].direction = m.direction();
