@@ -141,16 +141,24 @@ void Game::handleMessage(const Message &m) {
 			universe.planets[m.id()].mass = m.mass();
 			break;
 		case Message::PLAYER_INFO:
-			allocShips(m.id()+1);
-			universe.ships[m.id()].name = m.text;
+			if (m.state() == Message::CONNECTED) {
+				allocShips(m.id()+1);
+				universe.ships[m.id()].name = m.text;
+			} else {
+				universe.ships[m.id()].deactivate = true;
+			}
 			break;
 		case Message::SCORE_INFO:
 			//TODO
 			break;
 		case Message::NEW_ROUND:
 			//TODO
-			for (size_t i = 0; i < universe.ships.size(); ++i) {
-				universe.ships[i].ready = false;
+			for (Ship &s : universe.ships) {
+				s.ready = false;
+				if (s.deactivate) {
+					s.active = false;
+					s.deactivate = false;
+				}
 			}
 			state = SELECT_ACTION;
 			break;
@@ -165,17 +173,15 @@ void Game::handleMessage(const Message &m) {
 				universe.bullets.push_back(universe.ships[m.id()].shoot());
 				universe.ships[m.id()].ready = true;
 				bool allReady = true;
-				for (size_t i = 0; i < universe.ships.size(); ++i) {
-					if (universe.ships[i].active && !universe.ships[i].ready) {
+				for (Ship &s : universe.ships) {
+					if (s.active
+							&& !s.deactivate
+							&& !s.ready) {
 						allReady = false;
 					}
 				}
 				if (allReady) { state = ROUND; roundCntr = 8192; }
 			}
-			break;
-		case Message::CHECKSUM_MISMATCH:
-			//TODO
-			LOG(WARN) << "Client " << m.id() << " is out of sync";
 			break;
 	}
 }

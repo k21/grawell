@@ -62,10 +62,11 @@ char *Encoder::encode(const Message &m, size_t &size) {
 			set(res+14, m.mass(), 4);
 			break;
 		case Message::PLAYER_INFO:
-			size = 3 + m.text.size(); res = new char[size];
+			size = 5 + m.text.size(); res = new char[size];
 			set(res+0, m.id(), 2);
-			set(res+2, m.text.size(), 1);
-			for (size_t i = 0; i < (m.text.size()&0xFF); ++i) res[3+i] = m.text[i];
+			set(res+2, m.state(), 2);
+			set(res+4, m.text.size(), 1);
+			for (size_t i = 0; i < (m.text.size()&0xFF); ++i) res[5+i] = m.text[i];
 			break;
 		case Message::SCORE_INFO:
 			size = 6; res = new char[size];
@@ -85,10 +86,6 @@ char *Encoder::encode(const Message &m, size_t &size) {
 			set(res+0, m.id(), 2);
 			set(res+2, m.direction(), 2);
 			set(res+4, m.strength(), 4);
-			break;
-		case Message::CHECKSUM_MISMATCH:
-			size = 2; res = new char[size];
-			set(res+0, m.id(), 2);
 			break;
 	}
 	return res;

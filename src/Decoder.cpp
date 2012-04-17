@@ -68,11 +68,12 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			m->mass(get(buffer+14, 4));
 			break;
 		case Message::PLAYER_INFO:
-			if (len < 3) FAIL();
+			if (len < 5) FAIL();
 			m->id((short)get(buffer+0, 2));
-			size = 3 + get(buffer+2, 1);;
+			m->state((short)get(buffer+2, 2));
+			size = 5 + get(buffer+4, 1);
 			if (len < size) FAIL();
-			m->text = string(buffer+3, size-3);
+			m->text = string(buffer+5, size-5);
 			break;
 		case Message::SCORE_INFO:
 			size = 6; if (len < size) FAIL();
@@ -92,10 +93,6 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			m->id((short)get(buffer+0, 2));
 			m->direction((short)get(buffer+2, 2));
 			m->strength(get(buffer+4, 4));
-			break;
-		case Message::CHECKSUM_MISMATCH:
-			size = 2; if (len < size) FAIL();
-			m->id((short)get(buffer+0, 2));
 			break;
 		default:
 			FAIL();

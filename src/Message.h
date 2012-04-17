@@ -22,13 +22,13 @@ public:
 		NEW_ROUND,
 		PLAYER_READY,
 		ACTION_INFO,
-		CHECKSUM_MISMATCH,
 	};
 
 	enum Field : unsigned char {
 		TYPE = 0,
 		VERSION,
 		ACCEPTED,
+		STATE,
 		ID,
 		X, Y,
 		SIZE, MASS,
@@ -39,6 +39,10 @@ public:
 		FIELD_COUNT
 	};
 
+	static const unsigned short CONNECTED = 0;
+	static const unsigned short DISCONNECTED = 1;
+	static const unsigned short CHECKSUM_MISMATCH = 2;
+
 	bool fromServer() const { return type() >= 128; }
 
 	typedef unsigned char uchar;
@@ -48,6 +52,7 @@ public:
 	ushort      type() const { return (ushort)data[TYPE     ]; }
 	ushort   version() const { return (ushort)data[VERSION  ]; }
 	bool    accepted() const { return (bool)  data[ACCEPTED ]; }
+	ushort     state() const { return (ushort)data[STATE    ]; }
 	ushort        id() const { return (ushort)data[ID       ]; }
 	long           x() const { return (long)  data[X        ]; }
 	long           y() const { return (long)  data[Y        ]; }
@@ -62,6 +67,7 @@ public:
 	void      type(ushort v) { data[TYPE     ] = v; }
 	void   version(ushort v) { data[VERSION  ] = v; }
 	void  accepted(bool   v) { data[ACCEPTED ] = v; }
+	void     state(ushort v) { data[STATE    ] = v; }
 	void        id(ushort v) { data[ID       ] = v; }
 	void         x(long   v) { data[X        ] = v; }
 	void         y(long   v) { data[Y        ] = v; }
@@ -111,9 +117,9 @@ public:
 		m.id(id); m.x(x); m.y(y); m.size(size); m.mass(mass);
 		return m;
 	}
-	static Message playerInfo(ushort id, std::string name) {
+	static Message playerInfo(ushort id, ushort state, std::string name) {
 		Message m; m.type(PLAYER_INFO);
-		m.id(id); m.text = name;
+		m.id(id); m.state(state); m.text = name;
 		return m;
 	}
 	static Message scoreInfo(ushort id, long score) {
@@ -134,11 +140,6 @@ public:
 	static Message actionInfo(ushort id, ushort direction, ulong strength) {
 		Message m; m.type(ACTION_INFO);
 		m.id(id); m.direction(direction); m.strength(strength);
-		return m;
-	}
-	static Message checksumMismatch(ushort id) {
-		Message m; m.type(CHECKSUM_MISMATCH);
-		m.id(id);
 		return m;
 	}
 

@@ -28,7 +28,8 @@ class Ship : public Sphere {
 public:
 	Ship(unsigned short id_): Sphere(Point(0,0), 15), id(id_),
 			direction(0), strength(20000),
-			active(false), name(), score(0), ready(true) {}
+			active(false), deactivate(false),
+			name(), score(0), ready(true) {}
 
 	Bullet shoot() const;
 	void draw(sf::RenderTarget &target) const;
@@ -53,7 +54,7 @@ public:
 	unsigned short direction;
 	unsigned long strength;
 
-	bool active;
+	bool active, deactivate;
 	std::string name;
 	long score;
 	bool ready;

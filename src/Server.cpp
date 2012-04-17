@@ -36,7 +36,7 @@ void Server::accept(ClientInfo &client, const Message &req,
 	client.id = allocID();
 	universe.ships[client.id].name = req.text;
 	Message m;
-	m = Message::playerInfo(client.id, req.text);
+	m = Message::playerInfo(client.id, Message::CONNECTED, req.text);
 	sendToAll(vector<Message>(1,m));
 	client.state = ClientInfo::ACCEPTED;
 	m = Message::joinResponse(PROTOCOL_VERSION, true, client.id);
@@ -45,7 +45,11 @@ void Server::accept(ClientInfo &client, const Message &req,
 	toSend.push_back(m);
 	for (size_t i = 0; i < universe.ships.size(); ++i) {
 		if (!universe.ships[i].active) continue;
-		m = Message::playerInfo((unsigned short)i, universe.ships[i].name);
+		m = Message::playerInfo(
+				(unsigned short)i,
+				Message::CONNECTED,
+				universe.ships[i].name
+				);
 		toSend.push_back(m);
 	}
 	for (size_t i = 0; i < universe.ships.size(); ++i) {
@@ -119,6 +123,12 @@ void Server::changeState() {
 						(long)(universe.ships[c->id].center.y*1024)
 						);
 				roundEnd.push_back(m);
+			}
+		}
+		for (Ship &s : universe.ships) {
+			if (s.deactivate) {
+				s.active = false;
+				s.deactivate = false;
 			}
 		}
 		Message m = Message::newRound(0);
@@ -234,14 +244,18 @@ void Server::Run() {
 				}
 			}
 			if (error) {
+				unsigned short id = client.id;
 				if (client.state != ClientInfo::NOTHING) {
-					if (universe.ships[client.id].ready) --readyCnt;
-					freeID(client.id);
+					if (universe.ships[id].ready) --readyCnt;
+					universe.ships[id].deactivate = true;
+					freeID(id);
 					--playersCnt;
 				}
 				client.socket.Close();
 				delete *it;
 				it = clients.erase(it);
+				sendToAll(vector<Message>(
+						1, Message::playerInfo(id, Message::DISCONNECTED, "")));
 				continue;
 			}
 			++it;
