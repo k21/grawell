@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include <SFML/Audio.hpp>
 
 #include "Client.h"
@@ -10,12 +12,17 @@ using namespace std;
 using namespace sf;
 
 Game::Game(const char *serverAddress, unsigned short port):
-		screen(0), clock(), universe(), id(0), client(0),
-		state(NOTHING), roundCntr(0), lastUpdate(0) {
+		screen(0), view(), clock(), universe(), id(0), client(0),
+		state(NOTHING), roundCntr(0), lastUpdate(0),
+		moveDown(0), moveRight(0), zoom(0),
+		moveDownDelta(0), moveRightDelta(0), zoomDelta(0) {
 	VideoMode mode(800, 600);
 	unsigned long style = Style::Close;
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", style, settings);
+	view.SetCenter(0, 0);
+	view.SetHalfSize(400, 300);
+	screen->SetView(view);
 	client = new Client(IPAddress(serverAddress), port);
 	client->Launch();
 }
@@ -46,24 +53,30 @@ void Game::shoot() {
 	client->send(m);
 }
 
-void Game::keyPressed(Key::Code code) {
+void Game::handleKey(Key::Code code, bool pressed) {
 	switch (code) {
 		case Key::Escape: screen->Close(); break;
 		case Key::Left:
-			if (state == SELECT_ACTION) {
+			if (pressed && state == SELECT_ACTION) {
 				universe.ships[id].rotate(-200);
 			}
 			break;
 		case Key::Right:
-			if (state == SELECT_ACTION) {
+			if (pressed && state == SELECT_ACTION) {
 				universe.ships[id].rotate(+200);
 			}
 			break;
 		case Key::Space:
-			if (state == SELECT_ACTION) {
+			if (pressed && state == SELECT_ACTION) {
 				shoot();
 			}
 			break;
+		case Key::W: moveDownDelta  = (short)-pressed; break;
+		case Key::S: moveDownDelta  = (short) pressed; break;
+		case Key::A: moveRightDelta = (short)-pressed; break;
+		case Key::D: moveRightDelta = (short) pressed; break;
+		case Key::Q: zoomDelta = (short)-pressed; break;
+		case Key::E: zoomDelta = (short) pressed; break;
 		default: break;
 	}
 }
@@ -78,7 +91,11 @@ void Game::input() {
 				break;
 
 			case Event::KeyPressed:
-				keyPressed(event.Key.Code);
+				handleKey(event.Key.Code, true);
+				break;
+
+			case Event::KeyReleased:
+				handleKey(event.Key.Code, false);
 				break;
 
 			default:
@@ -198,6 +215,12 @@ void Game::logic() {
 }
 
 void Game::display() {
+	moveRight += moveRightDelta*(double)view.GetHalfSize().x/200;
+	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/200;
+	zoom      += 2*zoomDelta;
+	moveRight *= 0.85; moveDown *= 0.85; zoom *= 0.85;
+	view.Move((float)moveRight, (float)moveDown);
+	view.Zoom((float)exp(zoom/250));
 	screen->Clear();
 	for (size_t i  = 0; i < universe.planets.size(); ++i) {
 		universe.planets[i].draw(*screen);

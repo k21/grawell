@@ -23,11 +23,12 @@ private:
 	void logic();
 	void display();
 	void handleMessage(const Message &m);
-	void keyPressed(sf::Key::Code code);
+	void handleKey(sf::Key::Code code, bool down);
 	void shoot();
 	void allocShips(size_t n);
 
 	sf::RenderWindow *screen;
+	sf::View view;
 	sf::Clock clock;
 	Universe universe;
 	unsigned short id;
@@ -39,6 +40,8 @@ private:
 	} state;
 	long roundCntr;
 	double lastUpdate;
+	double moveDown, moveRight, zoom;
+	short moveDownDelta, moveRightDelta, zoomDelta;
 
 };
 
