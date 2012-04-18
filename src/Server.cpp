@@ -6,7 +6,7 @@ using namespace sf;
 unsigned short Server::allocID() {
 	unsigned short res;
 	if (!freeIDs.empty()) {
-		set<unsigned short>::iterator it = freeIDs.begin();
+		auto it = freeIDs.begin();
 		res = *it;
 		freeIDs.erase(it);
 	} else {
@@ -21,7 +21,7 @@ unsigned short Server::allocID() {
 void Server::freeID(unsigned short id) {
 	freeIDs.insert(id);
 	universe.ships[id].active = false;
-	set<unsigned short>::iterator it;
+	auto it = freeIDs.end();
 	while ((it = freeIDs.find((unsigned short)(cntIDs-1))) != freeIDs.end()) {
 		freeIDs.erase(it);
 		--cntIDs;
@@ -207,7 +207,7 @@ void Server::Run() {
 			LOG(ERROR) << "An error occured when waiting for client";
 			return;
 		}
-		list<ClientInfo *>::iterator it = clients.begin();
+		auto it = clients.begin();
 		while (it != clients.end()) {
 			ClientInfo &client = **it;
 			char buffer[MAX_PACKET_SIZE]; size_t received;
