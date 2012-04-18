@@ -7,8 +7,8 @@ unsigned short Server::allocID() {
 	unsigned short res;
 	if (!freeIDs.empty()) {
 		set<unsigned short>::iterator it = freeIDs.begin();
-		freeIDs.erase(it);
 		res = *it;
+		freeIDs.erase(it);
 	} else {
 		res = cntIDs;
 		++cntIDs;
