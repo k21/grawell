@@ -33,6 +33,8 @@ public:
 				<< line
 				<< '\t';
 	}
+	Log(const Log &) = delete;
+	Log &operator = (const Log &) = delete;
 	inline ~Log() {
 		os << '\n';
 		if (level <= maxLogLevel) {

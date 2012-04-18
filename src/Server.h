@@ -22,6 +22,8 @@ public:
 			encoder(), decoder(),
 			state(NOTHING),
 			pending(0), pendingSize(0) {}
+	ClientInfo(const ClientInfo &) = delete;
+	ClientInfo &operator = (const ClientInfo &) = delete;
 	sf::IPAddress address;
 	sf::SocketTCP socket;
 	unsigned short id;
@@ -32,10 +34,6 @@ public:
 	} state;
 	char *pending; size_t pendingSize;
 
-private:
-	ClientInfo(const ClientInfo &);
-	const ClientInfo &operator = (const ClientInfo &);
-
 };
 
 class Server : public sf::Thread {
@@ -45,6 +43,8 @@ public:
 			serverSocket(), universe(), state(ROUND), roundEnd(),
 			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0),
 			placer(200) {}
+	Server(const Server &) = delete;
+	Server &operator = (const Server &) = delete;
 	~Server() {
 		while (!clients.empty()) {
 			delete clients.front();
@@ -61,9 +61,6 @@ public:
 	}
 
 private:
-	Server(const Server&);
-	const Server& operator = (const Server&);
-
 	int handleMessage(ClientInfo &client, const Message &m);
 	void accept(ClientInfo &client, const Message &m,
 			std::vector<Message> &toSend);

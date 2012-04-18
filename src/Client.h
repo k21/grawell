@@ -16,6 +16,8 @@ public:
 	Client(const sf::IPAddress &address_, short port_):
 		address(address_), port(port_), socket(), exit_(false),
 		mutexIn(), mutexOut(), incoming(), outgoing(), encoder(), decoder() {}
+	Client(const Client &) = delete;
+	Client &operator = (const Client &) = delete;
 
 	void Run();
 	void exit() {

@@ -12,13 +12,13 @@ class Game {
 
 public:
 	Game(const char *serverAddress, unsigned short port);
+	Game(const Game &) = delete;
+	Game &operator = (const Game &) = delete;
 	~Game();
+
 	void run();
 
 private:
-	Game(const Game&);
-	const Game &operator = (const Game&);
-
 	void input();
 	void logic();
 	void display();
