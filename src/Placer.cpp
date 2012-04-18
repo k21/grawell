@@ -7,7 +7,7 @@
 using namespace std;
 
 static long round(double x, double gridSize) {
-	return (long)((x+gridSize/2)/gridSize);
+	return (long)floor((x+gridSize/2)/gridSize);
 }
 
 void Placer::place(Sphere &s) {
@@ -39,10 +39,6 @@ void Placer::checkEdge(pair<long, long> p) {
 	if (used.find(   top) != used.end()) return;
 	if (used.find(bottom) != used.end()) return;
 	edge.erase(p);
-	checkEdge(  left);
-	checkEdge( right);
-	checkEdge(   top);
-	checkEdge(bottom);
 }
 
 void Placer::remove(Sphere &s) {
@@ -50,5 +46,9 @@ void Placer::remove(Sphere &s) {
 	pair<long, long> p = make_pair(x, y);
 	used.erase(p);
 	edge.insert(p);
-	checkEdge(p);
+	pair<long, long> left(x-1, y), right(x+1, y), top(x, y-1), bottom(x, y+1);
+	checkEdge(  left);
+	checkEdge( right);
+	checkEdge(   top);
+	checkEdge(bottom);
 }
