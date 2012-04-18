@@ -77,7 +77,7 @@ public:
 
 };
 
-inline Vector operator * (double a, const Vector& v) {
+inline Vector operator * (double a, const Vector &v) {
 	return v*a;
 }
 
