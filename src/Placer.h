@@ -20,7 +20,7 @@ private:
 	void checkEdge(std::pair<long, long> p);
 
 	long gridSize;
-	std::set<std::pair<long, long> > used, edge;
+	std::set<std::pair<long, long>> used, edge;
 
 };
 

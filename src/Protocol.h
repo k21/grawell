@@ -34,7 +34,7 @@ private:
 	char *current;
 	size_t lastSize;
 	char *last;
-	std::queue<std::pair<size_t, char *> > data;
+	std::queue<std::pair<size_t, char *>> data;
 
 };
 
