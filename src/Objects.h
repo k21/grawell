@@ -71,7 +71,8 @@ public:
 		Sphere(pos, 2), playerID(playerID_), speed(speed_) {}
 
 	bool update(const std::vector<Planet> &planets, std::vector<Ship> &ships,
-			std::list<boost::uint16_t> &destroyed, double dt);
+			std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits,
+			double dt);
 	void draw(sf::RenderTarget &target) const;
 
 	boost::uint16_t playerID;

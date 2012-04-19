@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "Server.h"
 
 using namespace std;
@@ -97,17 +99,19 @@ void Server::changeState() {
 			if (!s.active) continue;
 			universe.bullets.push_back(s.shoot());
 		}
-		list<uint16_t> destroyed;
+		list<pair<uint16_t, uint16_t>> hits;
 		for (size_t i = 0; i < 8192; ++i) {
-			universe.update(destroyed, 1.0/1024);
+			universe.update(hits, 1.0/1024);
 			if (universe.bullets.empty()) break;
 		}
-		for (uint16_t i : destroyed) {
-			placer.remove(universe.ships[i]);
-			placer.place(universe.ships[i]);
-			Message m = Message::shipInfo(i,
-					(int32_t)(universe.ships[i].center.x*1024),
-					(int32_t)(universe.ships[i].center.y*1024)
+		for (pair<uint16_t, uint16_t> p : hits) {
+			uint16_t from = p.first, to = p.second;
+			++universe.ships[from].score;
+			placer.remove(universe.ships[to]);
+			placer.place(universe.ships[to]);
+			Message m = Message::shipInfo(to,
+					(int32_t)(universe.ships[to].center.x*1024),
+					(int32_t)(universe.ships[to].center.y*1024)
 					);
 			roundEnd.push_back(m);
 		}

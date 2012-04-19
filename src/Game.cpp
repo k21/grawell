@@ -1,4 +1,5 @@
 #include <cmath>
+#include <utility>
 
 #include <SFML/Audio.hpp>
 
@@ -120,6 +121,8 @@ void Game::handleMessage(const Message &m) {
 				return;
 			}
 			id = m.id();
+			allocShips(id+1);
+			universe.ships[id].name = "name";
 			state = WAITING;
 			break;
 		case Message::GAME_SETTINGS:
@@ -201,12 +204,14 @@ void Game::logic() {
 	if (state == ROUND) {
 		static const double dt = 1.0/1024;
 		double now = clock.GetElapsedTime();
-		list<uint16_t> destroyed;
+		list<pair<uint16_t, uint16_t>> hits;
 		while (lastUpdate < now) {
-			universe.update(destroyed, dt);
-			for (uint16_t i : destroyed) {
-				universe.ships[i].active = false;
+			universe.update(hits, dt);
+			for (pair<uint16_t, uint16_t> p : hits) {
+				++universe.ships[p.first].score;
+				universe.ships[p.second].active = false;
 			}
+			hits.clear();
 			lastUpdate += dt;
 			--roundCntr;
 			if (roundCntr == 0 || universe.bullets.empty()) {

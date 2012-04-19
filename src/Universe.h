@@ -2,6 +2,7 @@
 #define UNIVERSE_H_
 
 #include <list>
+#include <utility>
 #include <vector>
 
 #include <boost/cstdint.hpp>
@@ -14,7 +15,10 @@ class Universe {
 public:
 	Universe();
 
-	void update(std::list<boost::uint16_t> &destroyed, double dt);
+	void update(
+			std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits,
+			double dt
+			);
 
 	Settings settings;
 	std::vector<Planet> planets;

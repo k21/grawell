@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Objects.h"
 
 using namespace std;
@@ -13,7 +15,8 @@ void Planet::draw(RenderTarget &target) const {
 }
 
 void Ship::draw(RenderTarget &target) const {
-	Color transparent(0, 0, 0, 0), blue(0, 0, 255);
+	Color transparent(0, 0, 0, 0), blue(0, 0, 255),
+			whiteTransparent(255, 255, 255, 128);
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius,
 			transparent, 1, blue);
@@ -22,6 +25,13 @@ void Ship::draw(RenderTarget &target) const {
 			(float)d.x, (float)d.y, 1, blue);
 	target.Draw(circle);
 	target.Draw(line);
+	stringstream ss;
+	ss << name << " (" << score << ")";
+	String s(ss.str(), Font::GetDefaultFont(), 20);
+	s.SetColor(whiteTransparent);
+	s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight());
+	s.SetPosition((float)center.x, (float)(center.y-radius-5));
+	target.Draw(s);
 }
 
 void Bullet::draw(RenderTarget &target) const {
@@ -56,7 +66,7 @@ static Vector acceleration(const Point &pos, const vector<Planet> &planets) {
 }
 
 bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
-		list<uint16_t> &destroyed, double dt) {
+		list<pair<uint16_t, uint16_t>> &hits, double dt) {
 	Vector kv1 = acceleration(center, planets);
 	Vector kr1 = speed;
 	Vector kv2 = acceleration(center+dt/2*kr1, planets);
@@ -73,7 +83,7 @@ bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
 	for (size_t i = 0; i < ships.size(); ++i) {
 		if (!ships[i].active) continue;
 		if (ships[i].intersects(center)) {
-			destroyed.push_back((uint16_t)i);
+			hits.push_back(make_pair(playerID, (uint16_t)i));
 			return true;
 		}
 	}
