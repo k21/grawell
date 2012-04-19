@@ -112,7 +112,7 @@ void Game::allocShips(size_t n) {
 }
 
 void Game::handleMessage(const Message &m) {
-	LOG(DEBUG) << "Client received packet type " << m.type();
+	LOG(DEBUG) << "Client received packet type " << (uint16_t)m.type();
 	switch (m.type()) {
 		case Message::JOIN_RESPONSE:
 			if (!m.accepted()) {

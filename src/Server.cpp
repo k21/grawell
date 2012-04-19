@@ -151,7 +151,7 @@ void Server::sendToAll(const vector<Message> &m) {
 }
 
 int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
-	LOG(DEBUG) << "Server received packet type " << m.type();
+	LOG(DEBUG) << "Server received packet type " << (uint16_t)m.type();
 	if (m.fromServer()) {
 		return 1;
 	}
