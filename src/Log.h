@@ -1,6 +1,7 @@
 #ifndef LOG_H_
 #define LOG_H_
 
+#include <cstdio>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
