@@ -1,10 +1,11 @@
 #include "Server.h"
 
 using namespace std;
+using namespace boost;
 using namespace sf;
 
-unsigned short Server::allocID() {
-	unsigned short res;
+uint16_t Server::allocID() {
+	uint16_t res;
 	if (!freeIDs.empty()) {
 		auto it = freeIDs.begin();
 		res = *it;
@@ -18,11 +19,11 @@ unsigned short Server::allocID() {
 	return res;
 }
 
-void Server::freeID(unsigned short id) {
+void Server::freeID(uint16_t id) {
 	freeIDs.insert(id);
 	universe.ships[id].active = false;
 	auto it = freeIDs.end();
-	while ((it = freeIDs.find((unsigned short)(cntIDs-1))) != freeIDs.end()) {
+	while ((it = freeIDs.find((uint16_t)(cntIDs-1))) != freeIDs.end()) {
 		freeIDs.erase(it);
 		--cntIDs;
 		universe.ships.pop_back();
@@ -46,7 +47,7 @@ void Server::accept(ClientInfo &client, const Message &req,
 	for (size_t i = 0; i < universe.ships.size(); ++i) {
 		if (!universe.ships[i].active) continue;
 		m = Message::playerInfo(
-				(unsigned short)i,
+				(uint16_t)i,
 				Message::CONNECTED,
 				universe.ships[i].name
 				);
@@ -54,23 +55,23 @@ void Server::accept(ClientInfo &client, const Message &req,
 	}
 	for (size_t i = 0; i < universe.ships.size(); ++i) {
 		if (!universe.ships[i].active) continue;
-		m = Message::scoreInfo((unsigned short)i, universe.ships[i].score);
+		m = Message::scoreInfo((uint16_t)i, universe.ships[i].score);
 		toSend.push_back(m);
 	}
 	for (size_t pi = 0; pi < universe.planets.size(); ++pi) {
-		m = Message::planetInfo((unsigned short)pi,
-				(long)(universe.planets[pi].center.x*1024),
-				(long)(universe.planets[pi].center.y*1024),
-				(long)universe.planets[pi].radius,
-				(long)universe.planets[pi].mass
+		m = Message::planetInfo((uint16_t)pi,
+				(int32_t)(universe.planets[pi].center.x*1024),
+				(int32_t)(universe.planets[pi].center.y*1024),
+				(int32_t)universe.planets[pi].radius,
+				(int32_t)universe.planets[pi].mass
 				);
 		toSend.push_back(m);
 	}
 	for (size_t i = 0; i < universe.ships.size(); ++i) {
 		if (!universe.ships[i].active) continue;
-		m = Message::shipInfo((unsigned short)i,
-				(long)(universe.ships[i].center.x*1024),
-				(long)(universe.ships[i].center.y*1024)
+		m = Message::shipInfo((uint16_t)i,
+				(int32_t)(universe.ships[i].center.x*1024),
+				(int32_t)(universe.ships[i].center.y*1024)
 				);
 		toSend.push_back(m);
 	}
@@ -96,17 +97,17 @@ void Server::changeState() {
 			if (!s.active) continue;
 			universe.bullets.push_back(s.shoot());
 		}
-		list<unsigned short> destroyed;
+		list<uint16_t> destroyed;
 		for (size_t i = 0; i < 8192; ++i) {
 			universe.update(destroyed, 1.0/1024);
 			if (universe.bullets.empty()) break;
 		}
-		for (unsigned short i : destroyed) {
+		for (uint16_t i : destroyed) {
 			placer.remove(universe.ships[i]);
 			placer.place(universe.ships[i]);
 			Message m = Message::shipInfo(i,
-					(long)(universe.ships[i].center.x*1024),
-					(long)(universe.ships[i].center.y*1024)
+					(int32_t)(universe.ships[i].center.x*1024),
+					(int32_t)(universe.ships[i].center.y*1024)
 					);
 			roundEnd.push_back(m);
 		}
@@ -119,8 +120,8 @@ void Server::changeState() {
 				universe.ships[c->id].active = true;
 				placer.place(universe.ships[c->id]);
 				Message m = Message::shipInfo(c->id,
-						(long)(universe.ships[c->id].center.x*1024),
-						(long)(universe.ships[c->id].center.y*1024)
+						(int32_t)(universe.ships[c->id].center.x*1024),
+						(int32_t)(universe.ships[c->id].center.y*1024)
 						);
 				roundEnd.push_back(m);
 			}
@@ -145,7 +146,7 @@ void Server::sendToAll(const vector<Message> &m) {
 	}
 }
 
-int Server::handleMessage(ClientInfo &client, const Message &m) {
+int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
 	LOG(DEBUG) << "Server received packet type " << m.type();
 	if (m.fromServer()) {
 		return 1;
@@ -244,7 +245,7 @@ void Server::Run() {
 				}
 			}
 			if (error) {
-				unsigned short id = client.id;
+				uint16_t id = client.id;
 				if (client.state != ClientInfo::NOTHING) {
 					if (universe.ships[id].ready) --readyCnt;
 					universe.ships[id].deactivate = true;

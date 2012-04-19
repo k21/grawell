@@ -4,6 +4,8 @@
 #include <list>
 #include <vector>
 
+#include <boost/cstdint.hpp>
+
 #include "Objects.h"
 #include "Settings.h"
 
@@ -12,7 +14,7 @@ class Universe {
 public:
 	Universe();
 
-	void update(std::list<unsigned short> &destroyed, double dt);
+	void update(std::list<boost::uint16_t> &destroyed, double dt);
 
 	Settings settings;
 	std::vector<Planet> planets;

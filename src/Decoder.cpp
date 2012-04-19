@@ -1,6 +1,7 @@
 #include "Protocol.h"
 
 using namespace std;
+using namespace boost;
 
 Decoder::~Decoder() {
 	delete current;
@@ -11,10 +12,10 @@ Decoder::~Decoder() {
 	delete [] incoming;
 }
 
-static unsigned long get(char *data, size_t size) {
-	unsigned long incoming = 0;
+static uint32_t get(char *data, size_t size) {
+	uint32_t incoming = 0;
 	for (size_t i = 0; i < size; ++i) {
-		incoming |= ((unsigned char)data[i])<<(8*i);
+		incoming |= ((uint8_t)data[i])<<(8*i);
 	}
 	return incoming;
 }
@@ -22,20 +23,20 @@ static unsigned long get(char *data, size_t size) {
 #define FAIL() do {error_ = true; delete m; return 0; } while (0)
 size_t Decoder::decodeMessage(char *buffer, size_t len) {
 	Message *m = new Message;
-	unsigned char type = (unsigned char)get(header+2, 1);
+	uint8_t type = (uint8_t)get(header+2, 1);
 	size_t size;
 	m->type(type);
 	switch (type) {
 		case Message::JOIN_REQUEST:
 			if (len < 3) FAIL();
-			m->version((short)get(buffer+0, 2));
+			m->version((uint16_t)get(buffer+0, 2));
 			size = 3 + get(buffer+2, 1);
 			if (len < size) FAIL();
 			m->text = string(buffer+3, size-3);
 			break;
 		case Message::ACTION:
 			size = 6; if (len < size) FAIL();
-			m->direction((short)get(buffer+0, 2));
+			m->direction((uint16_t)get(buffer+0, 2));
 			m->strength(get(buffer+2, 4));
 			break;
 		case Message::ROUND_CHECKSUM:
@@ -45,9 +46,9 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			break;
 		case Message::JOIN_RESPONSE:
 			size = 5; if (len < size) FAIL();
-			m->version((short)get(buffer+0, 2));
+			m->version((uint16_t)get(buffer+0, 2));
 			m->accepted((bool)get(buffer+2, 1));
-			m->id((short)get(buffer+3, 2));
+			m->id((uint16_t)get(buffer+3, 2));
 			break;
 		case Message::GAME_SETTINGS:
 			size = 1; if (len < size) FAIL();
@@ -55,13 +56,13 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			break;
 		case Message::SHIP_INFO:
 			size = 10; if (len < size) FAIL();
-			m->id((short)get(buffer+0, 2));
+			m->id((uint16_t)get(buffer+0, 2));
 			m->x(get(buffer+2, 4));
 			m->y(get(buffer+6, 4));
 			break;
 		case Message::PLANET_INFO:
 			size = 18; if (len < size) FAIL();
-			m->id((short)get(buffer+ 0, 2));
+			m->id((uint16_t)get(buffer+ 0, 2));
 			m->x(get(buffer+ 2, 4));
 			m->y(get(buffer+ 6, 4));
 			m->size(get(buffer+10, 4));
@@ -69,15 +70,15 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			break;
 		case Message::PLAYER_INFO:
 			if (len < 5) FAIL();
-			m->id((short)get(buffer+0, 2));
-			m->state((short)get(buffer+2, 2));
+			m->id((uint16_t)get(buffer+0, 2));
+			m->state((uint16_t)get(buffer+2, 2));
 			size = 5 + get(buffer+4, 1);
 			if (len < size) FAIL();
 			m->text = string(buffer+5, size-5);
 			break;
 		case Message::SCORE_INFO:
 			size = 6; if (len < size) FAIL();
-			m->id((short)get(buffer+0, 2));
+			m->id((uint16_t)get(buffer+0, 2));
 			m->score(get(buffer+2, 4));
 			break;
 		case Message::NEW_ROUND:
@@ -86,12 +87,12 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			break;
 		case Message::PLAYER_READY:
 			size = 2; if (len < size) FAIL();
-			m->id((short)get(buffer+0, 2));
+			m->id((uint16_t)get(buffer+0, 2));
 			break;
 		case Message::ACTION_INFO:
 			size = 8; if (len < size) FAIL();
-			m->id((short)get(buffer+0, 2));
-			m->direction((short)get(buffer+2, 2));
+			m->id((uint16_t)get(buffer+0, 2));
+			m->direction((uint16_t)get(buffer+2, 2));
 			m->strength(get(buffer+4, 4));
 			break;
 		default:
@@ -103,9 +104,9 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 #undef FAIL
 
 void Decoder::decodePacket() {
-	int count = (int)get(header+3, 1);
+	size_t count = (size_t)get(header+3, 1);
 	size_t at = 0;
-	for (int i = 0; i < count; ++i) {
+	for (size_t i = 0; i < count; ++i) {
 		at += decodeMessage(incoming+at, loaded-at);
 		if (error_) return;
 	}

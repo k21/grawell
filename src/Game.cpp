@@ -9,21 +9,21 @@
 #include "Game.h"
 
 using namespace std;
+using namespace boost;
 using namespace sf;
 
-Game::Game(const char *serverAddress, unsigned short port):
+Game::Game(const char *serverAddress, uint16_t port):
 		screen(0), view(), clock(), universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0), lastUpdate(0),
 		moveDown(0), moveRight(0), zoom(0),
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0) {
 	VideoMode mode(800, 600);
-	unsigned long style = Style::Close;
 	WindowSettings settings(24, 8, 8);
-	screen = new RenderWindow(mode, "GraWell", style, settings);
+	screen = new RenderWindow(mode, "GraWell", Style::Close, settings);
 	view.SetCenter(0, 0);
 	view.SetHalfSize(400, 300);
 	screen->SetView(view);
-	client = new Client(IPAddress(serverAddress), port);
+	client = new Client(IPAddress(serverAddress), (short)port);
 	client->Launch();
 }
 
@@ -71,12 +71,12 @@ void Game::handleKey(Key::Code code, bool pressed) {
 				shoot();
 			}
 			break;
-		case Key::W: moveDownDelta  = (short)-pressed; break;
-		case Key::S: moveDownDelta  = (short) pressed; break;
-		case Key::A: moveRightDelta = (short)-pressed; break;
-		case Key::D: moveRightDelta = (short) pressed; break;
-		case Key::Q: zoomDelta = (short)-pressed; break;
-		case Key::E: zoomDelta = (short) pressed; break;
+		case Key::W: moveDownDelta  = (int8_t)-pressed; break;
+		case Key::S: moveDownDelta  = (int8_t) pressed; break;
+		case Key::A: moveRightDelta = (int8_t)-pressed; break;
+		case Key::D: moveRightDelta = (int8_t) pressed; break;
+		case Key::Q: zoomDelta = (int8_t)-pressed; break;
+		case Key::E: zoomDelta = (int8_t) pressed; break;
 		default: break;
 	}
 }
@@ -106,7 +106,7 @@ void Game::input() {
 
 void Game::allocShips(size_t n) {
 	while (universe.ships.size() < n) {
-		universe.ships.push_back(Ship((unsigned short)universe.ships.size()));
+		universe.ships.push_back(Ship((uint16_t)universe.ships.size()));
 	}
 }
 
@@ -201,10 +201,10 @@ void Game::logic() {
 	if (state == ROUND) {
 		static const double dt = 1.0/1024;
 		double now = clock.GetElapsedTime();
-		list<unsigned short> destroyed;
+		list<uint16_t> destroyed;
 		while (lastUpdate < now) {
 			universe.update(destroyed, dt);
-			for (unsigned short i : destroyed) {
+			for (uint16_t i : destroyed) {
 				universe.ships[i].active = false;
 			}
 			lastUpdate += dt;

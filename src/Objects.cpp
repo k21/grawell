@@ -1,6 +1,7 @@
 #include "Objects.h"
 
 using namespace std;
+using namespace boost;
 using namespace sf;
 
 void Planet::draw(RenderTarget &target) const {
@@ -55,7 +56,7 @@ static Vector acceleration(const Point &pos, const vector<Planet> &planets) {
 }
 
 bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
-		list<unsigned short> &destroyed, double dt) {
+		list<uint16_t> &destroyed, double dt) {
 	Vector kv1 = acceleration(center, planets);
 	Vector kr1 = speed;
 	Vector kv2 = acceleration(center+dt/2*kr1, planets);
@@ -72,7 +73,7 @@ bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
 	for (size_t i = 0; i < ships.size(); ++i) {
 		if (!ships[i].active) continue;
 		if (ships[i].intersects(center)) {
-			destroyed.push_back((unsigned short)i);
+			destroyed.push_back((uint16_t)i);
 			return true;
 		}
 	}

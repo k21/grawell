@@ -4,12 +4,14 @@
 #include <set>
 #include <utility>
 
+#include <boost/cstdint.hpp>
+
 class Sphere;
 
 class Placer {
 
 public:
-	Placer(long gridSize_): gridSize(gridSize_), used(), edge() {
+	Placer(boost::int32_t gridSize_): gridSize(gridSize_), used(), edge() {
 		edge.insert(std::make_pair(0, 0));
 	}
 
@@ -17,10 +19,10 @@ public:
 	void remove(Sphere &s);
 
 private:
-	void checkEdge(std::pair<long, long> p);
+	void checkEdge(std::pair<boost::int32_t, boost::int32_t> p);
 
-	long gridSize;
-	std::set<std::pair<long, long>> used, edge;
+	boost::int32_t gridSize;
+	std::set<std::pair<boost::int32_t, boost::int32_t>> used, edge;
 
 };
 

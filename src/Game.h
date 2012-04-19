@@ -1,6 +1,8 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include <boost/cstdint.hpp>
+
 #include <SFML/Graphics.hpp>
 
 #include "Universe.h"
@@ -11,7 +13,7 @@ class Message;
 class Game {
 
 public:
-	Game(const char *serverAddress, unsigned short port);
+	Game(const char *serverAddress, boost::uint16_t port);
 	Game(const Game &) = delete;
 	Game &operator = (const Game &) = delete;
 	~Game();
@@ -31,17 +33,17 @@ private:
 	sf::View view;
 	sf::Clock clock;
 	Universe universe;
-	unsigned short id;
+	boost::uint16_t id;
 	Client *client;
 	enum {
 		NOTHING, REQUEST_SENT, WAITING,
 		SELECT_ACTION, SELECT_DONE,
 		ROUND, ROUND_DONE
 	} state;
-	long roundCntr;
+	boost::int32_t roundCntr;
 	double lastUpdate;
 	double moveDown, moveRight, zoom;
-	short moveDownDelta, moveRightDelta, zoomDelta;
+	boost::int8_t moveDownDelta, moveRightDelta, zoomDelta;
 
 };
 

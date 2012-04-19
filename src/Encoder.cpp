@@ -1,6 +1,7 @@
 #include "Protocol.h"
 
 using namespace std;
+using namespace boost;
 
 Encoder::~Encoder() {
 	delete [] current;
@@ -11,7 +12,7 @@ Encoder::~Encoder() {
 	}
 }
 
-static void set(char *dest, unsigned long data, size_t size) {
+static void set(char *dest, uint32_t data, size_t size) {
 	for (size_t i = 0; i < size; ++i) {
 		dest[i] = (char)(data & 0xFF);
 		data >>= 8;
@@ -106,7 +107,7 @@ void Encoder::append(const char *what, size_t size) {
 	}
 }
 
-void Encoder::append(unsigned long what, size_t size) {
+void Encoder::append(uint32_t what, size_t size) {
 	char c[size];
 	for (size_t i = 0; i < size; ++i) {
 		c[i] = (char)(what & 0xFF);
@@ -123,7 +124,7 @@ void Encoder::encode(const std::vector<Message> &messages) {
 	for (size_t i = 0; i < n; ++i) {
 		enc[i] = encode(messages[i], sizes[i]);
 	}
-	int type = messages[0].type();
+	uint8_t type = messages[0].type();
 	size_t begin = 0, end = 1;
 	size_t tlen = sizes[0];
 	do {

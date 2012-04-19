@@ -3,13 +3,14 @@
 #include "Client.h"
 
 using namespace std;
+using namespace boost;
 using namespace sf;
 
 void Client::Run() {
 	LOG(INFO) << "Connecting to server at " << address << ':' << port << "...";
-	static const int RETRY = 10;
+	static const int16_t RETRY = 10;
 	Socket::Status status = socket.Connect(port, address);
-	int r = 1;
+	int16_t r = 1;
 	while (status != Socket::Done && r < RETRY) {
 		LOG(WARN) << "Connection attempt unsuccessful";
 		Sleep(1.f);
@@ -25,7 +26,7 @@ void Client::Run() {
 	socket.SetBlocking(false);
 	while (!exit_) {
 		bool nothing = true;
-		int s = sendPending();
+		int8_t s = sendPending();
 		if (s == -1) {
 			//TODO: error
 			LOG(ERROR) << "An error has occured when sending packets";
@@ -41,7 +42,7 @@ void Client::Run() {
 	}
 }
 
-int Client::sendPending() {
+int8_t Client::sendPending() {
 	bool something = false;
 	vector<Message> toSend;
 	{
@@ -66,7 +67,7 @@ int Client::sendPending() {
 	return something;
 }
 
-int Client::recvPending() {
+int8_t Client::recvPending() {
 	bool something = false;
 	Socket::Status status;
 	while (true) {

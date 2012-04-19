@@ -1,11 +1,15 @@
 #include <cstring>
 
+#include <boost/cstdint.hpp>
+
 #include "Game.h"
 #include "Log.h"
 #include "Server.h"
 
+using namespace boost;
+
 static const char LOCALHOST_ADDRESS[] = "localhost";
-static const unsigned short DEFAULT_PORT = 4920;
+static const uint16_t DEFAULT_PORT = 4920;
 
 static const char USAGE_STRING[] =
 "Usage:\n"
@@ -41,7 +45,7 @@ int main(int argc, char **argv) {
 		printUsage(argv[0]); return 1;
 	}
 	const char *joinAddress = LOCALHOST_ADDRESS;
-	unsigned short joinPort = DEFAULT_PORT, hostPort = DEFAULT_PORT;
+	uint16_t joinPort = DEFAULT_PORT, hostPort = DEFAULT_PORT;
 	if (mode == JOIN) {
 		if (argc > 4) {
 			printUsage(argv[0]); return 1;
@@ -55,7 +59,7 @@ int main(int argc, char **argv) {
 			if (*end != '\0' || p < 0 || p >= 65536) {
 				printUsage(argv[0]); return 1;
 			}
-			joinPort = (unsigned short)p;
+			joinPort = (uint16_t)p;
 		}
 	} else if (mode == HOST || mode == DEDICATED) {
 		if (argc > 3) {
@@ -67,8 +71,8 @@ int main(int argc, char **argv) {
 			if (*end != '\0' || p < 0 || p >= 65536) {
 				printUsage(argv[0]); return 1;
 			}
-			hostPort = (unsigned short)p;
-			joinPort = (unsigned short)p;
+			hostPort = (uint16_t)p;
+			joinPort = (uint16_t)p;
 		}
 	}
 

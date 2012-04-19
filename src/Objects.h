@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+#include <boost/cstdint.hpp>
+
 #include <SFML/Graphics.hpp>
 
 #include "Sphere.h"
@@ -26,37 +28,37 @@ class Bullet;
 class Ship : public Sphere {
 
 public:
-	Ship(unsigned short id_): Sphere(Point(0,0), 15), id(id_),
+	Ship(boost::uint16_t id_): Sphere(Point(0,0), 15), id(id_),
 			direction(0), strength(20000),
 			active(false), deactivate(false),
 			name(), score(0), ready(true) {}
 
 	Bullet shoot() const;
 	void draw(sf::RenderTarget &target) const;
-	void rotate(int d) {
+	void rotate(boost::int32_t d) {
 		if (d == 0) return;
 		if (d > 0) {
-			direction = (unsigned short)(direction + d);
+			direction = (boost::uint16_t)(direction + d);
 			if (direction >= 36000) {
-				direction = (unsigned short)(direction - 36000);
+				direction = (boost::uint16_t)(direction - 36000);
 			}
 		}
 		if (d < 0) {
 			d = -d;
 			if (direction < d) {
-				direction = (unsigned short)(36000 - d);
-			} else direction = (unsigned short)(direction - d);
+				direction = (boost::uint16_t)(36000 - d);
+			} else direction = (boost::uint16_t)(direction - d);
 		}
 	}
 
-	unsigned short id;
+	boost::uint16_t id;
 
-	unsigned short direction;
-	unsigned long strength;
+	boost::uint16_t direction;
+	boost::uint32_t strength;
 
 	bool active, deactivate;
 	std::string name;
-	long score;
+	boost::int32_t score;
 	bool ready;
 
 };
@@ -64,15 +66,15 @@ public:
 class Bullet : public Sphere {
 
 public:
-	Bullet(unsigned short playerID_, const Point &pos,
+	Bullet(boost::uint16_t playerID_, const Point &pos,
 			const Vector &speed_):
 		Sphere(pos, 2), playerID(playerID_), speed(speed_) {}
 
 	bool update(const std::vector<Planet> &planets, std::vector<Ship> &ships,
-			std::list<unsigned short> &destroyed, double dt);
+			std::list<boost::uint16_t> &destroyed, double dt);
 	void draw(sf::RenderTarget &target) const;
 
-	unsigned short playerID;
+	boost::uint16_t playerID;
 	Vector speed;
 
 };
