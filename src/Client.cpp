@@ -20,7 +20,7 @@ void Client::Run() {
 	}
 	if (status != Socket::Done) {
 		//TODO: error
-		LOG(ERROR) << "Could not connect to server";
+		LOG(ERR) << "Could not connect to server";
 		return;
 	}
 	socket.SetBlocking(false);
@@ -29,13 +29,13 @@ void Client::Run() {
 		int8_t s = sendPending();
 		if (s == -1) {
 			//TODO: error
-			LOG(ERROR) << "An error has occured when sending packets";
+			LOG(ERR) << "An error has occured when sending packets";
 			return;
 		} else if (s == 1) nothing = false;
 		s = recvPending();
 		if (s == -1) {
 			//TODO: error
-			LOG(ERROR) << "An error has occured when receiving packets";
+			LOG(ERR) << "An error has occured when receiving packets";
 			return;
 		} else if (s == 1) nothing = false;
 		if (nothing) Sleep(0.05f);
@@ -77,7 +77,7 @@ int8_t Client::recvPending() {
 			something = true;
 			decoder.decode(buffer, size);
 			if (decoder.error()) {
-				LOG(ERROR) << "Received an invalid packet from server";
+				LOG(ERR) << "Received an invalid packet from server";
 				return -1;
 			}
 		} else break;

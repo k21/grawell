@@ -117,7 +117,7 @@ void Game::handleMessage(const Message &m) {
 		case Message::JOIN_RESPONSE:
 			if (!m.accepted()) {
 				//TODO: error message
-				LOG(ERROR) << "Server refused connection";
+				LOG(ERR) << "Server refused connection";
 				return;
 			}
 			id = m.id();

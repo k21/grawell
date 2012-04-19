@@ -190,7 +190,7 @@ void Server::Run() {
 	LOG(INFO) << "Starting server";
 	if (!serverSocket.Listen(port)) {
 		//TODO: error
-		LOG(ERROR) << "Server cannot listen";
+		LOG(ERR) << "Server cannot listen";
 		return;
 	}
 	serverSocket.SetBlocking(false);
@@ -209,7 +209,7 @@ void Server::Run() {
 			clients.push_back(client);
 		} else if (status != Socket::NotReady) {
 			//TODO: error
-			LOG(ERROR) << "An error occured when waiting for client";
+			LOG(ERR) << "An error occured when waiting for client";
 			return;
 		}
 		auto it = clients.begin();

@@ -13,7 +13,7 @@
 class Log {
 
 public:
-	enum Level {FATAL, ERROR, WARN, INFO, DEBUG, TRACE};
+	enum Level {FATAL, ERR, WARN, INFO, DEBUG, TRACE};
 
 	inline Log(Level level_, const char *file, int line):
 			os(), level(level_) {
