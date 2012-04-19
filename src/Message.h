@@ -54,10 +54,10 @@ public:
 
 	bool fromServer() const { return type() >= 128; }
 
-	uint16_t      type() const { return (uint16_t) data[TYPE     ]; }
+	uint8_t       type() const { return (uint8_t)  data[TYPE     ]; }
 	uint16_t   version() const { return (uint16_t) data[VERSION  ]; }
 	bool      accepted() const { return (bool)     data[ACCEPTED ]; }
-	uint16_t     state() const { return (uint16_t) data[STATE    ]; }
+	uint8_t      state() const { return (uint8_t)  data[STATE    ]; }
 	uint16_t        id() const { return (uint16_t) data[ID       ]; }
 	int32_t          x() const { return (int32_t)  data[X        ]; }
 	int32_t          y() const { return (int32_t)  data[Y        ]; }
@@ -69,10 +69,10 @@ public:
 	uint32_t  strength() const { return (uint32_t) data[STRENGTH ]; }
 	uint32_t  checksum() const { return (uint32_t) data[CHECKSUM ]; }
 
-	void      type(uint16_t v) { data[TYPE     ] = v; }
+	void      type(uint8_t  v) { data[TYPE     ] = v; }
 	void   version(uint16_t v) { data[VERSION  ] = v; }
 	void  accepted(bool     v) { data[ACCEPTED ] = v; }
-	void     state(uint16_t v) { data[STATE    ] = v; }
+	void     state(uint8_t  v) { data[STATE    ] = v; }
 	void        id(uint16_t v) { data[ID       ] = v; }
 	void         x(int32_t  v) { data[X        ] = v; }
 	void         y(int32_t  v) { data[Y        ] = v; }
@@ -123,7 +123,7 @@ public:
 		m.id(id); m.x(x); m.y(y); m.size(size); m.mass(mass);
 		return m;
 	}
-	static Message playerInfo(uint16_t id, uint16_t state, std::string name) {
+	static Message playerInfo(uint16_t id, uint8_t state, std::string name) {
 		Message m; m.type(PLAYER_INFO);
 		m.id(id); m.state(state); m.text = name;
 		return m;

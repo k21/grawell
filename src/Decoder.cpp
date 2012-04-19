@@ -69,12 +69,12 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			m->mass(get(buffer+14, 4));
 			break;
 		case Message::PLAYER_INFO:
-			if (len < 5) FAIL();
+			if (len < 4) FAIL();
 			m->id((uint16_t)get(buffer+0, 2));
-			m->state((uint16_t)get(buffer+2, 2));
-			size = 5 + get(buffer+4, 1);
+			m->state((uint8_t)get(buffer+2, 1));
+			size = 4 + get(buffer+3, 1);
 			if (len < size) FAIL();
-			m->text = string(buffer+5, size-5);
+			m->text = string(buffer+4, size-4);
 			break;
 		case Message::SCORE_INFO:
 			size = 6; if (len < size) FAIL();
