@@ -25,7 +25,7 @@ char *Encoder::encode(const Message &m, size_t &size) {
 		case Message::JOIN_REQUEST:
 			size = 3 + m.text.size(); res = new char[size];
 			set(res+0, m.version(), 2);
-			set(res+2, m.text.size(), 1);
+			set(res+2, (uint8_t)m.text.size(), 1);
 			for (size_t i = 0; i < (m.text.size()&0xFF); ++i) res[3+i] = m.text[i];
 			break;
 		case Message::ACTION:
@@ -66,7 +66,7 @@ char *Encoder::encode(const Message &m, size_t &size) {
 			size = 4 + m.text.size(); res = new char[size];
 			set(res+0, m.id(), 2);
 			set(res+2, m.state(), 1);
-			set(res+3, m.text.size(), 1);
+			set(res+3, (uint8_t)m.text.size(), 1);
 			for (size_t i = 0; i < (m.text.size()&0xFF); ++i) res[4+i] = m.text[i];
 			break;
 		case Message::SCORE_INFO:
@@ -132,9 +132,9 @@ void Encoder::encode(const std::vector<Message> &messages) {
 			tlen += sizes[end];
 			++end;
 		}
-		append(tlen, 2);
+		append((uint32_t)tlen, 2);
 		append(type, 1);
-		append(end-begin, 1);
+		append((uint32_t)(end-begin), 1);
 		for (size_t i = begin; i < end; ++i) {
 			append(enc[i], sizes[i]);
 			delete [] enc[i];

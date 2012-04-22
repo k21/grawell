@@ -12,7 +12,7 @@ static int32_t round(double x, double gridSize) {
 }
 
 void Placer::place(Sphere &s) {
-	int32_t i = rand() % edge.size();
+	int32_t i = (int32_t)(rand() % edge.size());
 	auto it = edge.begin();
 	advance(it, i);
 	pair<int32_t, int32_t> p = *it;
