@@ -37,11 +37,21 @@ Game::~Game() {
 }
 
 void Game::run() {
+	static const double FPS = 30;
+	static const double SPF = 1.0/FPS;
 	lastUpdate = clock.GetElapsedTime();
+	double frameStart = lastUpdate;
 	while (screen->IsOpened()) {
 		input();
 		logic();
 		display();
+		double now = clock.GetElapsedTime();
+		if (now-frameStart < SPF) {
+			Sleep((float)(SPF-(now-frameStart)));
+			frameStart = clock.GetElapsedTime();
+		} else {
+			frameStart = now;
+		}
 	}
 }
 
@@ -226,9 +236,9 @@ void Game::logic() {
 }
 
 void Game::display() {
-	moveRight += moveRightDelta*(double)view.GetHalfSize().x/200;
-	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/200;
-	zoom      += 2*zoomDelta;
+	moveRight += moveRightDelta*(double)view.GetHalfSize().x/100;
+	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/100;
+	zoom      += 4*zoomDelta;
 	moveRight *= 0.85; moveDown *= 0.85; zoom *= 0.85;
 	view.Move((float)moveRight, (float)moveDown);
 	view.Zoom((float)exp(zoom/250));
