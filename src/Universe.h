@@ -15,10 +15,7 @@ class Universe {
 public:
 	Universe();
 
-	void update(
-			std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits,
-			double dt
-			);
+	void update(std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits);
 
 	Settings settings;
 	std::vector<Planet> planets;

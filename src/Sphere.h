@@ -6,7 +6,7 @@
 class Sphere {
 
 public:
-	Sphere(const Point &center_, double radius_):
+	Sphere(const Point &center_, Vector::T radius_):
 		center(center_), radius(radius_) {}
 	virtual ~Sphere() {}
 
@@ -18,7 +18,7 @@ public:
 	}
 
 	Point center;
-	double radius;
+	Vector::T radius;
 
 };
 

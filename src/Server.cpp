@@ -62,18 +62,18 @@ void Server::accept(ClientInfo &client, const Message &req,
 	}
 	for (size_t pi = 0; pi < universe.planets.size(); ++pi) {
 		m = Message::planetInfo((uint16_t)pi,
-				(int32_t)(universe.planets[pi].center.x*1024),
-				(int32_t)(universe.planets[pi].center.y*1024),
-				(int32_t)universe.planets[pi].radius,
-				(int32_t)universe.planets[pi].mass
+				universe.planets[pi].center.x,
+				universe.planets[pi].center.y,
+				universe.planets[pi].radius,
+				universe.planets[pi].mass
 				);
 		toSend.push_back(m);
 	}
 	for (size_t i = 0; i < universe.ships.size(); ++i) {
 		if (!universe.ships[i].active) continue;
 		m = Message::shipInfo((uint16_t)i,
-				(int32_t)(universe.ships[i].center.x*1024),
-				(int32_t)(universe.ships[i].center.y*1024)
+				universe.ships[i].center.x,
+				universe.ships[i].center.y
 				);
 		toSend.push_back(m);
 	}
@@ -101,7 +101,7 @@ void Server::changeState() {
 		}
 		list<pair<uint16_t, uint16_t>> hits;
 		for (size_t i = 0; i < 8192; ++i) {
-			universe.update(hits, 1.0/1024);
+			universe.update(hits);
 			if (universe.bullets.empty()) break;
 		}
 		for (pair<uint16_t, uint16_t> p : hits) {
@@ -110,8 +110,8 @@ void Server::changeState() {
 			placer.remove(universe.ships[to]);
 			placer.place(universe.ships[to]);
 			Message m = Message::shipInfo(to,
-					(int32_t)(universe.ships[to].center.x*1024),
-					(int32_t)(universe.ships[to].center.y*1024)
+					universe.ships[to].center.x,
+					universe.ships[to].center.y
 					);
 			roundEnd.push_back(m);
 		}
@@ -124,8 +124,8 @@ void Server::changeState() {
 				universe.ships[c->id].active = true;
 				placer.place(universe.ships[c->id]);
 				Message m = Message::shipInfo(c->id,
-						(int32_t)(universe.ships[c->id].center.x*1024),
-						(int32_t)(universe.ships[c->id].center.y*1024)
+						universe.ships[c->id].center.x,
+						universe.ships[c->id].center.y
 						);
 				roundEnd.push_back(m);
 			}
@@ -196,8 +196,11 @@ void Server::Run() {
 	serverSocket.SetBlocking(false);
 	IPAddress address;
 	SocketTCP clientSocket;
-	universe.planets.push_back(Planet(Point(0,0),40,8000000));
-	placer.place(universe.planets.back());
+	for (size_t i = 0; i < 10; ++i) {
+		int32_t size = (uint32_t)(rand()%60+10)*FIXED_ONE;
+		universe.planets.push_back(Planet(Point(0,0),size,256000000));
+		placer.place(universe.planets.back());
+	}
 	while (!exit_) {
 		Socket::Status status = serverSocket.Accept(clientSocket, &address);
 		bool nothing = true;

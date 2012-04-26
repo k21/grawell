@@ -22,7 +22,7 @@ Game::Game(const char *serverAddress, uint16_t port):
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", Style::Close, settings);
 	view.SetCenter(0, 0);
-	view.SetHalfSize(400, 300);
+	view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
 	screen->SetView(view);
 	client = new Client(IPAddress(serverAddress), (short)port);
 	client->Launch();
@@ -140,16 +140,16 @@ void Game::handleMessage(const Message &m) {
 			break;
 		case Message::SHIP_INFO:
 			allocShips(m.id()+1);
-			universe.ships[m.id()].center.x = m.x()/1024.0;
-			universe.ships[m.id()].center.y = m.y()/1024.0;
+			universe.ships[m.id()].center.x = m.x();
+			universe.ships[m.id()].center.y = m.y();
 			universe.ships[m.id()].active = true;
 			break;
 		case Message::PLANET_INFO:
 			while (universe.planets.size() < (size_t)(m.id()+1)) {
 				universe.planets.push_back(Planet(Point(0,0), 0, 0));
 			}
-			universe.planets[m.id()].center.x = m.x()/1024.0;
-			universe.planets[m.id()].center.y = m.y()/1024.0;
+			universe.planets[m.id()].center.x = m.x();
+			universe.planets[m.id()].center.y = m.y();
 			universe.planets[m.id()].radius = m.size();
 			universe.planets[m.id()].mass = m.mass();
 			break;
@@ -212,17 +212,16 @@ void Game::logic() {
 		state = REQUEST_SENT;
 	}
 	if (state == ROUND) {
-		static const double dt = 1.0/1024;
 		double now = clock.GetElapsedTime();
 		list<pair<uint16_t, uint16_t>> hits;
 		while (lastUpdate < now) {
-			universe.update(hits, dt);
+			universe.update(hits);
 			for (pair<uint16_t, uint16_t> p : hits) {
 				++universe.ships[p.first].score;
 				universe.ships[p.second].active = false;
 			}
 			hits.clear();
-			lastUpdate += dt;
+			lastUpdate += 1.0/1024.0;
 			--roundCntr;
 			if (roundCntr == 0 || universe.bullets.empty()) {
 				state = ROUND_DONE;

@@ -44,7 +44,7 @@ public:
 	Server(boost::uint16_t port_): clients(), port(port_), exit_(false),
 			serverSocket(), universe(), state(ROUND), roundEnd(),
 			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0),
-			placer(200) {}
+			placer(200*FIXED_ONE) {}
 	Server(const Server &) = delete;
 	Server &operator = (const Server &) = delete;
 	~Server() {
