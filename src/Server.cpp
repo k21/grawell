@@ -46,18 +46,14 @@ void Server::accept(ClientInfo &client, const Message &req,
 	toSend.push_back(m);
 	m = Message::gameSettings();
 	toSend.push_back(m);
-	for (size_t i = 0; i < universe.ships.size(); ++i) {
-		if (!universe.ships[i].active) continue;
-		m = Message::playerInfo(
-				(uint16_t)i,
-				Message::CONNECTED,
-				universe.ships[i].name
-				);
+	for (Ship &s : universe.ships) {
+		if (!s.active) continue;
+		m = Message::playerInfo(s.id, Message::CONNECTED, s.name);
 		toSend.push_back(m);
 	}
-	for (size_t i = 0; i < universe.ships.size(); ++i) {
-		if (!universe.ships[i].active) continue;
-		m = Message::scoreInfo((uint16_t)i, universe.ships[i].score);
+	for (Ship &s : universe.ships) {
+		if (!s.active) continue;
+		m = Message::scoreInfo(s.id, s.score);
 		toSend.push_back(m);
 	}
 	for (size_t pi = 0; pi < universe.planets.size(); ++pi) {
@@ -69,12 +65,9 @@ void Server::accept(ClientInfo &client, const Message &req,
 				);
 		toSend.push_back(m);
 	}
-	for (size_t i = 0; i < universe.ships.size(); ++i) {
-		if (!universe.ships[i].active) continue;
-		m = Message::shipInfo((uint16_t)i,
-				universe.ships[i].center.x,
-				universe.ships[i].center.y
-				);
+	for (Ship &s : universe.ships) {
+		if (!s.active) continue;
+		m = Message::shipInfo(s.id, s.center.x, s.center.y);
 		toSend.push_back(m);
 	}
 }

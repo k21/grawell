@@ -242,12 +242,11 @@ void Game::display() {
 	view.Move((float)moveRight, (float)moveDown);
 	view.Zoom((float)exp(zoom/250));
 	screen->Clear();
-	for (size_t i  = 0; i < universe.planets.size(); ++i) {
-		universe.planets[i].draw(*screen);
+	for (Planet &p : universe.planets) {
+		p.draw(*screen);
 	}
-	for (size_t i  = 0; i < universe.ships.size(); ++i) {
-		if (!universe.ships[i].active) continue;
-		universe.ships[i].draw(*screen);
+	for (Ship &s : universe.ships) {
+		if (s.active) s.draw(*screen);
 	}
 	for (Bullet &b : universe.bullets) {
 		b.draw(*screen);
