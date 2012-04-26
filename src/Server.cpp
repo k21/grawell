@@ -23,7 +23,7 @@ uint16_t Server::allocID() {
 
 void Server::freeID(uint16_t id) {
 	freeIDs.insert(id);
-	universe.ships[id].active = false;
+	universe.ships[id] = Ship(id);
 	auto it = freeIDs.end();
 	while ((it = freeIDs.find((uint16_t)(cntIDs-1))) != freeIDs.end()) {
 		freeIDs.erase(it);
@@ -35,26 +35,32 @@ void Server::freeID(uint16_t id) {
 void Server::accept(ClientInfo &client, const Message &req,
 		vector<Message> &toSend) {
 	++playersCnt;
-	++readyCnt;
 	client.id = allocID();
-	universe.ships[client.id].name = req.text;
 	Message m;
 	m = Message::playerInfo(client.id, Message::CONNECTED, req.text);
 	sendToAll(vector<Message>(1,m));
-	client.state = ClientInfo::ACCEPTED;
+	client.hasShip = true;
+	universe.ships[client.id].name = req.text;
+	universe.ships[client.id].hasClient = true;
+	if (state == SELECT_ACTION) {
+		++readyCnt;
+		universe.ships[client.id].ready = true;
+	}
 	m = Message::joinResponse(PROTOCOL_VERSION, true, client.id);
 	toSend.push_back(m);
 	m = Message::gameSettings();
 	toSend.push_back(m);
 	for (Ship &s : universe.ships) {
-		if (!s.active) continue;
-		m = Message::playerInfo(s.id, Message::CONNECTED, s.name);
-		toSend.push_back(m);
+		if ((s.hasClient || s.visible) && s.id != client.id) {
+			m = Message::playerInfo(s.id, Message::CONNECTED, s.name);
+			toSend.push_back(m);
+		}
 	}
 	for (Ship &s : universe.ships) {
-		if (!s.active) continue;
-		m = Message::scoreInfo(s.id, s.score);
-		toSend.push_back(m);
+		if ((s.hasClient || s.visible) && s.id != client.id) {
+			m = Message::scoreInfo(s.id, s.score);
+			toSend.push_back(m);
+		}
 	}
 	for (size_t pi = 0; pi < universe.planets.size(); ++pi) {
 		m = Message::planetInfo((uint16_t)pi,
@@ -66,9 +72,33 @@ void Server::accept(ClientInfo &client, const Message &req,
 		toSend.push_back(m);
 	}
 	for (Ship &s : universe.ships) {
-		if (!s.active) continue;
-		m = Message::shipInfo(s.id, s.center.x, s.center.y);
+		if ((s.hasClient || s.visible) && s.id != client.id) {
+			m = Message::shipInfo(s.id, s.center.x, s.center.y);
+		}
 		toSend.push_back(m);
+	}
+	m = Message::newRound(0);
+	toSend.push_back(m);
+	for (Ship &s : universe.ships) {
+		if (s.leftBeforeRound) {
+			m = Message::playerInfo(s.id, Message::DISCONNECTED, "");
+			toSend.push_back(m);
+		}
+	}
+	if (state == ROUND) {
+		for (Ship &s : universe.ships) {
+			if ((s.visible || s.hasClient) && !s.leftBeforeRound) {
+				//TODO: bug - shot, disconnected, but his shot still flies
+				m = Message::actionInfo(s.id, s.direction, s.strength);
+				toSend.push_back(m);
+			}
+		}
+		for (Ship &s : universe.ships) {
+			if (s.leftDuringRound) {
+				m = Message::playerInfo(s.id, Message::DISCONNECTED, "");
+				toSend.push_back(m);
+			}
+		}
 	}
 }
 
@@ -79,19 +109,14 @@ void Server::changeState() {
 	readyCnt = 0;
 	if (state == SELECT_ACTION) {
 		vector<Message> toSend;
-		for (ClientInfo *c : clients) {
-			if (c->state != ClientInfo::PLAYING) continue;
-			Message m = Message::actionInfo(c->id,
-					universe.ships[c->id].direction,
-					universe.ships[c->id].strength
-					);
-			toSend.push_back(m);
+		for (Ship &s : universe.ships) {
+			if (s.hasClient && s.visible) {
+				Message m = Message::actionInfo(s.id, s.direction, s.strength);
+				toSend.push_back(m);
+				universe.bullets.push_back(s.shoot());
+			}
 		}
 		sendToAll(toSend);
-		for (Ship &s : universe.ships) {
-			if (!s.active) continue;
-			universe.bullets.push_back(s.shoot());
-		}
 		list<pair<uint16_t, uint16_t>> hits;
 		for (size_t i = 0; i < 8192; ++i) {
 			universe.update(hits);
@@ -100,46 +125,36 @@ void Server::changeState() {
 		for (pair<uint16_t, uint16_t> p : hits) {
 			uint16_t from = p.first, to = p.second;
 			++universe.ships[from].score;
+			universe.ships[to].visible = false;
 			placer.remove(universe.ships[to]);
-			placer.place(universe.ships[to]);
-			Message m = Message::shipInfo(to,
-					universe.ships[to].center.x,
-					universe.ships[to].center.y
-					);
-			roundEnd.push_back(m);
 		}
 		state = ROUND;
 	} else {
 		//TODO: check checksums
-		for (ClientInfo *c : clients) {
-			if (c->state == ClientInfo::ACCEPTED) {
-				c->state = ClientInfo::PLAYING;
-				universe.ships[c->id].active = true;
-				placer.place(universe.ships[c->id]);
-				Message m = Message::shipInfo(c->id,
-						universe.ships[c->id].center.x,
-						universe.ships[c->id].center.y
-						);
-				roundEnd.push_back(m);
+		for (Ship &s : universe.ships) {
+			if (s.leftBeforeRound || s.leftDuringRound) {
+				freeID(s.id);
 			}
 		}
+		vector<Message> toSend;
 		for (Ship &s : universe.ships) {
-			if (s.deactivate) {
-				s.active = false;
-				s.deactivate = false;
+			if (s.hasClient && !s.visible) {
+				placer.place(s);
+				s.visible = true;
+				Message m = Message::shipInfo(s.id, s.center.x, s.center.y);
+				toSend.push_back(m);
 			}
 		}
 		Message m = Message::newRound(0);
-		roundEnd.push_back(m);
-		sendToAll(roundEnd);
-		roundEnd.clear();
+		toSend.push_back(m);
+		sendToAll(toSend);
 		state = SELECT_ACTION;
 	}
 }
 
 void Server::sendToAll(const vector<Message> &m) {
 	for (ClientInfo *client : clients) {
-		if (client->state != ClientInfo::NOTHING) client->encoder.encode(m);
+		if (client->hasShip) client->encoder.encode(m);
 	}
 }
 
@@ -149,7 +164,7 @@ int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
 		return 1;
 	}
 	vector<Message> toSend;
-	if (client.state == ClientInfo::NOTHING) {
+	if (!client.hasShip) {
 		if (m.type() != Message::JOIN_REQUEST) {
 			return 1;
 		}
@@ -246,11 +261,15 @@ void Server::Run() {
 			}
 			if (error) {
 				uint16_t id = client.id;
-				if (client.state != ClientInfo::NOTHING) {
+				if (client.hasShip) {
 					if (universe.ships[id].ready) --readyCnt;
-					universe.ships[id].deactivate = true;
-					freeID(id);
+					if (state == SELECT_ACTION) {
+						universe.ships[id].leftBeforeRound = true;
+					} else {
+						universe.ships[id].leftDuringRound = true;
+					}
 					--playersCnt;
+					universe.ships[id].hasClient = false;
 				}
 				client.socket.Close();
 				delete *it;

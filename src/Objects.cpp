@@ -82,7 +82,7 @@ bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
 		if (planets[i].intersects(center)) return true;
 	}
 	for (size_t i = 0; i < ships.size(); ++i) {
-		if (!ships[i].active) continue;
+		if (!ships[i].visible) continue;
 		if (ships[i].intersects(center)) {
 			hits.push_back(make_pair(playerID, (uint16_t)i));
 			return true;

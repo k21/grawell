@@ -22,8 +22,8 @@ public:
 			const sf::SocketTCP &socket_, boost::uint16_t id_):
 			address(address_), socket(socket_), id(id_),
 			encoder(), decoder(),
-			state(NOTHING),
-			pending(0), pendingSize(0) {}
+			pending(0), pendingSize(0),
+			hasShip(false) {}
 	ClientInfo(const ClientInfo &) = delete;
 	ClientInfo &operator = (const ClientInfo &) = delete;
 	sf::IPAddress address;
@@ -31,10 +31,8 @@ public:
 	boost::uint16_t id;
 	Encoder encoder;
 	Decoder decoder;
-	enum {
-		NOTHING, ACCEPTED, PLAYING
-	} state;
 	char *pending; size_t pendingSize;
+	bool hasShip;
 
 };
 
@@ -42,7 +40,7 @@ class Server : public sf::Thread {
 
 public:
 	Server(boost::uint16_t port_): clients(), port(port_), exit_(false),
-			serverSocket(), universe(), state(ROUND), roundEnd(),
+			serverSocket(), universe(), state(SELECT_ACTION),
 			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0),
 			placer(200*FIXED_ONE) {}
 	Server(const Server &) = delete;
@@ -79,7 +77,6 @@ private:
 	enum {
 		SELECT_ACTION, ROUND
 	} state;
-	std::vector<Message> roundEnd;
 	boost::uint32_t checksum;
 	std::set<boost::uint16_t> freeIDs;
 	boost::uint16_t cntIDs;

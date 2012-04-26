@@ -17,7 +17,8 @@ Game::Game(const char *serverAddress, uint16_t port):
 		screen(0), view(), clock(), universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0), lastUpdate(0),
 		moveDown(0), moveRight(0), zoom(0),
-		moveDownDelta(0), moveRightDelta(0), zoomDelta(0) {
+		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
+		playersCnt(0), readyCnt(0) {
 	VideoMode mode(800, 600);
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", Style::Close, settings);
@@ -133,6 +134,7 @@ void Game::handleMessage(const Message &m) {
 			id = m.id();
 			allocShips(id+1);
 			universe.ships[id].name = "name";
+			universe.ships[id].ready = true;
 			state = WAITING;
 			break;
 		case Message::GAME_SETTINGS:
@@ -142,7 +144,7 @@ void Game::handleMessage(const Message &m) {
 			allocShips(m.id()+1);
 			universe.ships[m.id()].center.x = m.x();
 			universe.ships[m.id()].center.y = m.y();
-			universe.ships[m.id()].active = true;
+			universe.ships[m.id()].visible = true;
 			break;
 		case Message::PLANET_INFO:
 			while (universe.planets.size() < (size_t)(m.id()+1)) {
@@ -157,8 +159,19 @@ void Game::handleMessage(const Message &m) {
 			if (m.state() == Message::CONNECTED) {
 				allocShips(m.id()+1);
 				universe.ships[m.id()].name = m.text;
+				universe.ships[m.id()].hasClient = true;
+				universe.ships[m.id()].ready = true;
+				++playersCnt;
+				++readyCnt;
 			} else {
-				universe.ships[m.id()].deactivate = true;
+				if (state == SELECT_ACTION || state == SELECT_DONE) {
+					universe.ships[m.id()].leftBeforeRound = true;
+				} else {
+					universe.ships[m.id()].leftDuringRound = true;
+				}
+				universe.ships[m.id()].hasClient = false;
+				--playersCnt;
+				if (universe.ships[m.id()].ready) --readyCnt;
 			}
 			break;
 		case Message::SCORE_INFO:
@@ -166,14 +179,16 @@ void Game::handleMessage(const Message &m) {
 			break;
 		case Message::NEW_ROUND:
 			//TODO
+			readyCnt = 0;
 			for (Ship &s : universe.ships) {
-				s.ready = false;
-				if (s.deactivate) {
-					s.active = false;
-					s.deactivate = false;
+				if (s.visible) s.ready = false;
+				else if (s.hasClient) ++readyCnt;
+				if (s.leftBeforeRound || s.leftDuringRound) {
+					s = Ship(s.id);
 				}
 			}
-			state = SELECT_ACTION;
+			if (state == WAITING) state = SELECT_DONE;
+			else state = SELECT_ACTION;
 			break;
 		case Message::PLAYER_READY:
 			//TODO
@@ -185,15 +200,7 @@ void Game::handleMessage(const Message &m) {
 				universe.ships[m.id()].strength = m.strength();
 				universe.bullets.push_back(universe.ships[m.id()].shoot());
 				universe.ships[m.id()].ready = true;
-				bool allReady = true;
-				for (Ship &s : universe.ships) {
-					if (s.active
-							&& !s.deactivate
-							&& !s.ready) {
-						allReady = false;
-					}
-				}
-				if (allReady) { state = ROUND; roundCntr = 8192; }
+				++readyCnt;
 			}
 			break;
 	}
@@ -211,6 +218,10 @@ void Game::logic() {
 		client->send(m);
 		state = REQUEST_SENT;
 	}
+	if (state == SELECT_DONE && playersCnt == readyCnt) {
+		state = ROUND;
+		roundCntr = 8192;
+	}
 	if (state == ROUND) {
 		double now = clock.GetElapsedTime();
 		list<pair<uint16_t, uint16_t>> hits;
@@ -218,7 +229,7 @@ void Game::logic() {
 			universe.update(hits);
 			for (pair<uint16_t, uint16_t> p : hits) {
 				++universe.ships[p.first].score;
-				universe.ships[p.second].active = false;
+				universe.ships[p.second].visible = false;
 			}
 			hits.clear();
 			lastUpdate += 1.0/1024.0;
@@ -246,7 +257,7 @@ void Game::display() {
 		p.draw(*screen);
 	}
 	for (Ship &s : universe.ships) {
-		if (s.active) s.draw(*screen);
+		if (s.visible) s.draw(*screen);
 	}
 	for (Bullet &b : universe.bullets) {
 		b.draw(*screen);

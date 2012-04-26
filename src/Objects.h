@@ -30,8 +30,10 @@ class Ship : public Sphere {
 public:
 	Ship(boost::uint16_t id_): Sphere(Point(0,0), 15*FIXED_ONE), id(id_),
 			direction(0), strength(20000),
-			active(false), deactivate(false),
-			name(), score(0), ready(true) {}
+			hasClient(false), visible(false),
+			leftBeforeRound(false), leftDuringRound(false),
+			ready(false),
+			name(), score(0) {}
 
 	Bullet shoot() const;
 	void draw(sf::RenderTarget &target) const;
@@ -56,10 +58,10 @@ public:
 	boost::uint16_t direction;
 	boost::uint32_t strength;
 
-	bool active, deactivate;
+	bool hasClient, visible, leftBeforeRound, leftDuringRound;
+	bool ready;
 	std::string name;
 	boost::int32_t score;
-	bool ready;
 
 };
 
