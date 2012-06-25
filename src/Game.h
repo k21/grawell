@@ -44,7 +44,6 @@ private:
 	double lastUpdate;
 	double moveDown, moveRight, zoom;
 	boost::int8_t moveDownDelta, moveRightDelta, zoomDelta;
-	boost::uint16_t playersCnt, readyCnt;
 
 };
 

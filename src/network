@@ -27,9 +27,13 @@ S game settings
 	u8: zero
 	// will be specified later
 
-S ship info
+S player
 	u16: player id
-	point2i32: position
+	string: name
+
+S score
+	u16: player id
+	u32: score
 
 S planet info
 	u16: planet id
@@ -37,13 +41,15 @@ S planet info
 	u32: size
 	u32: mass
 
-S players
+S ship info
 	u16: player id
-	string: name
+	point2i32: position
 
-S scores
-	u16: player id
-	u32: score
+S bullet info
+	u16: bullet id
+	u16: owner id
+	point2i32: position
+	point2i32: speed
 
 S new round
 	u32: round
@@ -64,29 +70,25 @@ C round checksum
 	u32: round
 	u32: checksum
 
-S checksum mismatch
-	u16: player id
-
 
 Protocol
 ========
 
 C join request
 S join response
-S game settings
-S players
-S scores
-S planet info
-S ship position
-...
 [
-	? S ship position
+	S game settings
+	[ S player ]
+	[ S score ]
+	[ S planet info ]
+	[ S ship info ]
+	[ S bullet info ]
 	S new round
 	[
 		C action
 		S player ready
 	]
-	S round action info
+	[ S round action info ]
+	S round action info (player id = -1)
 	C round summary
-	? S checksum mismatch
 ]

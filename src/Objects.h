@@ -30,8 +30,7 @@ class Ship : public Sphere {
 public:
 	Ship(boost::uint16_t id_): Sphere(Point(0,0), 15*FIXED_ONE), id(id_),
 			direction(0), strength(20000),
-			hasClient(false), visible(false),
-			leftBeforeRound(false), leftDuringRound(false),
+			active(false), alive(false), connected(false),
 			ready(false),
 			name(), score(0) {}
 
@@ -58,7 +57,7 @@ public:
 	boost::uint16_t direction;
 	boost::uint32_t strength;
 
-	bool hasClient, visible, leftBeforeRound, leftDuringRound;
+	bool active, alive, connected;
 	bool ready;
 	std::string name;
 	boost::int32_t score;

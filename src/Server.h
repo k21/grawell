@@ -23,7 +23,7 @@ public:
 			address(address_), socket(socket_), id(id_),
 			encoder(), decoder(),
 			pending(0), pendingSize(0),
-			hasShip(false) {}
+			active(false) {}
 	ClientInfo(const ClientInfo &) = delete;
 	ClientInfo &operator = (const ClientInfo &) = delete;
 	sf::IPAddress address;
@@ -32,7 +32,7 @@ public:
 	Encoder encoder;
 	Decoder decoder;
 	char *pending; size_t pendingSize;
-	bool hasShip;
+	bool active;
 
 };
 
@@ -41,7 +41,7 @@ class Server : public sf::Thread {
 public:
 	Server(boost::uint16_t port_): clients(), port(port_), exit_(false),
 			serverSocket(), universe(), state(SELECT_ACTION),
-			checksum(0), freeIDs(), cntIDs(0), readyCnt(0), playersCnt(0),
+			checksum(0), freeIDs(), cntIDs(0), waitingForCnt(0),
 			placer(200*FIXED_ONE) {}
 	Server(const Server &) = delete;
 	Server &operator = (const Server &) = delete;
@@ -80,8 +80,7 @@ private:
 	boost::uint32_t checksum;
 	std::set<boost::uint16_t> freeIDs;
 	boost::uint16_t cntIDs;
-	size_t readyCnt;
-	size_t playersCnt;
+	size_t waitingForCnt;
 	Placer placer;
 
 };
