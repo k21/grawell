@@ -107,7 +107,10 @@ void Server::changeState() {
 				toSend.push_back(Message::shipInfo(s.id, s.center.x, s.center.y));
 			}
 		}
-		//TODO: send bullets
+		for (Bullet &b : universe.bullets) {
+			toSend.push_back(Message::bulletInfo(b.playerID,
+					b.center.x, b.center.y, b.speed.x, b.speed.y));
+		}
 		toSend.push_back(Message::newRound(0));
 		sendToAll(toSend);
 		state = SELECT_ACTION;

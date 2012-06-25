@@ -46,7 +46,6 @@ S ship info
 	point2i32: position
 
 S bullet info
-	u16: bullet id
 	u16: owner id
 	point2i32: position
 	point2i32: speed

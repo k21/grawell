@@ -28,6 +28,7 @@ public:
 		PLANET_INFO,
 		PLAYER_INFO,
 		SCORE_INFO,
+		BULLET_INFO,
 		NEW_ROUND,
 		PLAYER_READY,
 		ACTION_INFO,
@@ -40,6 +41,7 @@ public:
 		STATE,
 		ID,
 		X, Y,
+		SPEEDX, SPEEDY,
 		SIZE, MASS,
 		SCORE,
 		ROUND,
@@ -61,6 +63,8 @@ public:
 	uint16_t        id() const { return (uint16_t) data[ID       ]; }
 	int32_t          x() const { return (int32_t)  data[X        ]; }
 	int32_t          y() const { return (int32_t)  data[Y        ]; }
+	int32_t     speedX() const { return (int32_t)  data[SPEEDX   ]; }
+	int32_t     speedY() const { return (int32_t)  data[SPEEDY   ]; }
 	uint32_t      size() const { return (uint32_t) data[SIZE     ]; }
 	uint32_t      mass() const { return (uint32_t) data[MASS     ]; }
 	int32_t      score() const { return (int32_t)  data[SCORE    ]; }
@@ -76,6 +80,8 @@ public:
 	void        id(uint16_t v) { data[ID       ] = v; }
 	void         x(int32_t  v) { data[X        ] = v; }
 	void         y(int32_t  v) { data[Y        ] = v; }
+	void    speedX(int32_t  v) { data[SPEEDX   ] = v; }
+	void    speedY(int32_t  v) { data[SPEEDY   ] = v; }
 	void      size(uint32_t v) { data[SIZE     ] = v; }
 	void      mass(uint32_t v) { data[MASS     ] = v; }
 	void     score(int32_t  v) { data[SCORE    ] = v; }
@@ -131,6 +137,12 @@ public:
 	static Message scoreInfo(uint16_t id, int32_t score) {
 		Message m; m.type(SCORE_INFO);
 		m.id(id); m.score(score);
+		return m;
+	}
+	static Message bulletInfo(uint16_t owner, int32_t x, int32_t y,
+			int32_t speedX, int32_t speedY) {
+		Message m; m.type(BULLET_INFO);
+		m.id(owner); m.x(x); m.y(y); m.speedX(speedX); m.speedY(speedY);
 		return m;
 	}
 	static Message newRound(uint32_t round) {

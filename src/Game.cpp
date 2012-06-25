@@ -166,6 +166,10 @@ void Game::handleMessage(const Message &m) {
 				p.mass = m.mass();
 			}
 			break;
+		case Message::BULLET_INFO:
+			universe.bullets.push_back(Bullet(m.id(),
+					Point(m.x(), m.y()), Vector(m.speedX(), m.speedY())));
+			break;
 		case Message::PLAYER_INFO:
 			if (m.state() == Message::CONNECTED) {
 				allocShips(m.id()+1);

@@ -74,6 +74,14 @@ char *Encoder::encode(const Message &m, size_t &size) {
 			set(res+0, m.id(), 2);
 			set(res+2, m.score(), 4);
 			break;
+		case Message::BULLET_INFO:
+			size = 18; res = new char[size];
+			set(res+ 0, m.id(), 2);
+			set(res+ 2, m.x(), 4);
+			set(res+ 6, m.y(), 4);
+			set(res+10, m.speedX(), 4);
+			set(res+14, m.speedY(), 4);
+			break;
 		case Message::NEW_ROUND:
 			size = 4; res = new char[size];
 			set(res+0, m.round(), 4);
