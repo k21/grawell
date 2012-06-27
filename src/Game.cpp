@@ -190,7 +190,7 @@ void Game::handleMessage(const Message &m) {
 			universe.ships[m.id()].ready = true;
 			break;
 		case Message::ACTION_INFO:
-			if (m.id() == 65535) {
+			if (m.id() == Message::NO_PLAYER) {
 				state = ROUND;
 				roundCntr = 8192;
 			} else {
@@ -221,7 +221,7 @@ void Game::logic() {
 		while (lastUpdate < now) {
 			universe.update(hits);
 			for (pair<uint16_t, uint16_t> p : hits) {
-				++universe.ships[p.first].score;
+				if (p.first != Message::NO_PLAYER) ++universe.ships[p.first].score;
 				universe.ships[p.second].alive = false;
 			}
 			hits.clear();

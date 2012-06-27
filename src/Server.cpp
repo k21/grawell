@@ -22,6 +22,9 @@ uint16_t Server::allocID() {
 }
 
 void Server::freeID(uint16_t id) {
+	for (Bullet &b : universe.bullets) {
+		if (b.playerID == id) b.playerID = Message::NO_PLAYER;
+	}
 	Ship &s = universe.ships[id];
 	if (s.alive) placer.remove(s);
 	freeIDs.insert(id);
@@ -56,7 +59,7 @@ void Server::changeState() {
 				universe.bullets.push_back(s.shoot());
 			}
 		}
-		Message m = Message::actionInfo(65535, 0, 0);
+		Message m = Message::actionInfo(Message::NO_PLAYER, 0, 0);
 		toSend.push_back(m);
 		sendToAll(toSend);
 		list<pair<uint16_t, uint16_t>> hits;
@@ -66,7 +69,7 @@ void Server::changeState() {
 		}
 		for (pair<uint16_t, uint16_t> p : hits) {
 			uint16_t from = p.first, to = p.second;
-			++universe.ships[from].score;
+			if (from != Message::NO_PLAYER) ++universe.ships[from].score;
 			universe.ships[to].alive = false;
 			placer.remove(universe.ships[to]);
 		}

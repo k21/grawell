@@ -54,6 +54,8 @@ public:
 	static const uint16_t DISCONNECTED = 1;
 	static const uint16_t CHECKSUM_MISMATCH = 2;
 
+	static const uint16_t NO_PLAYER = 65535;
+
 	bool fromServer() const { return type() >= 128; }
 
 	uint8_t       type() const { return (uint8_t)  data[TYPE     ]; }
