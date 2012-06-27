@@ -8,7 +8,8 @@ using namespace std;
 using namespace boost;
 
 static int32_t round(int32_t x, int32_t gridSize) {
-	return (x+gridSize/2)/gridSize;
+	int32_t rx = x+gridSize/2;
+	return rx/gridSize - (rx < 0);
 }
 
 void Placer::place(Sphere &s) {
@@ -32,7 +33,7 @@ void Placer::place(Sphere &s) {
 
 void Placer::checkEdge(pair<int32_t, int32_t> p) {
 	int32_t x = p.first, y = p.second;
-	if (x == 0 && y == 0) return;
+	if (edge.size() == 1) return;
 	if (edge.find(p) == edge.end()) return;
 	pair<int32_t, int32_t> left(x-1, y), right(x+1, y), top(x, y-1), bottom(x, y+1);
 	if (used.find(  left) != used.end()) return;
@@ -53,4 +54,5 @@ void Placer::remove(Sphere &s) {
 	checkEdge( right);
 	checkEdge(   top);
 	checkEdge(bottom);
+	checkEdge(     p);
 }
