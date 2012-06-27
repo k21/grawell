@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "Objects.h"
+#include "Entities.h"
 
 using namespace std;
 using namespace boost;
@@ -34,11 +34,15 @@ void Ship::draw(RenderTarget &target) const {
 }
 
 void Bullet::draw(RenderTarget &target) const {
-	Color transparent(0, 0, 0, 0), red(255, 0, 0);
+	Color transparent(0, 0, 0, 0), red(255, 0, 0), yellow(255, 255, 0);
 	Shape circle = Shape::Circle(
-			(float)center.x, (float)center.y, (float)radius,
-			red);
+			(float)center.x, (float)center.y, (float)radius, red);
 	target.Draw(circle);
+	for (size_t i = 1; i < trail.size(); ++i) {
+		Shape line = Shape::Line((float)trail[i-1].x, (float)trail[i-1].y,
+				(float)trail[i].x, (float)trail[i].y, FIXED_ONE, yellow);
+		target.Draw(line);
+	}
 }
 
 Bullet Ship::shoot() const {
@@ -78,6 +82,9 @@ bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
 	speed  += (kv1 + 2*kv2 + 2*kv3 + kv4)/6;
 	center += (kr1 + 2*kr2 + 2*kr3 + kr4)/6;
 #undef SPEED_TO_POS
+	if (trail.empty() || (center-trail.back()).size() > 6*FIXED_ONE) {
+		trail.push_back(center);
+	}
 	for (size_t i = 0; i < planets.size(); ++i) {
 		if (planets[i].intersects(center)) return true;
 	}

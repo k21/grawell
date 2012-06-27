@@ -1,5 +1,5 @@
-#ifndef OBJECTS_H_
-#define OBJECTS_H_
+#ifndef ENTITIES_H_
+#define ENTITIES_H_
 
 #include <list>
 #include <vector>
@@ -69,7 +69,7 @@ class Bullet : public Entity {
 public:
 	Bullet(boost::uint16_t playerID_, const Point &pos,
 			const Vector &speed_): Entity(pos, 2*FIXED_ONE),
-			playerID(playerID_), speed(speed_) {}
+			playerID(playerID_), speed(speed_), trail() {}
 
 	bool update(const std::vector<Planet> &planets, std::vector<Ship> &ships,
 			std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits);
@@ -77,6 +77,8 @@ public:
 
 	boost::uint16_t playerID;
 	Vector speed;
+
+	std::vector<Point> trail;
 
 };
 

@@ -7,7 +7,7 @@
 
 #include <boost/cstdint.hpp>
 
-#include "Objects.h"
+#include "Entities.h"
 #include "Settings.h"
 
 class Universe {
