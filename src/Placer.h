@@ -6,7 +6,7 @@
 
 #include <boost/cstdint.hpp>
 
-class Sphere;
+class Entity;
 
 class Placer {
 
@@ -15,8 +15,8 @@ public:
 		edge.insert(std::make_pair(0, 0));
 	}
 
-	void place(Sphere &s);
-	void remove(Sphere &s);
+	void place(Entity &e);
+	void remove(Entity &e);
 
 private:
 	void checkEdge(std::pair<boost::int32_t, boost::int32_t> p);

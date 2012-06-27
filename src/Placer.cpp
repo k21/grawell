@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-#include "Sphere.h"
+#include "Entity.h"
 
 #include "Placer.h"
 
@@ -12,7 +12,7 @@ static int32_t round(int32_t x, int32_t gridSize) {
 	return rx/gridSize - (rx < 0);
 }
 
-void Placer::place(Sphere &s) {
+void Placer::place(Entity &e) {
 	int32_t i = (int32_t)(rand() % edge.size());
 	auto it = edge.begin();
 	advance(it, i);
@@ -26,9 +26,9 @@ void Placer::place(Sphere &s) {
 	if (used.find( right) == used.end()) edge.insert( right);
 	if (used.find(   top) == used.end()) edge.insert(   top);
 	if (used.find(bottom) == used.end()) edge.insert(bottom);
-	int32_t range = gridSize - 2*s.radius;
-	s.center.x = x*gridSize-(gridSize/2)+(s.radius+rand()%range);
-	s.center.y = y*gridSize-(gridSize/2)+(s.radius+rand()%range);
+	int32_t range = gridSize - 2*e.radius;
+	e.center.x = x*gridSize-(gridSize/2)+(e.radius+rand()%range);
+	e.center.y = y*gridSize-(gridSize/2)+(e.radius+rand()%range);
 }
 
 void Placer::checkEdge(pair<int32_t, int32_t> p) {
@@ -43,8 +43,8 @@ void Placer::checkEdge(pair<int32_t, int32_t> p) {
 	edge.erase(p);
 }
 
-void Placer::remove(Sphere &s) {
-	int32_t x = round(s.center.x, gridSize), y = round(s.center.y, gridSize);
+void Placer::remove(Entity &e) {
+	int32_t x = round(e.center.x, gridSize), y = round(e.center.y, gridSize);
 	pair<int32_t, int32_t> p = make_pair(x, y);
 	used.erase(p);
 	edge.insert(p);

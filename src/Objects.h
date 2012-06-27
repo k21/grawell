@@ -9,13 +9,13 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Sphere.h"
+#include "Entity.h"
 
-class Planet : public Sphere {
+class Planet : public Entity {
 
 public:
 	Planet(const Point &pos_, Vector::T radius_, boost::int32_t mass_):
-		Sphere(pos_, radius_), mass(mass_) {}
+		Entity(pos_, radius_), mass(mass_) {}
 
 	void draw(sf::RenderTarget &target) const;
 
@@ -25,10 +25,10 @@ public:
 
 class Bullet;
 
-class Ship : public Sphere {
+class Ship : public Entity {
 
 public:
-	Ship(boost::uint16_t id_): Sphere(Point(0,0), 15*FIXED_ONE), id(id_),
+	Ship(boost::uint16_t id_): Entity(Point(0,0), 15*FIXED_ONE), id(id_),
 			direction(0), strength(20000),
 			active(false), alive(false), connected(false),
 			ready(false),
@@ -64,12 +64,12 @@ public:
 
 };
 
-class Bullet : public Sphere {
+class Bullet : public Entity {
 
 public:
 	Bullet(boost::uint16_t playerID_, const Point &pos,
-			const Vector &speed_):
-		Sphere(pos, 2*FIXED_ONE), playerID(playerID_), speed(speed_) {}
+			const Vector &speed_): Entity(pos, 2*FIXED_ONE),
+			playerID(playerID_), speed(speed_) {}
 
 	bool update(const std::vector<Planet> &planets, std::vector<Ship> &ships,
 			std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits);
