@@ -17,7 +17,8 @@ Game::Game(const char *serverAddress, uint16_t port):
 		screen(0), view(), clock(), universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0), lastUpdate(0),
 		moveDown(0), moveRight(0), zoom(0),
-		moveDownDelta(0), moveRightDelta(0), zoomDelta(0) {
+		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
+		keepPlanets(), keepBullets() {
 	VideoMode mode(800, 600);
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", Style::Close, settings);
@@ -135,6 +136,7 @@ void Game::handleMessage(const Message &m) {
 				s.inGame = false;
 				s.alive = false;
 			}
+			keepPlanets.clear(); keepBullets.clear();
 			break;
 		case Message::SHIP_INFO:
 			{
@@ -151,6 +153,7 @@ void Game::handleMessage(const Message &m) {
 				p.center.y = m.y();
 				p.radius = m.size();
 				p.mass = m.mass();
+				keepPlanets.insert(m.id());
 			}
 			break;
 		case Message::BULLET_INFO:
@@ -159,6 +162,7 @@ void Game::handleMessage(const Message &m) {
 				b.playerID = m.owner();
 				b.center.x = m.x(); b.center.y = m.y();
 				b.speed.x = m.speedX(); b.speed.y = m.speedY();
+				keepBullets.insert(m.id());
 			}
 			break;
 		case Message::PLAYER_INFO:
@@ -174,6 +178,16 @@ void Game::handleMessage(const Message &m) {
 			//TODO
 			break;
 		case Message::NEW_ROUND:
+			for (Planet &p : universe.planets) {
+				if (p.active() && keepPlanets.find(p.id()) == keepPlanets.end()) {
+					universe.planets.free(p);
+				}
+			}
+			for (Bullet &b : universe.bullets) {
+				if (b.active() && keepBullets.find(b.id()) == keepBullets.end()) {
+					universe.bullets.free(b);
+				}
+			}
 			state = SELECT_ACTION;
 			break;
 		case Message::PLAYER_READY:

@@ -1,6 +1,8 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include <set>
+
 #include <boost/cstdint.hpp>
 
 #include <SFML/Graphics.hpp>
@@ -43,6 +45,7 @@ private:
 	double lastUpdate;
 	double moveDown, moveRight, zoom;
 	boost::int8_t moveDownDelta, moveRightDelta, zoomDelta;
+	std::set<uint16_t> keepPlanets, keepBullets;
 
 };
 
