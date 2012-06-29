@@ -225,7 +225,10 @@ void Game::logic() {
 		while (lastUpdate < now) {
 			universe.update(hits);
 			for (pair<uint16_t, uint16_t> p : hits) {
-				if (p.first != Message::NO_PLAYER) ++universe.ships[p.first].score;
+				if (p.first != Message::NO_PLAYER) {
+					if (p.first == p.second) --universe.ships[p.first].score;
+					else ++universe.ships[p.first].score;
+				}
 				universe.ships[p.second].alive = false;
 			}
 			hits.clear();

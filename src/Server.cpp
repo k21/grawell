@@ -47,7 +47,10 @@ void Server::changeState() {
 		}
 		for (pair<uint16_t, uint16_t> p : hits) {
 			uint16_t from = p.first, to = p.second;
-			if (from != Message::NO_PLAYER) ++universe.ships[from].score;
+			if (from != Message::NO_PLAYER) {
+				if (from == to) --universe.ships[from].score;
+				else ++universe.ships[from].score;
+			}
 			universe.ships[to].alive = false;
 			placer.remove(universe.ships[to]);
 		}
