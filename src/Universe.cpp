@@ -7,10 +7,15 @@ Universe::Universe():
 		settings(), planets(), ships(), bullets() {}
 
 void Universe::update(list<pair<uint16_t, uint16_t>> &hits) {
-	auto it = bullets.begin();
-	while (it != bullets.end()) {
-		if (it->update(planets, ships, hits)) {
-			it = bullets.erase(it);
-		} else ++it;
+	vector<size_t> toErase;
+	for (Bullet &b : bullets) {
+		if (b.active()) {
+			if (b.update(planets, ships, hits)) {
+				toErase.push_back(b.id());
+			}
+		}
+	}
+	for (size_t i : toErase) {
+		bullets.free(bullets[i]);
 	}
 }

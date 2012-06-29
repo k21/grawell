@@ -27,7 +27,6 @@ private:
 	void handleMessage(const Message &m);
 	void handleKey(sf::Key::Code code, bool down);
 	void shoot();
-	void allocShips(size_t n);
 
 	sf::RenderWindow *screen;
 	sf::View view;

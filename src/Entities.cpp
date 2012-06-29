@@ -45,11 +45,12 @@ void Bullet::draw(RenderTarget &target) const {
 	}
 }
 
-Bullet Ship::shoot() const {
+void Ship::shoot(EntityManager<Bullet> &bullets) const {
 	Vector d = Vector::polar(direction, radius+2*FIXED_ONE);
 	Point pos = center + d;
 	Vector speed = Vector::polar(direction, 50*FIXED_ONE);
-	return Bullet(id, pos, speed);
+	Bullet &b = bullets.alloc();
+	b.playerID = id(); b.center = pos; b.speed = speed;
 }
 
 static Vector acceleration(const Point &pos, const Planet &pl) {
@@ -60,7 +61,7 @@ static Vector acceleration(const Point &pos, const Planet &pl) {
 	return v;
 }
 
-static Vector acceleration(const Point &pos, const vector<Planet> &planets) {
+static Vector acceleration(const Point &pos, EntityManager<Planet> &planets) {
 	Vector v;
 	for (size_t i = 0; i < planets.size(); ++i) {
 		v += acceleration(pos, planets[i]);
@@ -68,8 +69,8 @@ static Vector acceleration(const Point &pos, const vector<Planet> &planets) {
 	return v;
 }
 
-bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
-		list<pair<uint16_t, uint16_t>> &hits) {
+bool Bullet::update(EntityManager<Planet> &planets,
+		EntityManager<Ship> &ships, list<pair<uint16_t, uint16_t>> &hits) {
 #define SPEED_TO_POS(a) ((a)/(1<<8))
 	Vector kv1 = acceleration(center, planets);
 	Vector kr1 = SPEED_TO_POS(speed);
@@ -85,13 +86,12 @@ bool Bullet::update(const vector<Planet> &planets, vector<Ship> &ships,
 	if (trail.empty() || (center-trail.back()).size() > 6*FIXED_ONE) {
 		trail.push_back(center);
 	}
-	for (size_t i = 0; i < planets.size(); ++i) {
-		if (planets[i].intersects(center)) return true;
+	for (Planet &p : planets) {
+		if (p.active() && p.intersects(center)) return true;
 	}
-	for (size_t i = 0; i < ships.size(); ++i) {
-		if (!ships[i].alive) continue;
-		if (ships[i].intersects(center)) {
-			hits.push_back(make_pair(playerID, (uint16_t)i));
+	for (Ship &s : ships) {
+		if (s.alive && s.intersects(center)) {
+			hits.push_back(make_pair(playerID, s.id()));
 			return true;
 		}
 	}

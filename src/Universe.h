@@ -18,9 +18,9 @@ public:
 	void update(std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits);
 
 	Settings settings;
-	std::vector<Planet> planets;
-	std::vector<Ship>   ships;
-	std::list<Bullet>   bullets;
+	EntityManager<Planet> planets;
+	EntityManager<Ship>   ships;
+	EntityManager<Bullet> bullets;
 
 };
 

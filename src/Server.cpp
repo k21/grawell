@@ -6,40 +6,18 @@ using namespace std;
 using namespace boost;
 using namespace sf;
 
-uint16_t Server::allocID() {
-	uint16_t res;
-	if (!freeIDs.empty()) {
-		auto it = freeIDs.begin();
-		res = *it;
-		freeIDs.erase(it);
-	} else {
-		res = cntIDs;
-		++cntIDs;
-		Ship nShip = Ship(res);
-		universe.ships.push_back(nShip);
-	}
-	return res;
-}
-
-void Server::freeID(uint16_t id) {
+void Server::removeShip(uint16_t id) {
 	for (Bullet &b : universe.bullets) {
 		if (b.playerID == id) b.playerID = Message::NO_PLAYER;
 	}
 	Ship &s = universe.ships[id];
 	if (s.alive) placer.remove(s);
-	freeIDs.insert(id);
-	s = Ship(id);
-	auto it = freeIDs.end();
-	while ((it = freeIDs.find((uint16_t)(cntIDs-1))) != freeIDs.end()) {
-		freeIDs.erase(it);
-		--cntIDs;
-		universe.ships.pop_back();
-	}
+	universe.ships.free(s);
 }
 
 void Server::accept(ClientInfo &client, const Message &req,
 		vector<Message> &toSend) {
-	uint16_t id = allocID();
+	uint16_t id = universe.ships.alloc().id();
 	client.id = id;
 	client.active = true;
 	universe.ships[id].name = req.text;
@@ -53,10 +31,10 @@ void Server::changeState() {
 	if (state == SELECT_ACTION) {
 		vector<Message> toSend;
 		for (Ship &s : universe.ships) {
-			if (s.active && s.connected && s.ready) {
-				Message m = Message::actionInfo(s.id, s.direction, s.strength);
+			if (s.inGame && s.connected && s.ready) {
+				Message m = Message::actionInfo(s.id(), s.direction, s.strength);
 				toSend.push_back(m);
-				universe.bullets.push_back(s.shoot());
+				s.shoot(universe.bullets);
 			}
 		}
 		Message m = Message::actionInfo(Message::NO_PLAYER, 0, 0);
@@ -76,12 +54,12 @@ void Server::changeState() {
 		state = ROUND;
 	} else {
 		for (Ship &s : universe.ships) {
-			if (s.active && !s.connected) {
-				freeID(s.id);
-			} else if (!s.active && s.connected) {
-				s.active = true;
+			if (s.inGame && !s.connected) {
+				removeShip(s.id());
+			} else if (!s.inGame && s.connected) {
+				s.inGame = true;
 			}
-			if (s.active && !s.alive) {
+			if (s.inGame && !s.alive) {
 				placer.place(s);
 				s.alive = true;
 			}
@@ -89,30 +67,32 @@ void Server::changeState() {
 		vector<Message> toSend;
 		toSend.push_back(Message::gameSettings());
 		for (Ship &s : universe.ships) {
-			if (s.active) {
+			if (s.inGame) {
 				toSend.push_back(Message::playerInfo(
-						s.id, Message::CONNECTED, s.name));
+						s.id(), Message::CONNECTED, s.name));
 			}
 		}
 		for (Ship &s : universe.ships) {
-			if (s.active) {
-				toSend.push_back(Message::scoreInfo(s.id, s.score));
+			if (s.inGame) {
+				toSend.push_back(Message::scoreInfo(s.id(), s.score));
 			}
 		}
-		uint16_t pi = 0;
 		for (Planet &p : universe.planets) {
-			toSend.push_back(Message::planetInfo(
-					pi, p.center.x, p.center.y, p.radius, p.mass));
-			++pi;
+			if (p.active()) {
+				toSend.push_back(Message::planetInfo(
+						p.id(), p.center.x, p.center.y, p.radius, p.mass));
+			}
 		}
 		for (Ship &s : universe.ships) {
-			if (s.active) {
-				toSend.push_back(Message::shipInfo(s.id, s.center.x, s.center.y));
+			if (s.inGame) {
+				toSend.push_back(Message::shipInfo(s.id(), s.center.x, s.center.y));
 			}
 		}
 		for (Bullet &b : universe.bullets) {
-			toSend.push_back(Message::bulletInfo(b.playerID,
-					b.center.x, b.center.y, b.speed.x, b.speed.y));
+			if (b.active()) {
+				toSend.push_back(Message::bulletInfo(b.playerID,
+						b.center.x, b.center.y, b.speed.x, b.speed.y));
+			}
 		}
 		toSend.push_back(Message::newRound(0));
 		sendToAll(toSend);
@@ -121,13 +101,13 @@ void Server::changeState() {
 	waitingForCnt = 0;
 	for (Ship &s : universe.ships) {
 		s.ready = false;
-		if (s.connected && s.active) ++waitingForCnt;
+		if (s.connected && s.inGame) ++waitingForCnt;
 	}
 }
 
 void Server::sendToAll(const vector<Message> &m) {
 	for (ClientInfo *c : clients) {
-		if (c->active && universe.ships[c->id].active) c->encoder.encode(m);
+		if (c->active && universe.ships[c->id].inGame) c->encoder.encode(m);
 	}
 }
 
@@ -179,8 +159,9 @@ void Server::Run() {
 	SocketTCP clientSocket;
 	for (size_t i = 0; i < 10; ++i) {
 		int32_t size = (uint32_t)(rand()%60+10)*FIXED_ONE;
-		universe.planets.push_back(Planet(Point(0,0),size,256000000));
-		placer.place(universe.planets.back());
+		Planet &p = universe.planets.alloc();
+		p.radius = size; p.mass = 256000000;
+		placer.place(p);
 	}
 	while (!exit_) {
 		Socket::Status status = serverSocket.Accept(clientSocket, &address);
@@ -234,7 +215,7 @@ void Server::Run() {
 			}
 			if (error) {
 				uint16_t id = client.id;
-				if (client.active && universe.ships[id].active) {
+				if (client.active && universe.ships[id].inGame) {
 					if (!universe.ships[id].ready) --waitingForCnt;
 					universe.ships[id].connected = false;
 					universe.ships[id].ready = true;

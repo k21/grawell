@@ -41,7 +41,7 @@ class Server : public sf::Thread {
 public:
 	Server(boost::uint16_t port_): clients(), port(port_), exit_(false),
 			serverSocket(), universe(), state(SELECT_ACTION),
-			checksum(0), freeIDs(), cntIDs(0), waitingForCnt(0),
+			checksum(0), waitingForCnt(0),
 			placer(200*FIXED_ONE) {}
 	Server(const Server &) = delete;
 	Server &operator = (const Server &) = delete;
@@ -64,8 +64,7 @@ private:
 	boost::int8_t handleMessage(ClientInfo &client, const Message &m);
 	void accept(ClientInfo &client, const Message &m,
 			std::vector<Message> &toSend);
-	boost::uint16_t allocID();
-	void freeID(boost::uint16_t id);
+	void removeShip(boost::uint16_t id);
 	void changeState();
 	void sendToAll(const std::vector<Message> &m);
 
@@ -78,8 +77,6 @@ private:
 		SELECT_ACTION, ROUND
 	} state;
 	boost::uint32_t checksum;
-	std::set<boost::uint16_t> freeIDs;
-	boost::uint16_t cntIDs;
 	size_t waitingForCnt;
 	Placer placer;
 

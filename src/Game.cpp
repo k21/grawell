@@ -115,12 +115,6 @@ void Game::input() {
 	}
 }
 
-void Game::allocShips(size_t n) {
-	while (universe.ships.size() < n) {
-		universe.ships.push_back(Ship((uint16_t)universe.ships.size()));
-	}
-}
-
 void Game::handleMessage(const Message &m) {
 	LOG(DEBUG) << "Client received packet type " << (uint16_t)m.type();
 	switch (m.type()) {
@@ -131,15 +125,14 @@ void Game::handleMessage(const Message &m) {
 				return;
 			}
 			id = m.id();
-			allocShips(id+1);
 			universe.ships[id].name = "name";
-			universe.ships[id].active = true;
+			universe.ships[id].inGame = true;
 			universe.ships[id].ready = true;
 			state = WAITING;
 			break;
 		case Message::GAME_SETTINGS:
 			for (Ship &s : universe.ships) {
-				s.active = false;
+				s.inGame = false;
 				s.alive = false;
 			}
 			universe.planets.clear();
@@ -147,7 +140,6 @@ void Game::handleMessage(const Message &m) {
 			break;
 		case Message::SHIP_INFO:
 			{
-				allocShips(m.id()+1);
 				Ship &s = universe.ships[m.id()];
 				s.center.x = m.x();
 				s.center.y = m.y();
@@ -156,9 +148,6 @@ void Game::handleMessage(const Message &m) {
 			break;
 		case Message::PLANET_INFO:
 			{
-				while (universe.planets.size() < (size_t)(m.id()+1)) {
-					universe.planets.push_back(Planet(Point(0,0), 0, 0));
-				}
 				Planet &p = universe.planets[m.id()];
 				p.center.x = m.x();
 				p.center.y = m.y();
@@ -167,15 +156,12 @@ void Game::handleMessage(const Message &m) {
 			}
 			break;
 		case Message::BULLET_INFO:
-			universe.bullets.push_back(Bullet(m.id(),
-					Point(m.x(), m.y()), Vector(m.speedX(), m.speedY())));
 			break;
 		case Message::PLAYER_INFO:
 			if (m.state() == Message::CONNECTED) {
-				allocShips(m.id()+1);
 				Ship &s = universe.ships[m.id()];
 				s.name = m.text;
-				s.active = true;
+				s.inGame = true;
 			} else {
 				//TODO
 			}
@@ -197,7 +183,7 @@ void Game::handleMessage(const Message &m) {
 				Ship &s = universe.ships[m.id()];
 				s.direction = m.direction();
 				s.strength = m.strength();
-				universe.bullets.push_back(universe.ships[m.id()].shoot());
+				universe.ships[m.id()].shoot(universe.bullets);
 			}
 			break;
 	}
@@ -247,13 +233,13 @@ void Game::display() {
 	view.Zoom((float)exp(zoom/250));
 	screen->Clear();
 	for (Planet &p : universe.planets) {
-		p.draw(*screen);
+		if (p.active()) p.draw(*screen);
 	}
 	for (Ship &s : universe.ships) {
 		if (s.alive) s.draw(*screen);
 	}
 	for (Bullet &b : universe.bullets) {
-		b.draw(*screen);
+		if (b.active()) b.draw(*screen);
 	}
 	screen->Display();
 }

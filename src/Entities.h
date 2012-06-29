@@ -9,17 +9,21 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "EntityManager.h"
+
 #include "Entity.h"
 
 class Planet : public Entity {
 
 public:
-	Planet(const Point &pos_, Vector::T radius_, boost::int32_t mass_):
-		Entity(pos_, radius_), mass(mass_) {}
-
 	void draw(sf::RenderTarget &target) const;
 
 	boost::int32_t mass;
+
+protected:
+	Planet(boost::uint16_t id_): Entity(id_), mass(0) {}
+
+	friend class EntityManager<Planet>;
 
 };
 
@@ -28,13 +32,7 @@ class Bullet;
 class Ship : public Entity {
 
 public:
-	Ship(boost::uint16_t id_): Entity(Point(0,0), 15*FIXED_ONE), id(id_),
-			direction(0), strength(20000),
-			active(false), alive(false), connected(false),
-			ready(false),
-			name(), score(0) {}
-
-	Bullet shoot() const;
+	void shoot(EntityManager<Bullet> &bullets) const;
 	void draw(sf::RenderTarget &target) const;
 	void rotate(boost::int32_t d) {
 		if (d == 0) return;
@@ -52,26 +50,31 @@ public:
 		}
 	}
 
-	boost::uint16_t id;
-
 	boost::uint16_t direction;
 	boost::uint32_t strength;
 
-	bool active, alive, connected;
+	bool inGame, alive, connected;
 	bool ready;
 	std::string name;
 	boost::int32_t score;
+
+protected:
+	Ship(boost::uint16_t id_): Entity(id_),
+			direction(0), strength(20000),
+			inGame(false), alive(false), connected(false),
+			ready(false),
+			name(), score(0) {
+		radius = 15*FIXED_ONE;
+	}
+
+	friend class EntityManager<Ship>;
 
 };
 
 class Bullet : public Entity {
 
 public:
-	Bullet(boost::uint16_t playerID_, const Point &pos,
-			const Vector &speed_): Entity(pos, 2*FIXED_ONE),
-			playerID(playerID_), speed(speed_), trail() {}
-
-	bool update(const std::vector<Planet> &planets, std::vector<Ship> &ships,
+	bool update(EntityManager<Planet> &planets, EntityManager<Ship> &ships,
 			std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits);
 	void draw(sf::RenderTarget &target) const;
 
@@ -79,6 +82,13 @@ public:
 	Vector speed;
 
 	std::vector<Point> trail;
+
+protected:
+	Bullet(boost::uint16_t id_): Entity(id_), playerID(65535), speed(), trail() {
+		radius = 2*FIXED_ONE;
+	}
+
+	friend class EntityManager<Bullet>;
 
 };
 
