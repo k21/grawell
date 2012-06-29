@@ -13,15 +13,34 @@ void Planet::draw(RenderTarget &target) const {
 	target.Draw(circle);
 }
 
+static Color color(uint16_t id) {
+	float p = fmodf(2.2f*id,6);
+	int8_t n = (int8_t)p;
+	int16_t q1 = (int16_t)((p-n)*256);
+	int16_t q2 = (int16_t)(256-q1);
+	int16_t r, g, b;
+	switch (n) {
+		case 0: r = 255; g =  q1; b =   0; break;
+		case 1: r =  q2; g = 255; b =   0; break;
+		case 2: r =   0; g = 255; b =  q1; break;
+		case 3: r =   0; g =  q2; b = 255; break;
+		case 4: r =  q1; g =   0; b = 255; break;
+		case 5: r = 255; g =   0; b =  q2; break;
+	}
+	r = max((int16_t)0, min((int16_t)255, r));
+	g = max((int16_t)0, min((int16_t)255, g));
+	b = max((int16_t)0, min((int16_t)255, b));
+	return Color((Uint8)r, (Uint8)g, (Uint8)b);
+}
+
 void Ship::draw(RenderTarget &target) const {
-	Color transparent(0, 0, 0, 0), blue(0, 0, 255),
-			whiteTransparent(255, 255, 255, 128);
+	Color whiteTransparent(255, 255, 255, 128);
+	Color c = color(id());
 	Shape circle = Shape::Circle(
-			(float)center.x, (float)center.y, (float)radius,
-			transparent, FIXED_ONE, blue);
-	Vector d = center + Vector::polar(direction, radius);
+			(float)center.x, (float)center.y, (float)radius, c);
+	Vector d = center + Vector::polar(direction, radius*2);
 	Shape line = Shape::Line((float)center.x, (float)center.y,
-			(float)d.x, (float)d.y, FIXED_ONE, blue);
+			(float)d.x, (float)d.y, FIXED_ONE, c);
 	target.Draw(circle);
 	target.Draw(line);
 	stringstream ss;
@@ -34,13 +53,18 @@ void Ship::draw(RenderTarget &target) const {
 }
 
 void Bullet::draw(RenderTarget &target) const {
-	Color transparent(0, 0, 0, 0), red(255, 0, 0), yellow(255, 255, 0);
+	Color c = color(playerID);
 	Shape circle = Shape::Circle(
-			(float)center.x, (float)center.y, (float)radius, red);
+			(float)center.x, (float)center.y, (float)radius, c);
 	target.Draw(circle);
 	for (size_t i = 1; i < trail.size(); ++i) {
 		Shape line = Shape::Line((float)trail[i-1].x, (float)trail[i-1].y,
-				(float)trail[i].x, (float)trail[i].y, FIXED_ONE, yellow);
+				(float)trail[i].x, (float)trail[i].y, FIXED_ONE, c);
+		target.Draw(line);
+	}
+	if (!trail.empty()) {
+		Shape line = Shape::Line((float)trail.back().x, (float)trail.back().y,
+				(float)center.x, (float)center.y, FIXED_ONE, c);
 		target.Draw(line);
 	}
 }
