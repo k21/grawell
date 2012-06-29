@@ -135,8 +135,6 @@ void Game::handleMessage(const Message &m) {
 				s.inGame = false;
 				s.alive = false;
 			}
-			universe.planets.clear();
-			universe.bullets.clear();
 			break;
 		case Message::SHIP_INFO:
 			{
@@ -156,6 +154,12 @@ void Game::handleMessage(const Message &m) {
 			}
 			break;
 		case Message::BULLET_INFO:
+			{
+				Bullet &b = universe.bullets[m.id()];
+				b.playerID = m.owner();
+				b.center.x = m.x(); b.center.y = m.y();
+				b.speed.x = m.speedX(); b.speed.y = m.speedY();
+			}
 			break;
 		case Message::PLAYER_INFO:
 			if (m.state() == Message::CONNECTED) {

@@ -40,6 +40,7 @@ public:
 		ACCEPTED,
 		STATE,
 		ID,
+		OWNER,
 		X, Y,
 		SPEEDX, SPEEDY,
 		SIZE, MASS,
@@ -63,6 +64,7 @@ public:
 	bool      accepted() const { return (bool)     data[ACCEPTED ]; }
 	uint8_t      state() const { return (uint8_t)  data[STATE    ]; }
 	uint16_t        id() const { return (uint16_t) data[ID       ]; }
+	uint16_t     owner() const { return (uint16_t) data[OWNER    ]; }
 	int32_t          x() const { return (int32_t)  data[X        ]; }
 	int32_t          y() const { return (int32_t)  data[Y        ]; }
 	int32_t     speedX() const { return (int32_t)  data[SPEEDX   ]; }
@@ -80,6 +82,7 @@ public:
 	void  accepted(bool     v) { data[ACCEPTED ] = v; }
 	void     state(uint8_t  v) { data[STATE    ] = v; }
 	void        id(uint16_t v) { data[ID       ] = v; }
+	void     owner(uint16_t v) { data[OWNER    ] = v; }
 	void         x(int32_t  v) { data[X        ] = v; }
 	void         y(int32_t  v) { data[Y        ] = v; }
 	void    speedX(int32_t  v) { data[SPEEDX   ] = v; }
@@ -141,10 +144,11 @@ public:
 		m.id(id); m.score(score);
 		return m;
 	}
-	static Message bulletInfo(uint16_t owner, int32_t x, int32_t y,
+	static Message bulletInfo(uint16_t id, uint16_t owner, int32_t x, int32_t y,
 			int32_t speedX, int32_t speedY) {
 		Message m; m.type(BULLET_INFO);
-		m.id(owner); m.x(x); m.y(y); m.speedX(speedX); m.speedY(speedY);
+		m.id(id); m.owner(owner); m.x(x); m.y(y);
+		m.speedX(speedX); m.speedY(speedY);
 		return m;
 	}
 	static Message newRound(uint32_t round) {

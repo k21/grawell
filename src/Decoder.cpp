@@ -82,12 +82,13 @@ size_t Decoder::decodeMessage(char *buffer, size_t len) {
 			m->score(get(buffer+2, 4));
 			break;
 		case Message::BULLET_INFO:
-			size = 18; if (len < size) FAIL();
+			size = 20; if (len < size) FAIL();
 			m->id((uint16_t)get(buffer+0, 2));
-			m->x(get(buffer+2, 4));
-			m->y(get(buffer+6, 4));
-			m->speedX(get(buffer+10, 4));
-			m->speedY(get(buffer+14, 4));
+			m->owner((uint16_t)get(buffer+2, 2));
+			m->x(get(buffer+4, 4));
+			m->y(get(buffer+8, 4));
+			m->speedX(get(buffer+12, 4));
+			m->speedY(get(buffer+16, 4));
 			break;
 		case Message::NEW_ROUND:
 			size = 4; if (len < size) FAIL();

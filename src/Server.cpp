@@ -90,7 +90,7 @@ void Server::changeState() {
 		}
 		for (Bullet &b : universe.bullets) {
 			if (b.active()) {
-				toSend.push_back(Message::bulletInfo(b.playerID,
+				toSend.push_back(Message::bulletInfo(b.id(), b.playerID,
 						b.center.x, b.center.y, b.speed.x, b.speed.y));
 			}
 		}
