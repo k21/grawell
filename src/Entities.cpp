@@ -70,7 +70,8 @@ static Vector acceleration(const Point &pos, EntityManager<Planet> &planets) {
 }
 
 bool Bullet::update(EntityManager<Planet> &planets,
-		EntityManager<Ship> &ships, list<pair<uint16_t, uint16_t>> &hits) {
+		EntityManager<Ship> &ships, list<pair<uint16_t, uint16_t>> &hits,
+		bool updateTrails) {
 #define SPEED_TO_POS(a) ((a)/(1<<8))
 	Vector kv1 = acceleration(center, planets);
 	Vector kr1 = SPEED_TO_POS(speed);
@@ -83,8 +84,10 @@ bool Bullet::update(EntityManager<Planet> &planets,
 	speed  += (kv1 + 2*kv2 + 2*kv3 + kv4)/6;
 	center += (kr1 + 2*kr2 + 2*kr3 + kr4)/6;
 #undef SPEED_TO_POS
-	if (trail.empty() || (center-trail.back()).size() > 6*FIXED_ONE) {
-		trail.push_back(center);
+	if (updateTrails) {
+		if (trail.empty() || (center-trail.back()).size() > 6*FIXED_ONE) {
+			trail.push_back(center);
+		}
 	}
 	for (Planet &p : planets) {
 		if (p.active() && p.intersects(center)) return true;

@@ -226,7 +226,7 @@ void Game::logic() {
 		double now = clock.GetElapsedTime();
 		list<pair<uint16_t, uint16_t>> hits;
 		while (lastUpdate < now) {
-			universe.update(hits);
+			universe.update(hits, true);
 			for (pair<uint16_t, uint16_t> p : hits) {
 				if (p.first != Message::NO_PLAYER) {
 					if (p.first == p.second) --universe.ships[p.first].score;

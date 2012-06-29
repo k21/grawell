@@ -15,7 +15,8 @@ class Universe {
 public:
 	Universe();
 
-	void update(std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits);
+	void update(std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits,
+			bool updateTrails);
 
 	Settings settings;
 	EntityManager<Planet> planets;
