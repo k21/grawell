@@ -175,7 +175,10 @@ void Game::handleMessage(const Message &m) {
 			}
 			break;
 		case Message::SCORE_INFO:
-			//TODO
+			{
+				Ship &s = universe.ships[m.id()];
+				s.score = m.score();
+			}
 			break;
 		case Message::NEW_ROUND:
 			for (Planet &p : universe.planets) {
