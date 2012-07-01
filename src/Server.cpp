@@ -8,7 +8,7 @@ using namespace sf;
 
 void Server::removeShip(uint16_t id) {
 	for (Bullet &b : universe.bullets) {
-		if (b.playerID == id) b.playerID = Message::NO_PLAYER;
+		if (b.owner() == id) b.owner(Message::NO_PLAYER);
 	}
 	Ship &s = universe.ships[id];
 	if (s.alive) placer.remove(s);
@@ -93,7 +93,7 @@ void Server::changeState() {
 		}
 		for (Bullet &b : universe.bullets) {
 			if (b.active()) {
-				toSend.push_back(Message::bulletInfo(b.id(), b.playerID,
+				toSend.push_back(Message::bulletInfo(b.id(), b.owner(),
 						b.center.x, b.center.y, b.speed.x, b.speed.y));
 			}
 		}

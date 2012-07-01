@@ -159,7 +159,7 @@ void Game::handleMessage(const Message &m) {
 		case Message::BULLET_INFO:
 			{
 				Bullet &b = universe.bullets[m.id()];
-				b.playerID = m.owner();
+				b.owner(m.owner());
 				b.center.x = m.x(); b.center.y = m.y();
 				b.speed.x = m.speedX(); b.speed.y = m.speedY();
 				keepBullets.insert(m.id());

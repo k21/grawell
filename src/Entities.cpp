@@ -53,7 +53,7 @@ void Ship::draw(RenderTarget &target) const {
 }
 
 void Bullet::draw(RenderTarget &target) const {
-	Color c = color(playerID);
+	Color c = color(myOwner);
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius, c);
 	target.Draw(circle);
@@ -74,7 +74,7 @@ void Ship::shoot(EntityManager<Bullet> &bullets) const {
 	Point pos = center + d;
 	Vector speed = Vector::polar(direction, 50*FIXED_ONE);
 	Bullet &b = bullets.alloc();
-	b.playerID = id(); b.center = pos; b.speed = speed;
+	b.owner(id()); b.center = pos; b.speed = speed;
 }
 
 static Vector acceleration(const Point &pos, const Planet &pl) {
@@ -118,7 +118,7 @@ bool Bullet::update(EntityManager<Planet> &planets,
 	}
 	for (Ship &s : ships) {
 		if (s.alive && s.intersects(center)) {
-			hits.push_back(make_pair(playerID, s.id()));
+			hits.push_back(make_pair(myOwner, s.id()));
 			return true;
 		}
 	}

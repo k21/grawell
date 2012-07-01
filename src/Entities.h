@@ -79,15 +79,22 @@ public:
 			bool updateTrails);
 	void draw(sf::RenderTarget &target) const;
 
-	boost::uint16_t playerID;
+	boost::uint16_t owner() const { return myOwner; }
+	void owner(boost::uint16_t pid) {
+		myOwner = pid;
+	}
+
 	Vector speed;
 
 	std::vector<Point> trail;
 
 protected:
-	Bullet(boost::uint16_t id_): Entity(id_), playerID(65535), speed(), trail() {
+	Bullet(boost::uint16_t id_): Entity(id_), speed(),
+			trail(), myOwner(65535) {
 		radius = 2*FIXED_ONE;
 	}
+
+	boost::uint16_t myOwner;
 
 	friend class EntityManager<Bullet>;
 
