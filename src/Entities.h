@@ -45,7 +45,7 @@ public:
 		if (d < 0) {
 			d = -d;
 			if (direction < d) {
-				direction = (boost::uint16_t)(36000 - d);
+				direction = (boost::uint16_t)(36000 - d + direction);
 			} else direction = (boost::uint16_t)(direction - d);
 		}
 	}
