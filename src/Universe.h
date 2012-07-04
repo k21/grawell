@@ -7,8 +7,10 @@
 
 #include <boost/cstdint.hpp>
 
-#include "Entities.h"
+#include "Bullet.h"
+#include "Planet.h"
 #include "Settings.h"
+#include "Ship.h"
 #include "Trail.h"
 
 class Universe {
