@@ -8,6 +8,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Universe.h"
+#include "Trail.h"
 
 class Client;
 class Message;
@@ -46,6 +47,7 @@ private:
 	double moveDown, moveRight, zoom;
 	boost::int8_t moveDownDelta, moveRightDelta, zoomDelta;
 	std::set<uint16_t> keepPlanets, keepBullets;
+	std::vector<Trail> trails;
 
 };
 

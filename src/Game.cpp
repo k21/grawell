@@ -18,7 +18,7 @@ Game::Game(const char *serverAddress, uint16_t port):
 		state(NOTHING), roundCntr(0), lastUpdate(0),
 		moveDown(0), moveRight(0), zoom(0),
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
-		keepPlanets(), keepBullets() {
+		keepPlanets(), keepBullets(), trails() {
 	VideoMode mode(800, 600);
 	WindowSettings settings(24, 8, 8);
 	screen = new RenderWindow(mode, "GraWell", Style::Close, settings);
@@ -226,7 +226,7 @@ void Game::logic() {
 		double now = clock.GetElapsedTime();
 		list<pair<uint16_t, uint16_t>> hits;
 		while (lastUpdate < now) {
-			universe.update(hits, true);
+			universe.update(hits, true, &trails);
 			for (pair<uint16_t, uint16_t> p : hits) {
 				if (p.first != Message::NO_PLAYER) {
 					if (p.first == p.second) --universe.ships[p.first].score;
@@ -261,6 +261,9 @@ void Game::display() {
 	}
 	for (Ship &s : universe.ships) {
 		if (s.alive) s.draw(*screen);
+	}
+	for (Trail &t : trails) {
+		t.draw(*screen);
 	}
 	for (Bullet &b : universe.bullets) {
 		if (b.active()) b.draw(*screen);

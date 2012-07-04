@@ -9,6 +9,7 @@
 
 #include "Entities.h"
 #include "Settings.h"
+#include "Trail.h"
 
 class Universe {
 
@@ -16,7 +17,7 @@ public:
 	Universe();
 
 	void update(std::list<std::pair<boost::uint16_t, boost::uint16_t>> &hits,
-			bool updateTrails);
+			bool updateTrails, std::vector<Trail> *trails);
 
 	Settings settings;
 	EntityManager<Planet> planets;

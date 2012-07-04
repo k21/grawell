@@ -13,7 +13,7 @@ void Planet::draw(RenderTarget &target) const {
 	target.Draw(circle);
 }
 
-static Color color(uint16_t id) {
+Color Ship::getColorByID(uint16_t id) {
 	float p = fmodf(2.2f*id,6);
 	int8_t n = (int8_t)p;
 	int16_t q1 = (int16_t)((p-n)*256);
@@ -35,7 +35,7 @@ static Color color(uint16_t id) {
 
 void Ship::draw(RenderTarget &target) const {
 	Color whiteTransparent(255, 255, 255, 128);
-	Color c = color(id());
+	Color c = getColorByID(id());
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius, c);
 	Vector d = center + Vector::polar(direction, radius*2);
@@ -53,20 +53,11 @@ void Ship::draw(RenderTarget &target) const {
 }
 
 void Bullet::draw(RenderTarget &target) const {
-	Color c = color(myOwner);
+	Color c = Ship::getColorByID(myOwner);
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius, c);
 	target.Draw(circle);
-	for (size_t i = 1; i < trail.size(); ++i) {
-		Shape line = Shape::Line((float)trail[i-1].x, (float)trail[i-1].y,
-				(float)trail[i].x, (float)trail[i].y, FIXED_ONE, c);
-		target.Draw(line);
-	}
-	if (!trail.empty()) {
-		Shape line = Shape::Line((float)trail.back().x, (float)trail.back().y,
-				(float)center.x, (float)center.y, FIXED_ONE, c);
-		target.Draw(line);
-	}
+	trail.draw(target);
 }
 
 void Ship::shoot(EntityManager<Bullet> &bullets) const {
@@ -109,9 +100,7 @@ bool Bullet::update(EntityManager<Planet> &planets,
 	center += (kr1 + 2*kr2 + 2*kr3 + kr4)/6;
 #undef SPEED_TO_POS
 	if (updateTrails) {
-		if (trail.empty() || (center-trail.back()).size() > 6*FIXED_ONE) {
-			trail.push_back(center);
-		}
+		trail.add(center);
 	}
 	for (Planet &p : planets) {
 		if (p.active() && p.intersects(center)) return true;

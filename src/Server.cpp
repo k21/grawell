@@ -42,7 +42,7 @@ void Server::changeState() {
 		sendToAll(toSend);
 		list<pair<uint16_t, uint16_t>> hits;
 		for (size_t i = 0; i < 8192; ++i) {
-			universe.update(hits, false);
+			universe.update(hits, false, 0);
 			if (universe.bullets.empty()) break;
 		}
 		for (pair<uint16_t, uint16_t> p : hits) {

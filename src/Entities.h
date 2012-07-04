@@ -10,6 +10,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "EntityManager.h"
+#include "Trail.h"
 
 #include "Entity.h"
 
@@ -50,6 +51,8 @@ public:
 		}
 	}
 
+	static sf::Color getColorByID(boost::uint16_t id);
+
 	boost::uint16_t direction;
 	boost::uint32_t strength;
 
@@ -82,15 +85,18 @@ public:
 	boost::uint16_t owner() const { return myOwner; }
 	void owner(boost::uint16_t pid) {
 		myOwner = pid;
+		sf::Color trailColor = Ship::getColorByID(pid);
+		trailColor.a = 96;
+		trail.setColor(trailColor);
 	}
 
 	Vector speed;
 
-	std::vector<Point> trail;
+	Trail trail;
 
 protected:
 	Bullet(boost::uint16_t id_): Entity(id_), speed(),
-			trail(), myOwner(65535) {
+			trail(1000, sf::Color(0,0,0,0)), myOwner(65535) {
 		radius = 2*FIXED_ONE;
 	}
 
