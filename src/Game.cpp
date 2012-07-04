@@ -20,7 +20,7 @@ Game::Game(const char *serverAddress, uint16_t port):
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
 		keepPlanets(), keepBullets(), trails() {
 	VideoMode mode(800, 600);
-	WindowSettings settings(24, 8, 8);
+	WindowSettings settings(24, 0, 2);
 	screen = new RenderWindow(mode, "GraWell", Style::Close, settings);
 	view.SetCenter(0, 0);
 	view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
