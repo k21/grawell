@@ -43,16 +43,17 @@ void Server::changeState() {
 		list<pair<uint16_t, uint16_t>> hits;
 		for (size_t i = 0; i < 8192; ++i) {
 			universe.update(hits, false, 0);
-			if (universe.bullets.empty()) break;
-		}
-		for (pair<uint16_t, uint16_t> p : hits) {
-			uint16_t from = p.first, to = p.second;
-			if (from != Message::NO_PLAYER) {
-				if (from == to) --universe.ships[from].score;
-				else ++universe.ships[from].score;
+			for (pair<uint16_t, uint16_t> p : hits) {
+				uint16_t from = p.first, to = p.second;
+				if (from != Message::NO_PLAYER) {
+					if (from == to) --universe.ships[from].score;
+					else ++universe.ships[from].score;
+				}
+				universe.ships[to].alive = false;
+				placer.remove(universe.ships[to]);
 			}
-			universe.ships[to].alive = false;
-			placer.remove(universe.ships[to]);
+			hits.clear();
+			if (universe.bullets.empty()) break;
 		}
 		state = ROUND;
 	} else {
