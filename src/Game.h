@@ -28,7 +28,7 @@ private:
 	void logic();
 	void display();
 	void handleMessage(const Message &m);
-	void handleKey(sf::Key::Code code, bool down);
+	void handleKey(sf::Event::KeyEvent code, bool down);
 	void shoot();
 
 	sf::RenderWindow *screen;

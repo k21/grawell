@@ -65,17 +65,26 @@ void Game::shoot() {
 	client->send(m);
 }
 
-void Game::handleKey(Key::Code code, bool pressed) {
-	switch (code) {
+static int32_t rotateAmount(bool control, bool shift) {
+	if (control && shift) return 5;
+	if (control) return 25;
+	if (shift) return 1000;
+	return 200;
+}
+
+void Game::handleKey(sf::Event::KeyEvent e, bool pressed) {
+	switch (e.Code) {
 		case Key::Escape: screen->Close(); break;
 		case Key::Left:
 			if (pressed && state == SELECT_ACTION) {
-				universe.ships[id].rotate(-200);
+				int32_t r = rotateAmount(e.Control, e.Shift);
+				universe.ships[id].rotate(-r);
 			}
 			break;
 		case Key::Right:
 			if (pressed && state == SELECT_ACTION) {
-				universe.ships[id].rotate(+200);
+				int32_t r = rotateAmount(e.Control, e.Shift);
+				universe.ships[id].rotate(+r);
 			}
 			break;
 		case Key::Space:
@@ -103,11 +112,11 @@ void Game::input() {
 				break;
 
 			case Event::KeyPressed:
-				handleKey(event.Key.Code, true);
+				handleKey(event.Key, true);
 				break;
 
 			case Event::KeyReleased:
-				handleKey(event.Key.Code, false);
+				handleKey(event.Key, false);
 				break;
 
 			default:
