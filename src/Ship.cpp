@@ -5,7 +5,6 @@
 #include "Ship.h"
 
 using namespace std;
-using namespace boost;
 using namespace sf;
 
 Color Ship::getColorByID(uint16_t id) {

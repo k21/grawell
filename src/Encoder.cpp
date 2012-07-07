@@ -1,7 +1,6 @@
 #include "Protocol.h"
 
 using namespace std;
-using namespace boost;
 
 Encoder::~Encoder() {
 	delete [] current;

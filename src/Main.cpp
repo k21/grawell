@@ -1,12 +1,10 @@
 #include <cstring>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include "Game.h"
 #include "Log.h"
 #include "Server.h"
-
-using namespace boost;
 
 static const char LOCALHOST_ADDRESS[] = "localhost";
 static const uint16_t DEFAULT_PORT = 4920;

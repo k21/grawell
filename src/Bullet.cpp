@@ -1,7 +1,6 @@
 #include "Bullet.h"
 
 using namespace std;
-using namespace boost;
 using namespace sf;
 
 void Bullet::draw(RenderTarget &target) const {

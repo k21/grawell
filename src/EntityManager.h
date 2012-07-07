@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include "Vector.h"
 
@@ -20,7 +20,7 @@ public:
 			freeIDs.erase(it);
 		} else {
 			size_t i = pool.size();
-			pool.push_back(T((boost::uint16_t)i));
+			pool.push_back(T((uint16_t)i));
 			res = &pool.back();
 		}
 		res->myActive = true;
@@ -37,7 +37,7 @@ public:
 	}
 	T &operator [] (size_t id) {
 		while (pool.size() < id+1) {
-			pool.push_back(T((boost::uint16_t)pool.size()));
+			pool.push_back(T((uint16_t)pool.size()));
 		}
 		pool[id].myActive = true;
 		return pool[id];
@@ -53,7 +53,7 @@ public:
 
 private:
 	std::vector<T> pool;
-	std::set<boost::uint16_t> freeIDs;
+	std::set<uint16_t> freeIDs;
 
 };
 

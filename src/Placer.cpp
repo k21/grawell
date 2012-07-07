@@ -5,7 +5,6 @@
 #include "Placer.h"
 
 using namespace std;
-using namespace boost;
 
 static int32_t round(int32_t x, int32_t gridSize) {
 	int32_t rx = x+gridSize/2;

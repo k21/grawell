@@ -1,7 +1,6 @@
 #include "Universe.h"
 
 using namespace std;
-using namespace boost;
 
 Universe::Universe():
 		settings(), planets(), ships(), bullets() {}

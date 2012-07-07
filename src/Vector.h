@@ -3,15 +3,15 @@
 
 #include <cmath>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
-static const boost::int32_t FIXED_ONE = 1<<16;
+static const int32_t FIXED_ONE = 1<<16;
 
 //TODO: handle overflow
 class Vector {
 
 public:
-	typedef boost::int32_t T;
+	typedef int32_t T;
 
 	Vector(): x(0), y(0) {}
 	Vector(T x_, T y_): x(x_), y(y_) {}
@@ -47,17 +47,17 @@ public:
 
 	inline T size() const {
 		//TODO: without doubles
-		return (T)sqrt((double)((boost::int64_t)x*x + (boost::int64_t)y*y));
+		return (T)sqrt((double)((int64_t)x*x + (int64_t)y*y));
 	}
 
 	inline void normalize(T targetSize) {
 		T s = size();
-		T nx = (T)((boost::int64_t)x*targetSize/s);
-		T ny = (T)((boost::int64_t)y*targetSize/s);
+		T nx = (T)((int64_t)x*targetSize/s);
+		T ny = (T)((int64_t)y*targetSize/s);
 		x = nx; y = ny;
 	}
 
-	static Vector polar(boost::uint16_t dir, T size_) {
+	static Vector polar(uint16_t dir, T size_) {
 		//TODO: without doubles
 		double d = dir/18000.0*M_PI;
 		return Vector((T)(cos(d)*size_), (T)(sin(d)*size_));

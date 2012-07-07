@@ -1,7 +1,6 @@
 #include "Protocol.h"
 
 using namespace std;
-using namespace boost;
 
 Decoder::~Decoder() {
 	delete current;

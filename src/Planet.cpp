@@ -1,7 +1,6 @@
 #include "Planet.h"
 
 using namespace std;
-using namespace boost;
 using namespace sf;
 
 void Planet::draw(RenderTarget &target) const {

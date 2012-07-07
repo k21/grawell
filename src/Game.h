@@ -3,7 +3,7 @@
 
 #include <set>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include <SFML/Graphics.hpp>
 
@@ -16,7 +16,7 @@ class Message;
 class Game {
 
 public:
-	Game(const char *serverAddress, boost::uint16_t port);
+	Game(const char *serverAddress, uint16_t port);
 	Game(const Game &) = delete;
 	Game &operator = (const Game &) = delete;
 	~Game();
@@ -35,17 +35,17 @@ private:
 	sf::View view;
 	sf::Clock clock;
 	Universe universe;
-	boost::uint16_t id;
+	uint16_t id;
 	Client *client;
 	enum {
 		NOTHING, REQUEST_SENT, WAITING,
 		SELECT_ACTION, SELECT_DONE,
 		ROUND, ROUND_DONE
 	} state;
-	boost::int32_t roundCntr;
+	int32_t roundCntr;
 	double pendingUpdates;
 	double moveDown, moveRight, zoom;
-	boost::int8_t moveDownDelta, moveRightDelta, zoomDelta;
+	int8_t moveDownDelta, moveRightDelta, zoomDelta;
 	std::set<uint16_t> keepPlanets, keepBullets;
 	std::vector<Trail> trails;
 

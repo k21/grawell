@@ -1,7 +1,7 @@
 #ifndef PLANET_H_
 #define PLANET_H_
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include <SFML/Graphics.hpp>
 
@@ -13,10 +13,10 @@ class Planet : public Entity {
 public:
 	void draw(sf::RenderTarget &target) const;
 
-	boost::int32_t mass;
+	int32_t mass;
 
 protected:
-	Planet(boost::uint16_t id_): Entity(id_), mass(0) {}
+	Planet(uint16_t id_): Entity(id_), mass(0) {}
 
 	friend class EntityManager<Planet>;
 

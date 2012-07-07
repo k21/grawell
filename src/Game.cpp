@@ -10,7 +10,6 @@
 #include "Game.h"
 
 using namespace std;
-using namespace boost;
 using namespace sf;
 
 Game::Game(const char *serverAddress, uint16_t port):

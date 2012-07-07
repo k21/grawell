@@ -4,7 +4,7 @@
 #include <queue>
 #include <string>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
@@ -15,7 +15,7 @@
 class Client : public sf::Thread {
 
 public:
-	Client(const sf::IPAddress &address_, boost::int16_t port_):
+	Client(const sf::IPAddress &address_, int16_t port_):
 		address(address_), port(port_), socket(), exit_(false),
 		mutexIn(), mutexOut(), incoming(), outgoing(), encoder(), decoder() {}
 	Client(const Client &) = delete;
@@ -33,11 +33,11 @@ public:
 	bool recv(Message &message);
 
 private:
-	boost::int8_t sendPending();
-	boost::int8_t recvPending();
+	int8_t sendPending();
+	int8_t recvPending();
 
 	sf::IPAddress address;
-	boost::uint16_t port;
+	uint16_t port;
 	sf::SocketTCP socket;
 	volatile bool exit_;
 	sf::Mutex mutexIn, mutexOut;

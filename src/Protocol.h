@@ -7,11 +7,11 @@
 #include <utility>
 #include <vector>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 static const size_t MAX_PACKET_SIZE = 1024;
-static const boost::uint16_t PROTOCOL_VERSION_DEV = 65535;
-static const boost::uint16_t PROTOCOL_VERSION = PROTOCOL_VERSION_DEV;
+static const uint16_t PROTOCOL_VERSION_DEV = 65535;
+static const uint16_t PROTOCOL_VERSION = PROTOCOL_VERSION_DEV;
 
 #include "Message.h"
 
@@ -29,7 +29,7 @@ public:
 private:
 	char *encode(const Message &m, size_t &size);
 	void append(const char *what, size_t size);
-	void append(boost::uint32_t what, size_t size);
+	void append(uint32_t what, size_t size);
 
 	size_t currentSize;
 	char *current;

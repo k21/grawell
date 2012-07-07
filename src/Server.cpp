@@ -3,7 +3,6 @@
 #include "Server.h"
 
 using namespace std;
-using namespace boost;
 using namespace sf;
 
 void Server::removeShip(uint16_t id) {

@@ -3,7 +3,6 @@
 #include "Client.h"
 
 using namespace std;
-using namespace boost;
 using namespace sf;
 
 void Client::Run() {

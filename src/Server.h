@@ -5,7 +5,7 @@
 #include <queue>
 #include <set>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
@@ -19,7 +19,7 @@ class ClientInfo {
 
 public:
 	ClientInfo(const sf::IPAddress &address_,
-			const sf::SocketTCP &socket_, boost::uint16_t id_):
+			const sf::SocketTCP &socket_, uint16_t id_):
 			address(address_), socket(socket_), id(id_),
 			encoder(), decoder(),
 			pending(0), pendingSize(0),
@@ -28,7 +28,7 @@ public:
 	ClientInfo &operator = (const ClientInfo &) = delete;
 	sf::IPAddress address;
 	sf::SocketTCP socket;
-	boost::uint16_t id;
+	uint16_t id;
 	Encoder encoder;
 	Decoder decoder;
 	char *pending; size_t pendingSize;
@@ -39,7 +39,7 @@ public:
 class Server : public sf::Thread {
 
 public:
-	Server(boost::uint16_t port_): clients(), port(port_), exit_(false),
+	Server(uint16_t port_): clients(), port(port_), exit_(false),
 			serverSocket(), universe(), state(SELECT_ACTION),
 			checksum(0), waitingForCnt(0),
 			placer(200*FIXED_ONE) {}
@@ -61,22 +61,22 @@ public:
 	}
 
 private:
-	boost::int8_t handleMessage(ClientInfo &client, const Message &m);
+	int8_t handleMessage(ClientInfo &client, const Message &m);
 	void accept(ClientInfo &client, const Message &m,
 			std::vector<Message> &toSend);
-	void removeShip(boost::uint16_t id);
+	void removeShip(uint16_t id);
 	void changeState();
 	void sendToAll(const std::vector<Message> &m);
 
 	std::list<ClientInfo *> clients;
-	boost::uint16_t port;
+	uint16_t port;
 	volatile bool exit_;
 	sf::SocketTCP serverSocket;
 	Universe universe;
 	enum {
 		SELECT_ACTION, ROUND
 	} state;
-	boost::uint32_t checksum;
+	uint32_t checksum;
 	size_t waitingForCnt;
 	Placer placer;
 
