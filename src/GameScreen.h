@@ -1,39 +1,34 @@
-#ifndef GAME_H_
-#define GAME_H_
-
-#include <set>
+#ifndef GAME_SCREEN_H_
+#define GAME_SCREEN_H_
 
 #include <cstdint>
+#include <set>
 
-#include <SFML/Graphics.hpp>
-
-#include "Universe.h"
+#include "Screen.h"
 #include "Trail.h"
+#include "Universe.h"
 
 class Client;
 class Message;
 
-class Game {
+class GameScreen : public Screen {
 
 public:
-	Game(const char *serverAddress, uint16_t port);
-	Game(const Game &) = delete;
-	Game &operator = (const Game &) = delete;
-	~Game();
+	GameScreen(Driver &driver_, const char *serverAddress, uint16_t port);
+	GameScreen(const GameScreen &) = delete;
+	const GameScreen &operator = (const GameScreen &) = delete;
+	~GameScreen();
 
-	void run();
-
-private:
-	void input();
-	void logic();
+protected:
+	void logic(float elapsed);
 	void display();
+
+	void handleKey(sf::Event::KeyEvent e, bool pressed);
+
 	void handleMessage(const Message &m);
-	void handleKey(sf::Event::KeyEvent code, bool down);
 	void shoot();
 
-	sf::RenderWindow *screen;
 	sf::View view;
-	sf::Clock clock;
 	Universe universe;
 	uint16_t id;
 	Client *client;
@@ -43,7 +38,6 @@ private:
 		ROUND, ROUND_DONE
 	} state;
 	int32_t roundCntr;
-	double pendingUpdates;
 	double moveDown, moveRight, zoom;
 	int8_t moveDownDelta, moveRightDelta, zoomDelta;
 	std::set<uint16_t> keepPlanets, keepBullets;

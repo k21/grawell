@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-#include "Game.h"
+#include "Driver.h"
+#include "GameScreen.h"
 #include "Log.h"
 #include "Server.h"
 
@@ -86,8 +87,9 @@ int main(int argc, char **argv) {
 	}
 
 	if (mode == JOIN || mode == HOST) {
-		Game game(joinAddress, joinPort);
-		game.run();
+		Driver driver;
+		driver.changeScreen(new GameScreen(driver, joinAddress, joinPort));
+		driver.run();
 	}
 
 	if (server) {

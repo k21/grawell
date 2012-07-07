@@ -1,57 +1,38 @@
 #include <cmath>
 #include <utility>
 
-#include <SFML/Audio.hpp>
-
 #include "Client.h"
+#include "Driver.h"
 #include "Log.h"
 #include "Server.h"
 
-#include "Game.h"
+#include "GameScreen.h"
 
 using namespace std;
 using namespace sf;
 
-Game::Game(const char *serverAddress, uint16_t port):
-		screen(0), view(), clock(), universe(), id(0), client(0),
-		state(NOTHING), roundCntr(0), pendingUpdates(0),
+GameScreen::GameScreen(Driver &driver_,
+		const char *serverAddress, uint16_t port):
+		Screen(driver_),
+		view(), universe(), id(0), client(0),
+		state(NOTHING), roundCntr(0),
 		moveDown(0), moveRight(0), zoom(0),
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
 		keepPlanets(), keepBullets(), trails() {
-	VideoMode mode(800, 600);
-	WindowSettings settings(24, 0, 2);
-	screen = new RenderWindow(mode, "GraWell", Style::Close, settings);
 	view.SetCenter(0, 0);
 	view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
-	screen->SetView(view);
 	client = new Client(IPAddress(serverAddress), (short)port);
 	client->Launch();
 }
 
-Game::~Game() {
-	delete screen;
+GameScreen::~GameScreen() {
 	if (client) {
 		client->exit();
 		delete client;
 	}
 }
 
-void Game::run() {
-	static const float FPS = 30.f;
-	static const float SPF = 1.0f/FPS;
-	clock.Reset();
-	while (screen->IsOpened()) {
-		input();
-		logic();
-		display();
-		float elapsed = clock.GetElapsedTime();
-		if (elapsed < SPF) Sleep(SPF-elapsed);
-		pendingUpdates += max(SPF, elapsed);
-		clock.Reset();
-	}
-}
-
-void Game::shoot() {
+void GameScreen::shoot() {
 	state = SELECT_DONE;
 	Message m = Message::action(
 			universe.ships[id].direction,
@@ -67,9 +48,9 @@ static int32_t rotateAmount(bool control, bool shift) {
 	return 200;
 }
 
-void Game::handleKey(sf::Event::KeyEvent e, bool pressed) {
+void GameScreen::handleKey(Event::KeyEvent e, bool pressed) {
 	switch (e.Code) {
-		case Key::Escape: screen->Close(); break;
+		case Key::Escape: driver.exit(); break;
 		case Key::Up:
 			if (pressed && state == SELECT_ACTION) {
 				universe.ships[id].strength += 1000;
@@ -111,30 +92,7 @@ void Game::handleKey(sf::Event::KeyEvent e, bool pressed) {
 	}
 }
 
-void Game::input() {
-	Event event;
-	while (screen->GetEvent(event)) {
-		switch (event.Type) {
-
-			case Event::Closed:
-				screen->Close();
-				break;
-
-			case Event::KeyPressed:
-				handleKey(event.Key, true);
-				break;
-
-			case Event::KeyReleased:
-				handleKey(event.Key, false);
-				break;
-
-			default:
-				break;
-		}
-	}
-}
-
-void Game::handleMessage(const Message &m) {
+void GameScreen::handleMessage(const Message &m) {
 	LOG(DEBUG) << "Client received packet type " << (uint16_t)m.type();
 	switch (m.type()) {
 		case Message::JOIN_RESPONSE:
@@ -228,7 +186,7 @@ void Game::handleMessage(const Message &m) {
 	}
 }
 
-void Game::logic() {
+void GameScreen::logic(float elapsed) {
 	{
 		Message m;
 		while (client->recv(m)) {
@@ -242,7 +200,7 @@ void Game::logic() {
 	}
 	if (state == ROUND) {
 		list<pair<uint16_t, uint16_t>> hits;
-		while (pendingUpdates > 0) {
+		while (elapsed > 0) {
 			universe.update(hits, true, &trails);
 			for (pair<uint16_t, uint16_t> p : hits) {
 				if (p.first != Message::NO_PLAYER) {
@@ -252,7 +210,7 @@ void Game::logic() {
 				universe.ships[p.second].alive = false;
 			}
 			hits.clear();
-			pendingUpdates -= 1.0/1024.0;
+			elapsed -= 1.0f/1024;
 			--roundCntr;
 			if (roundCntr == 0 || universe.bullets.empty()) {
 				state = ROUND_DONE;
@@ -262,28 +220,31 @@ void Game::logic() {
 			}
 		}
 	}
-	pendingUpdates = 0;
 }
 
-void Game::display() {
+void GameScreen::display() {
 	moveRight += moveRightDelta*(double)view.GetHalfSize().x/100;
 	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/100;
 	zoom      += 4*zoomDelta;
 	moveRight *= 0.85; moveDown *= 0.85; zoom *= 0.85;
 	view.Move((float)moveRight, (float)moveDown);
 	view.Zoom((float)exp(zoom/250));
-	screen->Clear();
-	for (Planet &p : universe.planets) {
-		if (p.active()) p.draw(*screen);
-	}
-	for (Ship &s : universe.ships) {
-		if (s.alive) s.draw(*screen);
-	}
+
+	RenderWindow &window = driver.getRenderWindow();
+	window.SetView(view);
+	window.Clear();
+
 	for (Trail &t : trails) {
-		t.draw(*screen);
+		t.draw(window);
+	}
+	for (Planet &p : universe.planets) {
+		if (p.active()) p.draw(window);
 	}
 	for (Bullet &b : universe.bullets) {
-		if (b.active()) b.draw(*screen);
+		if (b.active()) b.draw(window);
 	}
-	screen->Display();
+	for (Ship &s : universe.ships) {
+		if (s.alive) s.draw(window);
+	}
+	window.Display();
 }
