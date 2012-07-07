@@ -43,7 +43,7 @@ private:
 		ROUND, ROUND_DONE
 	} state;
 	boost::int32_t roundCntr;
-	double lastUpdate;
+	double pendingUpdates;
 	double moveDown, moveRight, zoom;
 	boost::int8_t moveDownDelta, moveRightDelta, zoomDelta;
 	std::set<uint16_t> keepPlanets, keepBullets;

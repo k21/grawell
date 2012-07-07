@@ -15,7 +15,7 @@ using namespace sf;
 
 Game::Game(const char *serverAddress, uint16_t port):
 		screen(0), view(), clock(), universe(), id(0), client(0),
-		state(NOTHING), roundCntr(0), lastUpdate(0),
+		state(NOTHING), roundCntr(0), pendingUpdates(0),
 		moveDown(0), moveRight(0), zoom(0),
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
 		keepPlanets(), keepBullets(), trails() {
@@ -38,21 +38,17 @@ Game::~Game() {
 }
 
 void Game::run() {
-	static const double FPS = 30;
-	static const double SPF = 1.0/FPS;
-	lastUpdate = clock.GetElapsedTime();
-	double frameStart = lastUpdate;
+	static const float FPS = 30.f;
+	static const float SPF = 1.0f/FPS;
+	clock.Reset();
 	while (screen->IsOpened()) {
 		input();
 		logic();
 		display();
-		double now = clock.GetElapsedTime();
-		if (now-frameStart < SPF) {
-			Sleep((float)(SPF-(now-frameStart)));
-			frameStart = clock.GetElapsedTime();
-		} else {
-			frameStart = now;
-		}
+		float elapsed = clock.GetElapsedTime();
+		if (elapsed < SPF) Sleep(SPF-elapsed);
+		pendingUpdates += max(SPF, elapsed);
+		clock.Reset();
 	}
 }
 
@@ -246,9 +242,8 @@ void Game::logic() {
 		state = REQUEST_SENT;
 	}
 	if (state == ROUND) {
-		double now = clock.GetElapsedTime();
 		list<pair<uint16_t, uint16_t>> hits;
-		while (lastUpdate < now) {
+		while (pendingUpdates > 0) {
 			universe.update(hits, true, &trails);
 			for (pair<uint16_t, uint16_t> p : hits) {
 				if (p.first != Message::NO_PLAYER) {
@@ -258,7 +253,7 @@ void Game::logic() {
 				universe.ships[p.second].alive = false;
 			}
 			hits.clear();
-			lastUpdate += 1.0/1024.0;
+			pendingUpdates -= 1.0/1024.0;
 			--roundCntr;
 			if (roundCntr == 0 || universe.bullets.empty()) {
 				state = ROUND_DONE;
@@ -268,7 +263,7 @@ void Game::logic() {
 			}
 		}
 	}
-	lastUpdate = clock.GetElapsedTime();
+	pendingUpdates = 0;
 }
 
 void Game::display() {
