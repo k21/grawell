@@ -33,7 +33,8 @@ void Ship::draw(RenderTarget &target) const {
 	Color c = getColorByID(id());
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius, c);
-	Vector d = center + Vector::polar(direction, radius*2);
+	float lineLength = 1.2f*(float)radius + (float)(strength*FIXED_ONE)/100.f;
+	Vector d = center + Vector::polar(direction, (Vector::T)lineLength);
 	Shape line = Shape::Line((float)center.x, (float)center.y,
 			(float)d.x, (float)d.y, FIXED_ONE, c);
 	target.Draw(circle);
@@ -50,7 +51,7 @@ void Ship::draw(RenderTarget &target) const {
 void Ship::shoot(EntityManager<Bullet> &bullets) const {
 	Vector d = Vector::polar(direction, radius+2*FIXED_ONE);
 	Point pos = center + d;
-	Vector speed = Vector::polar(direction, 50*FIXED_ONE);
+	Vector speed = Vector::polar(direction, strength*FIXED_ONE/100);
 	Bullet &b = bullets.alloc();
 	b.owner(id()); b.center = pos; b.speed = speed;
 }

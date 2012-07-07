@@ -75,6 +75,20 @@ static int32_t rotateAmount(bool control, bool shift) {
 void Game::handleKey(sf::Event::KeyEvent e, bool pressed) {
 	switch (e.Code) {
 		case Key::Escape: screen->Close(); break;
+		case Key::Up:
+			if (pressed && state == SELECT_ACTION) {
+				universe.ships[id].strength += 1000;
+			}
+			break;
+		case Key::Down:
+			if (pressed && state == SELECT_ACTION) {
+				if (universe.ships[id].strength > 1000) {
+					universe.ships[id].strength -= 1000;
+				} else {
+					universe.ships[id].strength = 0;
+				}
+			}
+			break;
 		case Key::Left:
 			if (pressed && state == SELECT_ACTION) {
 				int32_t r = rotateAmount(e.Control, e.Shift);
