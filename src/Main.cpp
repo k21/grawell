@@ -5,6 +5,7 @@
 #include "Driver.h"
 #include "GameScreen.h"
 #include "Log.h"
+#include "MenuScreen.h"
 #include "Server.h"
 
 static const char LOCALHOST_ADDRESS[] = "localhost";
@@ -12,13 +13,14 @@ static const uint16_t DEFAULT_PORT = 4920;
 
 static const char USAGE_STRING[] =
 "Usage:\n"
+"    %s\n"
 "    %s join [address [port]]\n"
 "    %s host [port]\n"
 "    %s dedicated [port]\n"
 ;
 
 static void printUsage(const char *name) {
-	fprintf(stderr, USAGE_STRING, name, name, name);
+	fprintf(stderr, USAGE_STRING, name, name, name, name);
 }
 
 int main(int argc, char **argv) {
@@ -27,7 +29,10 @@ int main(int argc, char **argv) {
 	LOG(TRACE) << "Entering main";
 
 	if (argc < 2) {
-		printUsage(argv[0]); return 1;
+		Driver driver;
+		driver.changeScreen(new MenuScreen(driver));
+		driver.run();
+		return 0;
 	}
 
 	enum {JOIN, HOST, DEDICATED} mode;
