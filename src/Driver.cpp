@@ -10,14 +10,10 @@ Driver::Driver(): renderWindow(0), screen(0),
 }
 
 Driver::~Driver() {
-	if (toDelete) {
-		delete toDelete;
-		toDelete = 0;
-	}
-	if (screen) {
-		delete screen;
-		screen = 0;
-	}
+	delete toDelete;
+	toDelete = 0;
+	delete screen;
+	screen = 0;
 	delete renderWindow;
 	renderWindow = 0;
 }
