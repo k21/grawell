@@ -14,10 +14,10 @@ public:
 	bool active() const { return myActive; }
 
 	bool intersects(const Point &p) const {
-		return (center - p).size() <= radius;
+		return (center - p).size() < radius;
 	}
 	bool intersects(const Entity &e) const {
-		return (center - e.center).size() <= radius + e.radius;
+		return (center - e.center).size() < radius + e.radius;
 	}
 
 	Point center;
