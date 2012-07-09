@@ -4,4 +4,3 @@ dist/
 .*.swp
 *.d
 *.o
-test/grawell_test

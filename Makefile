@@ -47,10 +47,7 @@ build:
 	mkdir build
 
 
-include test.make
-
-
 .PHONY: clean
 
-clean: clean_test
+clean:
 	rm -rf build dist
