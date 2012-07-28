@@ -4,6 +4,9 @@
 #include "../src/GameScreen.h"
 #include "../src/Server.h"
 
+static bool startGame = false;
+static bool host;
+
 class MainFrame : public wxFrame {
 public:
 	MainFrame():
@@ -75,6 +78,8 @@ public:
 	}
 
 	void OnButtonStartClick(wxCommandEvent &) {
+		startGame = true;
+		host = checkBoxHost->GetValue();
 		Close();
 	}
 
@@ -98,14 +103,23 @@ IMPLEMENT_APP_NO_MAIN(LauncherApp);
 int main(int argc, char **argv) {
 	wxEntry(argc, argv);
 
-	Server server(4920);
-	server.Launch();
+	if (!startGame) return 0;
+
+	Server *server = 0;
+	if (host) {
+		server = new Server(4920);
+		server->Launch();
+	}
 
 	Driver driver;
 	driver.changeScreen(new GameScreen(driver, "localhost", 4920));
 	driver.run();
 
-	server.exit();
+	if (server) {
+		server->exit();
+		delete server;
+		server = 0;
+	}
 
 	return 0;
 }
