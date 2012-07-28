@@ -1,5 +1,9 @@
 #include <wx/wx.h>
 
+#include "../src/Driver.h"
+#include "../src/GameScreen.h"
+#include "../src/Server.h"
+
 class MainFrame : public wxFrame {
 public:
 	MainFrame():
@@ -56,22 +60,22 @@ public:
 				wxCommandEventHandler(MainFrame::OnButtonStartClick));
 	}
 
-	void OnSelectHost(wxCommandEvent &event) {
+	void OnSelectHost(wxCommandEvent &) {
 		checkBoxHost->SetValue(true);
 		checkBoxJoin->SetValue(false);
 	}
 
-	void OnSelectJoin(wxCommandEvent &event) {
+	void OnSelectJoin(wxCommandEvent &) {
 		checkBoxHost->SetValue(false);
 		checkBoxJoin->SetValue(true);
 	}
 
-	void OnButtonSettingsClick(wxCommandEvent &event) {
+	void OnButtonSettingsClick(wxCommandEvent &) {
 		
 	}
 
-	void OnButtonStartClick(wxCommandEvent &event) {
-		
+	void OnButtonStartClick(wxCommandEvent &) {
+		Close();
 	}
 
 	wxCheckBox *checkBoxHost;
@@ -89,4 +93,19 @@ class LauncherApp : public wxApp {
 	}
 };
 
-IMPLEMENT_APP(LauncherApp);
+IMPLEMENT_APP_NO_MAIN(LauncherApp);
+
+int main(int argc, char **argv) {
+	wxEntry(argc, argv);
+
+	Server server(4920);
+	server.Launch();
+
+	Driver driver;
+	driver.changeScreen(new GameScreen(driver, "localhost", 4920));
+	driver.run();
+
+	server.exit();
+
+	return 0;
+}
