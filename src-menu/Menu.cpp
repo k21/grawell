@@ -90,7 +90,7 @@ public:
 
 };
 
-class LauncherApp : public wxApp {
+class MenuApp : public wxApp {
 	bool OnInit() {
 		MainFrame *frame = new MainFrame();
 		frame->Show(true);
@@ -98,7 +98,7 @@ class LauncherApp : public wxApp {
 	}
 };
 
-IMPLEMENT_APP_NO_MAIN(LauncherApp);
+IMPLEMENT_APP_NO_MAIN(MenuApp);
 
 int main(int argc, char **argv) {
 	wxEntry(argc, argv);
