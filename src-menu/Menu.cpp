@@ -7,6 +7,7 @@
 static bool startGame = false;
 static bool host = false;
 static wxString IPAddress;
+static wxString playerName;
 
 class MainFrame : public wxFrame {
 public:
@@ -82,6 +83,7 @@ public:
 
 	void OnButtonStartClick(wxCommandEvent &) {
 		IPAddress = textAddress->GetValue();
+		playerName = textName->GetValue();
 		startGame = true;
 		Close();
 	}
@@ -117,7 +119,8 @@ int main(int argc, char **argv) {
 	}
 
 	Driver driver;
-	driver.changeScreen(new GameScreen(driver, IPAddress.utf8_str(), 4920));
+	driver.changeScreen(new GameScreen(driver,
+			IPAddress.utf8_str(), 4920, playerName.utf8_str()));
 	driver.run();
 
 	if (server) {

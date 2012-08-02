@@ -14,7 +14,8 @@ class Message;
 class GameScreen : public Screen {
 
 public:
-	GameScreen(Driver &driver_, const char *serverAddress, uint16_t port);
+	GameScreen(Driver &driver_, const char *serverAddress, uint16_t port,
+			const char *playerName_);
 	GameScreen(const GameScreen &) = delete;
 	const GameScreen &operator = (const GameScreen &) = delete;
 	~GameScreen();
@@ -42,6 +43,7 @@ protected:
 	int8_t moveDownDelta, moveRightDelta, zoomDelta;
 	std::set<uint16_t> keepPlanets, keepBullets;
 	std::vector<Trail> trails;
+	char playerName[32 + 1];
 
 };
 

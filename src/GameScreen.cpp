@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstring>
 #include <utility>
 
 #include "Client.h"
@@ -12,13 +13,17 @@ using namespace std;
 using namespace sf;
 
 GameScreen::GameScreen(Driver &driver_,
-		const char *serverAddress, uint16_t port):
+		const char *serverAddress, uint16_t port,
+		const char *playerName_):
 		Screen(driver_),
 		view(), universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0),
 		moveDown(0), moveRight(0), zoom(0),
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
-		keepPlanets(), keepBullets(), trails() {
+		keepPlanets(), keepBullets(), trails(),
+		playerName() {
+	strncpy(playerName, playerName_, sizeof playerName);
+	playerName[(sizeof playerName) - 1] = '\0';
 	view.SetCenter(0, 0);
 	view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
 	client = new Client(IPAddress(serverAddress), (short)port);
@@ -102,7 +107,7 @@ void GameScreen::handleMessage(const Message &m) {
 				return;
 			}
 			id = m.id();
-			universe.ships[id].name = "name";
+			universe.ships[id].name = playerName;
 			universe.ships[id].inGame = true;
 			universe.ships[id].ready = true;
 			state = WAITING;
@@ -194,7 +199,7 @@ void GameScreen::logic(float elapsed) {
 		}
 	}
 	if (state == NOTHING) {
-		Message m = Message::joinRequest(PROTOCOL_VERSION, "name");
+		Message m = Message::joinRequest(PROTOCOL_VERSION, playerName);
 		client->send(m);
 		state = REQUEST_SENT;
 	}

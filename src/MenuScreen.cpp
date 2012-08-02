@@ -20,7 +20,7 @@ void MenuScreen::handleKey(sf::Event::KeyEvent e, bool pressed) {
 			driver.exit();
 			break;
 		case Key::Return:
-			driver.changeScreen(new GameScreen(driver, "127.0.0.1", 4920));
+			driver.changeScreen(new GameScreen(driver, "127.0.0.1", 4920, "name"));
 			break;
 		default:
 			break;
