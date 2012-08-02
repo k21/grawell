@@ -8,7 +8,7 @@ GRAWELL_LIBS := $(addprefix -l, \
 	sfml-system \
 	m \
 	)
-GRAWELL_LIBS += $(shell wx-config --libs)
+GRAWELL_LIBS += $(shell wx-config --unicode=yes --libs core)
 
 GRAWELL_FLAGS := -fno-exceptions
 GRAWELL_FLAGS += -mfpmath=sse -msse2
@@ -23,7 +23,7 @@ GRAWELL_CXXFLAGS := $(GRAWELL_FLAGS)
 GRAWELL_CXXFLAGS += -std=gnu++0x
 GRAWELL_CXXFLAGS += -Wall -Wextra -Wshadow
 GRAWELL_MENU_CXXFLAGS := $(GRAWELL_CXXFLAGS)
-GRAWELL_MENU_CXXFLAGS += $(shell wx-config --cxxflags)
+GRAWELL_MENU_CXXFLAGS += $(shell wx-config --unicode=yes --cxxflags)
 GRAWELL_CXXFLAGS += -Weffc++ -Wconversion
 
 GRAWELL_SOURCES := $(wildcard src/*.cpp)
