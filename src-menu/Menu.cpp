@@ -5,7 +5,8 @@
 #include "../src/Server.h"
 
 static bool startGame = false;
-static bool host;
+static bool host = false;
+static wxString IPAddress;
 
 class MainFrame : public wxFrame {
 public:
@@ -33,8 +34,8 @@ public:
 				wxStaticText *labelAddress = new wxStaticText(
 						panel, wxID_ANY, _("Server address"));
 
-				wxTextCtrl *textName = new wxTextCtrl(panel, wxID_ANY);
-				wxTextCtrl *textAddress = new wxTextCtrl(panel, wxID_ANY);
+				textName = new wxTextCtrl(panel, wxID_ANY);
+				textAddress = new wxTextCtrl(panel, wxID_ANY);
 
 				gridTextConfig->Add(labelName);
 				gridTextConfig->Add(textName, 1, wxEXPAND);
@@ -66,11 +67,13 @@ public:
 	void OnSelectHost(wxCommandEvent &) {
 		checkBoxHost->SetValue(true);
 		checkBoxJoin->SetValue(false);
+		host = true;
 	}
 
 	void OnSelectJoin(wxCommandEvent &) {
 		checkBoxHost->SetValue(false);
 		checkBoxJoin->SetValue(true);
+		host = false;
 	}
 
 	void OnButtonSettingsClick(wxCommandEvent &) {
@@ -78,13 +81,15 @@ public:
 	}
 
 	void OnButtonStartClick(wxCommandEvent &) {
+		IPAddress = textAddress->GetValue();
 		startGame = true;
-		host = checkBoxHost->GetValue();
 		Close();
 	}
 
 	wxCheckBox *checkBoxHost;
 	wxCheckBox *checkBoxJoin;
+	wxTextCtrl *textName;
+	wxTextCtrl *textAddress;
 	wxButton *buttonSettings;
 	wxButton *buttonStart;
 
@@ -112,7 +117,7 @@ int main(int argc, char **argv) {
 	}
 
 	Driver driver;
-	driver.changeScreen(new GameScreen(driver, "localhost", 4920));
+	driver.changeScreen(new GameScreen(driver, IPAddress.utf8_str(), 4920));
 	driver.run();
 
 	if (server) {
