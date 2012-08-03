@@ -9,25 +9,14 @@ static bool host = false;
 static wxString IPAddress;
 static wxString playerName;
 
-class MainFrame : public wxFrame {
+class SettingsFrame : public wxFrame {
 public:
-	MainFrame():
+	SettingsFrame():
 			wxFrame(0, wxID_ANY, _("title"), wxDefaultPosition, wxSize(200,200)) {
 		wxPanel *panel = new wxPanel(this, wxID_ANY);
 
 		wxBoxSizer *boxParts = new wxBoxSizer(wxVERTICAL);
 		{
-			wxBoxSizer *boxHostJoin = new wxBoxSizer(wxHORIZONTAL);
-			{
-				checkBoxHost = new wxCheckBox(panel, wxID_ANY, _("Host"));
-				checkBoxJoin = new wxCheckBox(panel, wxID_ANY, _("Join"));
-				checkBoxJoin->SetValue(true);
-
-				boxHostJoin->Add(checkBoxHost);
-				boxHostJoin->Add(checkBoxJoin);
-			}
-			boxParts->Add(boxHostJoin);
-
 			wxFlexGridSizer *gridTextConfig = new wxFlexGridSizer(2, 2, 5, 10);
 			{
 				wxStaticText *labelName = new wxStaticText(
@@ -38,20 +27,140 @@ public:
 				textName = new wxTextCtrl(panel, wxID_ANY);
 				textAddress = new wxTextCtrl(panel, wxID_ANY);
 
-				gridTextConfig->Add(labelName);
+				gridTextConfig->Add(labelName, 0,
+						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 				gridTextConfig->Add(textName, 1, wxEXPAND);
-				gridTextConfig->Add(labelAddress);
+				gridTextConfig->Add(labelAddress, 0,
+						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 				gridTextConfig->Add(textAddress, 1, wxEXPAND);
 
 				gridTextConfig->AddGrowableCol(1, 1);
 			}
 			boxParts->Add(gridTextConfig, 0, wxEXPAND | wxALL, 10);
 
-			buttonSettings = new wxButton(panel, wxID_ANY, _("Settings"));
-			boxParts->Add(buttonSettings, 1, wxEXPAND | wxLEFT | wxRIGHT, 10);
+			wxBoxSizer *boxButtons = new wxBoxSizer(wxHORIZONTAL);
+			{
+				buttonUndo = new wxButton(panel, wxID_ANY, _("Undo Changes"));
+				boxButtons->Add(buttonUndo, 1, wxEXPAND | wxLEFT, 10);
 
-			buttonStart = new wxButton(panel, wxID_ANY, _("Start game"));
-			boxParts->Add(buttonStart, 1, wxEXPAND | wxALL, 10);
+				buttonExit = new wxButton(panel, wxID_ANY, _("Leave Settings"));
+				boxButtons->Add(buttonExit, 1, wxEXPAND | wxLEFT, 10);
+			}
+			boxParts->Add(boxButtons, 1, wxEXPAND | (wxALL - wxLEFT), 10);
+		}
+		panel->SetSizer(boxParts);
+
+		buttonUndo->Enable(false);
+		changed = false;
+
+		Connect(textName->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
+				wxCommandEventHandler(SettingsFrame::OnChange));
+		Connect(textAddress->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
+				wxCommandEventHandler(SettingsFrame::OnChange));
+		Connect(buttonUndo->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
+				wxCommandEventHandler(SettingsFrame::OnButtonUndoClick));
+		Connect(buttonExit->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
+				wxCommandEventHandler(SettingsFrame::OnButtonExitClick));
+		Connect(this->GetId(), wxEVT_CLOSE_WINDOW,
+				wxCommandEventHandler(SettingsFrame::OnClose));
+	}
+
+	void OnChange(wxCommandEvent &) {
+		buttonExit->SetLabel(_("Save Changes"));
+		buttonUndo->Enable(true);
+		changed = true;
+	}
+
+	void AfterSaveOrUndo() {
+		buttonExit->SetLabel(_("Leave Settings"));
+		buttonUndo->Enable(false);
+		changed = false;
+	}
+
+	void OnButtonUndoClick(wxCommandEvent &) {
+		/* TODO */
+		AfterSaveOrUndo();
+	}
+
+	void OnButtonExitClick(wxCommandEvent &) {
+		if (changed) {
+			/* TODO */
+			AfterSaveOrUndo();
+		} else {
+			Close();
+		}
+	}
+
+	void OnClose(wxCommandEvent &) {
+		MakeModal(false);
+		Destroy();
+	}
+
+	wxTextCtrl *textName;
+	wxTextCtrl *textAddress;
+	wxButton *buttonUndo;
+	wxButton *buttonExit;
+
+	bool changed;
+
+};
+
+class MainFrame : public wxFrame {
+public:
+	MainFrame():
+			wxFrame(0, wxID_ANY, _("title"), wxDefaultPosition, wxSize(200,200)) {
+		wxPanel *panel = new wxPanel(this, wxID_ANY);
+
+		wxBoxSizer *boxParts = new wxBoxSizer(wxVERTICAL);
+		{
+			wxFlexGridSizer *gridTextConfig = new wxFlexGridSizer(3, 2, 5, 10);
+			{
+				wxStaticText *labelMode = new wxStaticText(
+						panel, wxID_ANY, _("Network mode"));
+				wxStaticText *labelName = new wxStaticText(
+						panel, wxID_ANY, _("Player name"));
+				wxStaticText *labelAddress = new wxStaticText(
+						panel, wxID_ANY, _("Server address"));
+
+				wxBoxSizer *boxHostJoin = new wxBoxSizer(wxHORIZONTAL);
+				{
+					checkBoxHost = new wxCheckBox(panel, wxID_ANY, _("Host"));
+					checkBoxJoin = new wxCheckBox(panel, wxID_ANY, _("Join"));
+					checkBoxJoin->SetValue(true);
+
+					boxHostJoin->Add(checkBoxHost, 0, wxALL, 10);
+					boxHostJoin->Add(checkBoxJoin, 0, wxALL, 10);
+				}
+
+				textName = new wxTextCtrl(panel, wxID_ANY);
+				textAddress = new wxTextCtrl(panel, wxID_ANY);
+
+				gridTextConfig->Add(labelMode, 0,
+						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+				gridTextConfig->Add(boxHostJoin, 1, wxEXPAND);
+				gridTextConfig->Add(labelName, 0,
+						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+				gridTextConfig->Add(textName, 1, wxEXPAND);
+				gridTextConfig->Add(labelAddress, 0,
+						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+				gridTextConfig->Add(textAddress, 1, wxEXPAND);
+
+				gridTextConfig->AddGrowableCol(1, 1);
+			}
+			boxParts->Add(gridTextConfig, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+
+			wxBoxSizer *boxButtons = new wxBoxSizer(wxHORIZONTAL);
+			{
+				buttonExit = new wxButton(panel, wxID_ANY, _("Exit"));
+				boxButtons->Add(buttonExit, 1, wxEXPAND | wxLEFT, 10);
+
+				buttonSettings = new wxButton(panel, wxID_ANY, _("Settings"));
+				boxButtons->Add(buttonSettings, 1, wxEXPAND | wxLEFT, 10);
+
+				buttonStart = new wxButton(panel, wxID_ANY, _("Start Game"));
+				boxButtons->Add(buttonStart, 1, wxEXPAND | wxLEFT, 10);
+			}
+			boxParts->Add(boxButtons, 1, wxEXPAND | (wxALL - wxLEFT), 10);
 		}
 		panel->SetSizer(boxParts);
 
@@ -59,6 +168,8 @@ public:
 				wxCommandEventHandler(MainFrame::OnSelectHost));
 		Connect(checkBoxJoin->GetId(), wxEVT_COMMAND_CHECKBOX_CLICKED,
 				wxCommandEventHandler(MainFrame::OnSelectJoin));
+		Connect(buttonExit->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
+				wxCommandEventHandler(MainFrame::OnButtonExitClick));
 		Connect(buttonSettings->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
 				wxCommandEventHandler(MainFrame::OnButtonSettingsClick));
 		Connect(buttonStart->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
@@ -77,8 +188,14 @@ public:
 		host = false;
 	}
 
+	void OnButtonExitClick(wxCommandEvent &) {
+		Close();
+	}
+
 	void OnButtonSettingsClick(wxCommandEvent &) {
-		
+		SettingsFrame *frame = new SettingsFrame();
+		frame->MakeModal(true);
+		frame->Show(true);
 	}
 
 	void OnButtonStartClick(wxCommandEvent &) {
@@ -92,6 +209,7 @@ public:
 	wxCheckBox *checkBoxJoin;
 	wxTextCtrl *textName;
 	wxTextCtrl *textAddress;
+	wxButton *buttonExit;
 	wxButton *buttonSettings;
 	wxButton *buttonStart;
 
