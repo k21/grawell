@@ -19,20 +19,31 @@ public:
 		{
 			wxFlexGridSizer *gridTextConfig = new wxFlexGridSizer(2, 2, 5, 10);
 			{
-				wxStaticText *labelName = new wxStaticText(
-						panel, wxID_ANY, _("Player name"));
-				wxStaticText *labelAddress = new wxStaticText(
-						panel, wxID_ANY, _("Server address"));
+				wxStaticText *labelResolution = new wxStaticText(
+						panel, wxID_ANY, _("Screen resolution"));
+				wxStaticText *labelFullscreen = new wxStaticText(
+						panel, wxID_ANY, _("Fullscreen"));
 
-				textName = new wxTextCtrl(panel, wxID_ANY);
-				textAddress = new wxTextCtrl(panel, wxID_ANY);
+				wxBoxSizer *boxResolution = new wxBoxSizer(wxHORIZONTAL);
+				{
+					textResolutionX = new wxTextCtrl(panel, wxID_ANY);
+					textResolutionY = new wxTextCtrl(panel, wxID_ANY);
+					wxStaticText *labelX = new wxStaticText(
+							panel, wxID_ANY, _("X"));
 
-				gridTextConfig->Add(labelName, 0,
+					boxResolution->Add(textResolutionX, 1, wxEXPAND);
+					boxResolution->Add(labelX, 0, wxEXPAND | wxALIGN_CENTER_VERTICAL);
+					boxResolution->Add(textResolutionY, 1, wxEXPAND);
+				}
+
+				checkboxFullscreen = new wxCheckBox(panel, wxID_ANY, _("No"));
+
+				gridTextConfig->Add(labelResolution, 0,
 						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
-				gridTextConfig->Add(textName, 1, wxEXPAND);
-				gridTextConfig->Add(labelAddress, 0,
+				gridTextConfig->Add(boxResolution, 1, wxEXPAND);
+				gridTextConfig->Add(labelFullscreen, 0,
 						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
-				gridTextConfig->Add(textAddress, 1, wxEXPAND);
+				gridTextConfig->Add(checkboxFullscreen, 1, wxEXPAND);
 
 				gridTextConfig->AddGrowableCol(1, 1);
 			}
@@ -53,10 +64,12 @@ public:
 		buttonUndo->Enable(false);
 		changed = false;
 
-		Connect(textName->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
+		Connect(textResolutionX->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
 				wxCommandEventHandler(SettingsFrame::OnChange));
-		Connect(textAddress->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
+		Connect(textResolutionY->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
 				wxCommandEventHandler(SettingsFrame::OnChange));
+		Connect(checkboxFullscreen->GetId(), wxEVT_COMMAND_CHECKBOX_CLICKED,
+				wxCommandEventHandler(SettingsFrame::OnCheckboxFullscreenClick));
 		Connect(buttonUndo->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
 				wxCommandEventHandler(SettingsFrame::OnButtonUndoClick));
 		Connect(buttonExit->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
@@ -69,6 +82,15 @@ public:
 		buttonExit->SetLabel(_("Save Changes"));
 		buttonUndo->Enable(true);
 		changed = true;
+	}
+
+	void OnCheckboxFullscreenClick(wxCommandEvent &e) {
+		OnChange(e);
+		if (checkboxFullscreen->GetValue()) {
+			checkboxFullscreen->SetLabel(_("Yes"));
+		} else {
+			checkboxFullscreen->SetLabel(_("No"));
+		}
 	}
 
 	void AfterSaveOrUndo() {
@@ -96,8 +118,9 @@ public:
 		Destroy();
 	}
 
-	wxTextCtrl *textName;
-	wxTextCtrl *textAddress;
+	wxTextCtrl *textResolutionX;
+	wxTextCtrl *textResolutionY;
+	wxCheckBox *checkboxFullscreen;
 	wxButton *buttonUndo;
 	wxButton *buttonExit;
 
