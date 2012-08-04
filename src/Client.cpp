@@ -10,9 +10,10 @@ void Client::Run() {
 	static const int16_t RETRY = 10;
 	Socket::Status status = socket.Connect(port, address);
 	int16_t r = 1;
-	while (status != Socket::Done && r < RETRY) {
+	while (status != Socket::Done && r < RETRY && !exit_) {
 		LOG(WARN) << "Connection attempt unsuccessful";
 		Sleep(1.f);
+		if (exit_) break;
 		LOG(WARN) << "Trying to connect again...";
 		status = socket.Connect(port, address);
 		++r;
