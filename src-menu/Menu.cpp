@@ -12,7 +12,8 @@ static wxString playerName;
 class SettingsFrame : public wxFrame {
 public:
 	SettingsFrame():
-			wxFrame(0, wxID_ANY, _("title"), wxDefaultPosition, wxSize(200,200)) {
+			wxFrame(0, wxID_ANY, _("GraWell Settings"),
+					wxDefaultPosition, wxSize(200,200)) {
 		wxPanel *panel = new wxPanel(this, wxID_ANY);
 
 		wxBoxSizer *boxParts = new wxBoxSizer(wxVERTICAL);
@@ -131,7 +132,8 @@ public:
 class MainFrame : public wxFrame {
 public:
 	MainFrame():
-			wxFrame(0, wxID_ANY, _("title"), wxDefaultPosition, wxSize(200,200)) {
+			wxFrame(0, wxID_ANY, _("GraWell Launcher"),
+					wxDefaultPosition, wxSize(200,200)) {
 		wxPanel *panel = new wxPanel(this, wxID_ANY);
 
 		wxBoxSizer *boxParts = new wxBoxSizer(wxVERTICAL);
