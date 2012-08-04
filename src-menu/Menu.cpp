@@ -33,7 +33,7 @@ public:
 							panel, wxID_ANY, _("X"));
 
 					boxResolution->Add(textResolutionX, 1, wxEXPAND);
-					boxResolution->Add(labelX, 0, wxEXPAND | wxALIGN_CENTER_VERTICAL);
+					boxResolution->Add(labelX, 0, wxALIGN_CENTER_VERTICAL);
 					boxResolution->Add(textResolutionY, 1, wxEXPAND);
 				}
 
