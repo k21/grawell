@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include <wx/wx.h>
 
 #include "../src/Driver.h"
@@ -5,9 +7,14 @@
 #include "../src/Server.h"
 
 static bool startGame = false;
+
 static bool host = false;
 static wxString IPAddress;
 static wxString playerName;
+
+static int32_t resolutionX;
+static int32_t resolutionY;
+static bool fullscreen;
 
 class SettingsFrame : public wxFrame {
 public:
@@ -37,7 +44,7 @@ public:
 					boxResolution->Add(textResolutionY, 1, wxEXPAND);
 				}
 
-				checkboxFullscreen = new wxCheckBox(panel, wxID_ANY, _("No"));
+				checkboxFullscreen = new wxCheckBox(panel, wxID_ANY, _("XXX"));
 
 				gridTextConfig->Add(labelResolution, 0,
 						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
@@ -55,15 +62,19 @@ public:
 				buttonUndo = new wxButton(panel, wxID_ANY, _("Undo Changes"));
 				boxButtons->Add(buttonUndo, 1, wxEXPAND | wxLEFT, 10);
 
-				buttonExit = new wxButton(panel, wxID_ANY, _("Leave Settings"));
+				buttonExit = new wxButton(panel, wxID_ANY, _("XXX"));
 				boxButtons->Add(buttonExit, 1, wxEXPAND | wxLEFT, 10);
 			}
 			boxParts->Add(boxButtons, 1, wxEXPAND | (wxALL - wxLEFT), 10);
 		}
 		panel->SetSizer(boxParts);
 
-		buttonUndo->Enable(false);
-		changed = false;
+		/* TODO: load values from file */
+		resolutionX = 800;
+		resolutionY = 600;
+		fullscreen = false;
+
+		UndoChanges();
 
 		Connect(textResolutionX->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
 				wxCommandEventHandler(SettingsFrame::OnChange));
@@ -80,29 +91,16 @@ public:
 	}
 
 	void OnChange(wxCommandEvent &) {
-		buttonExit->SetLabel(_("Save Changes"));
-		buttonUndo->Enable(true);
-		changed = true;
+		OnChange();
 	}
 
-	void OnCheckboxFullscreenClick(wxCommandEvent &e) {
-		OnChange(e);
-		if (checkboxFullscreen->GetValue()) {
-			checkboxFullscreen->SetLabel(_("Yes"));
-		} else {
-			checkboxFullscreen->SetLabel(_("No"));
-		}
-	}
-
-	void AfterSaveOrUndo() {
-		buttonExit->SetLabel(_("Leave Settings"));
-		buttonUndo->Enable(false);
-		changed = false;
+	void OnCheckboxFullscreenClick(wxCommandEvent &) {
+		OnChange();
+		UpdateFullscreenLabel();
 	}
 
 	void OnButtonUndoClick(wxCommandEvent &) {
-		/* TODO */
-		AfterSaveOrUndo();
+		UndoChanges();
 	}
 
 	void OnButtonExitClick(wxCommandEvent &) {
@@ -117,6 +115,34 @@ public:
 	void OnClose(wxCommandEvent &) {
 		MakeModal(false);
 		Destroy();
+	}
+
+	void OnChange() {
+		buttonExit->SetLabel(_("Save Changes"));
+		buttonUndo->Enable(true);
+		changed = true;
+	}
+
+	void AfterSaveOrUndo() {
+		buttonExit->SetLabel(_("Leave Settings"));
+		buttonUndo->Enable(false);
+		changed = false;
+	}
+
+	void UpdateFullscreenLabel() {
+		if (checkboxFullscreen->GetValue()) {
+			checkboxFullscreen->SetLabel(_("Yes"));
+		} else {
+			checkboxFullscreen->SetLabel(_("No"));
+		}
+	}
+
+	void UndoChanges() {
+		textResolutionX->SetValue(wxString::Format(_("%d"), resolutionX));
+		textResolutionY->SetValue(wxString::Format(_("%d"), resolutionY));
+		checkboxFullscreen->SetValue(fullscreen);
+		UpdateFullscreenLabel();
+		AfterSaveOrUndo();
 	}
 
 	wxTextCtrl *textResolutionX;
