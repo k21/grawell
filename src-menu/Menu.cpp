@@ -111,12 +111,10 @@ public:
 			long x, y;
 			if (!textResolutionX->GetValue().ToLong(&x) ||
 					x > MAX_RESOLUTION || x <= 0) {
-				/* TODO: error dialog */
 				success = false;
 			}
 			if (!textResolutionY->GetValue().ToLong(&y) ||
 					y > MAX_RESOLUTION || y <= 0) {
-				/* TODO: error dialog */
 				success = false;
 			}
 			if (success) {
@@ -125,6 +123,11 @@ public:
 				fullscreen = checkboxFullscreen->GetValue();
 				/* TODO: save to file */
 				AfterSaveOrUndo();
+			} else {
+				wxMessageDialog *dialog = new wxMessageDialog(this,
+						_("The resolution should contain "
+						"reasonably large numerical values"));
+				dialog->ShowModal();
 			}
 		} else {
 			Close();
