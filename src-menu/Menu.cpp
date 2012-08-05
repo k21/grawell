@@ -6,6 +6,8 @@
 #include "../src/GameScreen.h"
 #include "../src/Server.h"
 
+static const int MAX_RESOLUTION = 65536;
+
 static bool startGame = false;
 
 static bool host = false;
@@ -77,9 +79,9 @@ public:
 		UndoChanges();
 
 		Connect(textResolutionX->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
-				wxCommandEventHandler(SettingsFrame::OnChange));
+				wxCommandEventHandler(SettingsFrame::OnTextResolutionUpdate));
 		Connect(textResolutionY->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
-				wxCommandEventHandler(SettingsFrame::OnChange));
+				wxCommandEventHandler(SettingsFrame::OnTextResolutionUpdate));
 		Connect(checkboxFullscreen->GetId(), wxEVT_COMMAND_CHECKBOX_CLICKED,
 				wxCommandEventHandler(SettingsFrame::OnCheckboxFullscreenClick));
 		Connect(buttonUndo->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
@@ -90,7 +92,7 @@ public:
 				wxCommandEventHandler(SettingsFrame::OnClose));
 	}
 
-	void OnChange(wxCommandEvent &) {
+	void OnTextResolutionUpdate(wxCommandEvent &) {
 		OnChange();
 	}
 
@@ -105,8 +107,25 @@ public:
 
 	void OnButtonExitClick(wxCommandEvent &) {
 		if (changed) {
-			/* TODO */
-			AfterSaveOrUndo();
+			bool success = true;
+			long x, y;
+			if (!textResolutionX->GetValue().ToLong(&x) ||
+					x > MAX_RESOLUTION || x <= 0) {
+				/* TODO: error dialog */
+				success = false;
+			}
+			if (!textResolutionY->GetValue().ToLong(&y) ||
+					y > MAX_RESOLUTION || y <= 0) {
+				/* TODO: error dialog */
+				success = false;
+			}
+			if (success) {
+				resolutionX = x;
+				resolutionY = y;
+				fullscreen = checkboxFullscreen->GetValue();
+				/* TODO: save to file */
+				AfterSaveOrUndo();
+			}
 		} else {
 			Close();
 		}
