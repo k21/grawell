@@ -71,11 +71,6 @@ public:
 		}
 		panel->SetSizer(boxParts);
 
-		/* TODO: load values from file */
-		resolutionX = 800;
-		resolutionY = 600;
-		fullscreen = false;
-
 		UndoChanges();
 
 		Connect(textResolutionX->GetId(), wxEVT_COMMAND_TEXT_UPDATED,
@@ -299,6 +294,11 @@ class MenuApp : public wxApp {
 IMPLEMENT_APP_NO_MAIN(MenuApp);
 
 int main(int argc, char **argv) {
+	/* TODO: load values from file */
+	resolutionX = 800;
+	resolutionY = 600;
+	fullscreen = false;
+
 	wxEntry(argc, argv);
 
 	if (!startGame) return 0;
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
 		server->Launch();
 	}
 
-	Driver driver;
+	Driver driver(resolutionX, resolutionY, fullscreen);
 	driver.changeScreen(new GameScreen(driver,
 			IPAddress.utf8_str(), 4920, playerName.utf8_str()));
 	driver.run();

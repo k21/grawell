@@ -2,11 +2,13 @@
 
 using namespace sf;
 
-Driver::Driver(): renderWindow(0), screen(0),
+Driver::Driver(unsigned int resX, unsigned int resY, bool fullscreen):
+		renderWindow(0), screen(0),
 		toDelete(0), doExit(false), clock() {
-	VideoMode mode(800, 600);
+	VideoMode mode(resX, resY);
 	WindowSettings settings(24, 0, 2);
-	renderWindow = new RenderWindow(mode, "GraWell", Style::Close, settings);
+	renderWindow = new RenderWindow(mode, "GraWell",
+			Style::Close | (fullscreen ? Style::Fullscreen : 0), settings);
 }
 
 Driver::~Driver() {

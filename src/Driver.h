@@ -8,7 +8,7 @@
 class Driver {
 
 public:
-	Driver();
+	Driver(unsigned int resX, unsigned int resY, bool fullscreen);
 	Driver(const Driver &) = delete;
 	Driver &operator = (const Driver &) = delete;
 	~Driver();
