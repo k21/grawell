@@ -247,12 +247,17 @@ public:
 	void OnSelectHost(wxCommandEvent &) {
 		checkBoxHost->SetValue(true);
 		checkBoxJoin->SetValue(false);
+		IPAddress = textAddress->GetValue();
+		textAddress->SetValue(_("localhost"));
+		textAddress->Enable(false);
 		host = true;
 	}
 
 	void OnSelectJoin(wxCommandEvent &) {
 		checkBoxHost->SetValue(false);
 		checkBoxJoin->SetValue(true);
+		textAddress->SetValue(IPAddress);
+		textAddress->Enable(true);
 		host = false;
 	}
 
