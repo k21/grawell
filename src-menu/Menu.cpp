@@ -5,6 +5,7 @@
 #include "../src/Driver.h"
 #include "../src/GameScreen.h"
 #include "../src/Server.h"
+#include "Config.h"
 
 static const int MAX_RESOLUTION = 65536;
 
@@ -116,7 +117,7 @@ public:
 				resolutionX = x;
 				resolutionY = y;
 				fullscreen = checkboxFullscreen->GetValue();
-				/* TODO: save to file */
+				save(host, IPAddress, playerName, resolutionX, resolutionY, fullscreen);
 				AfterSaveOrUndo();
 			} else {
 				wxMessageDialog *dialog = new wxMessageDialog(this,
@@ -200,8 +201,8 @@ public:
 					boxHostJoin->Add(checkBoxJoin, 0, wxALL, 10);
 				}
 
-				textName = new wxTextCtrl(panel, wxID_ANY);
-				textAddress = new wxTextCtrl(panel, wxID_ANY);
+				textName = new wxTextCtrl(panel, wxID_ANY, playerName);
+				textAddress = new wxTextCtrl(panel, wxID_ANY, IPAddress);
 
 				gridTextConfig->Add(labelMode, 0,
 						wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
@@ -232,6 +233,9 @@ public:
 		}
 		panel->SetSizer(boxParts);
 
+		if (host) SelectHost();
+		else SelectJoin();
+
 		Connect(checkBoxHost->GetId(), wxEVT_COMMAND_CHECKBOX_CLICKED,
 				wxCommandEventHandler(MainFrame::OnSelectHost));
 		Connect(checkBoxJoin->GetId(), wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -242,9 +246,15 @@ public:
 				wxCommandEventHandler(MainFrame::OnButtonSettingsClick));
 		Connect(buttonStart->GetId(), wxEVT_COMMAND_BUTTON_CLICKED,
 				wxCommandEventHandler(MainFrame::OnButtonStartClick));
+		Connect(this->GetId(), wxEVT_CLOSE_WINDOW,
+				wxCommandEventHandler(MainFrame::OnClose));
 	}
 
 	void OnSelectHost(wxCommandEvent &) {
+		SelectHost();
+	}
+
+	void SelectHost() {
 		checkBoxHost->SetValue(true);
 		checkBoxJoin->SetValue(false);
 		IPAddress = textAddress->GetValue();
@@ -254,6 +264,10 @@ public:
 	}
 
 	void OnSelectJoin(wxCommandEvent &) {
+		SelectJoin();
+	}
+
+	void SelectJoin() {
 		checkBoxHost->SetValue(false);
 		checkBoxJoin->SetValue(true);
 		textAddress->SetValue(IPAddress);
@@ -272,10 +286,14 @@ public:
 	}
 
 	void OnButtonStartClick(wxCommandEvent &) {
-		IPAddress = textAddress->GetValue();
-		playerName = textName->GetValue();
 		startGame = true;
 		Close();
+	}
+
+	void OnClose(wxCommandEvent &) {
+		IPAddress = textAddress->GetValue();
+		playerName = textName->GetValue();
+		Destroy();
 	}
 
 	wxCheckBox *checkBoxHost;
@@ -299,12 +317,12 @@ class MenuApp : public wxApp {
 IMPLEMENT_APP_NO_MAIN(MenuApp);
 
 int main(int argc, char **argv) {
-	/* TODO: load values from file */
-	resolutionX = 800;
-	resolutionY = 600;
-	fullscreen = false;
+	/* TODO: check ret */
+	load(host, IPAddress, playerName, resolutionX, resolutionY, fullscreen);
 
 	wxEntry(argc, argv);
+
+	save(host, IPAddress, playerName, resolutionX, resolutionY, fullscreen);
 
 	if (!startGame) return 0;
 
