@@ -228,16 +228,31 @@ void GameScreen::logic(float elapsed) {
 }
 
 void GameScreen::display() {
+	RenderWindow &window = driver.getRenderWindow();
+	window.SetView(view);
+	window.Clear();
+
+	if (state == NOTHING || state == REQUEST_SENT || state == WAITING) {
+		view.SetCenter(0, 0);
+		view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
+
+		String s(
+				state == client->isConnected()
+					? "Waiting for next round..."
+					: "Connecting...",
+				Font::GetDefaultFont(), 60*FIXED_ONE);
+		s.SetColor(Color::White);
+		s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight());
+		s.SetPosition(0, 0);
+		window.Draw(s);
+		return;
+	}
 	moveRight += moveRightDelta*(double)view.GetHalfSize().x/100;
 	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/100;
 	zoom      += 4*zoomDelta;
 	moveRight *= 0.85; moveDown *= 0.85; zoom *= 0.85;
 	view.Move((float)moveRight, (float)moveDown);
 	view.Zoom((float)exp(zoom/250));
-
-	RenderWindow &window = driver.getRenderWindow();
-	window.SetView(view);
-	window.Clear();
 
 	for (Trail &t : trails) {
 		t.draw(window);

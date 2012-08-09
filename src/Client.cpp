@@ -23,6 +23,7 @@ void Client::Run() {
 		LOG(ERR) << "Could not connect to server";
 		return;
 	}
+	isConnected_ = true;
 	socket.SetBlocking(false);
 	while (!exit_) {
 		bool nothing = true;
