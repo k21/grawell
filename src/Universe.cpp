@@ -20,6 +20,7 @@ void Universe::update(list<pair<uint16_t, uint16_t>> &hits, bool updateTrails,
 			Trail &t = bullets[i].trail;
 			trails->push_back(Trail(t.getMaxSize(), t.getColor()));
 			t.swapPoints(trails->back());
+			if (trails->size() > 12) trails->pop_front();
 		}
 		bullets.free(bullets[i]);
 	}
