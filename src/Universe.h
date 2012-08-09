@@ -19,7 +19,7 @@ public:
 	Universe();
 
 	void update(std::list<std::pair<uint16_t, uint16_t>> &hits,
-			bool updateTrails, std::vector<Trail> *trails);
+			bool updateTrails, std::list<Trail> *trails);
 
 	Settings settings;
 	EntityManager<Planet> planets;

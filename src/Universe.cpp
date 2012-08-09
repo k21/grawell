@@ -6,7 +6,7 @@ Universe::Universe():
 		settings(), planets(), ships(), bullets() {}
 
 void Universe::update(list<pair<uint16_t, uint16_t>> &hits, bool updateTrails,
-		vector<Trail> *trails) {
+		list<Trail> *trails) {
 	vector<size_t> toErase;
 	for (Bullet &b : bullets) {
 		if (b.active()) {

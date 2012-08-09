@@ -2,6 +2,7 @@
 #define GAME_SCREEN_H_
 
 #include <cstdint>
+#include <list>
 #include <set>
 
 #include "Screen.h"
@@ -42,7 +43,7 @@ protected:
 	double moveDown, moveRight, zoom;
 	int8_t moveDownDelta, moveRightDelta, zoomDelta;
 	std::set<uint16_t> keepPlanets, keepBullets;
-	std::vector<Trail> trails;
+	std::list<Trail> trails;
 	char playerName[32 + 1];
 
 };
