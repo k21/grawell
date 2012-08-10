@@ -43,11 +43,12 @@ bool Bullet::update(EntityManager<Planet> &planets,
 	center += (kr1 + 2*kr2 + 2*kr3 + kr4)/6;
 #undef SPEED_TO_POS
 
-	if (center.size() > 16000*FIXED_ONE) return true;
-
 	if (updateTrails) {
 		trail.add(center);
 	}
+
+	if (center.size() > 16000*FIXED_ONE) return true;
+
 	for (Planet &p : planets) {
 		if (p.active() && p.intersects(center)) return true;
 	}
