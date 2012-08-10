@@ -16,7 +16,7 @@ GameScreen::GameScreen(Driver &driver_,
 		const char *serverAddress, uint16_t port,
 		const char *playerName_):
 		Screen(driver_),
-		view(), universe(), id(0), client(0),
+		view(), hudView(), universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0),
 		moveDown(0), moveRight(0), zoom(0),
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
@@ -26,6 +26,7 @@ GameScreen::GameScreen(Driver &driver_,
 	playerName[(sizeof playerName) - 1] = '\0';
 	view.SetCenter(0, 0);
 	view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
+	hudView.SetCenter(0, 0);
 	client = new Client(IPAddress(serverAddress), (short)port);
 	client->Launch();
 }
@@ -227,6 +228,23 @@ void GameScreen::logic(float elapsed) {
 	}
 }
 
+void GameScreen::drawHud(RenderWindow &window) {
+	window.SetView(hudView);
+	float sizeX = (float)driver.getRenderWindow().GetWidth();
+	float sizeY = (float)driver.getRenderWindow().GetHeight();
+	hudView.SetHalfSize(sizeX / 2, sizeY / 2);
+	Ship &s = universe.ships[id];
+	char shipInfo[256];
+	sprintf(shipInfo, "Power: %03d.%02d   Direction: %03d.%02d",
+			s.strength / 100, s.strength % 100,
+			s.direction / 100, s.direction % 100);
+	String str(shipInfo, Font::GetDefaultFont(), 20);
+	str.SetColor(Color::White);
+	str.SetCenter(str.GetRect().GetWidth()/2, 0);
+	str.SetPosition(0, -sizeY/2);
+	window.Draw(str);
+}
+
 void GameScreen::display() {
 	RenderWindow &window = driver.getRenderWindow();
 	window.SetView(view);
@@ -266,5 +284,6 @@ void GameScreen::display() {
 	for (Ship &s : universe.ships) {
 		if (s.alive) s.draw(window);
 	}
+	drawHud(window);
 	window.Display();
 }

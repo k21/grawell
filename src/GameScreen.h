@@ -29,8 +29,9 @@ protected:
 
 	void handleMessage(const Message &m);
 	void shoot();
+	void drawHud(sf::RenderWindow &window);
 
-	sf::View view;
+	sf::View view, hudView;
 	Universe universe;
 	uint16_t id;
 	Client *client;
