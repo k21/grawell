@@ -36,7 +36,7 @@ public:
 protected:
 	Bullet(uint16_t id_): Entity(id_), speed(),
 			trail(1000, sf::Color(0,0,0,0)), myOwner(65535) {
-		radius = 2*FIXED_ONE;
+		radius = 8*FIXED_ONE;
 	}
 
 	uint16_t myOwner;
