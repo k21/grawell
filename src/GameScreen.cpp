@@ -53,7 +53,7 @@ void GameScreen::shoot() {
 	client->send(m);
 }
 
-static int32_t rotateAmount(bool control, bool shift) {
+static int32_t changeAmount(bool control, bool shift) {
 	if (control && shift) return 5;
 	if (control) return 25;
 	if (shift) return 1000;
@@ -65,27 +65,30 @@ void GameScreen::handleKey(Event::KeyEvent e, bool pressed) {
 		case Key::Escape: driver.exit(); break;
 		case Key::Up:
 			if (pressed && state == SELECT_ACTION) {
-				universe.ships[id].strength += 1000;
+				int32_t strength = universe.ships[id].strength;
+				strength += 5 * changeAmount(e.Control, e.Shift);
+				universe.ships[id].strength = strength;
 			}
 			break;
 		case Key::Down:
 			if (pressed && state == SELECT_ACTION) {
-				if (universe.ships[id].strength > 1000) {
-					universe.ships[id].strength -= 1000;
-				} else {
-					universe.ships[id].strength = 0;
+				int32_t strength = universe.ships[id].strength;
+				strength -= 5 * changeAmount(e.Control, e.Shift);
+				if (strength < 0) {
+					strength = 0;
 				}
+				universe.ships[id].strength = strength;
 			}
 			break;
 		case Key::Left:
 			if (pressed && state == SELECT_ACTION) {
-				int32_t r = rotateAmount(e.Control, e.Shift);
+				int32_t r = changeAmount(e.Control, e.Shift);
 				universe.ships[id].rotate(-r);
 			}
 			break;
 		case Key::Right:
 			if (pressed && state == SELECT_ACTION) {
-				int32_t r = rotateAmount(e.Control, e.Shift);
+				int32_t r = changeAmount(e.Control, e.Shift);
 				universe.ships[id].rotate(+r);
 			}
 			break;
