@@ -35,7 +35,7 @@ void Ship::draw(RenderTarget &target) const {
 	float lineLength = 1.2f*(float)radius + (float)(strength*FIXED_ONE)/100.f;
 	Vector d = center + Vector::polar(direction, (Vector::T)lineLength);
 	Shape line = Shape::Line((float)center.x, (float)center.y,
-			(float)d.x, (float)d.y, FIXED_ONE, c);
+			(float)d.x, (float)d.y, 12*FIXED_ONE, c);
 	target.Draw(circle);
 	target.Draw(line);
 	stringstream ss;
