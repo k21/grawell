@@ -247,24 +247,25 @@ void GameScreen::drawHud(RenderWindow &window) {
 
 void GameScreen::display() {
 	RenderWindow &window = driver.getRenderWindow();
-	window.SetView(view);
 	window.Clear();
 
 	if (state == NOTHING || state == REQUEST_SENT || state == WAITING) {
-		view.SetCenter(0, 0);
-		view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
+		window.SetView(hudView);
 
 		String s(
 				state == client->isConnected()
 					? "Waiting for next round..."
 					: "Connecting...",
-				Font::GetDefaultFont(), 60*FIXED_ONE);
+				Font::GetDefaultFont(), 60);
 		s.SetColor(Color::White);
-		s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight());
+		s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight()/2);
 		s.SetPosition(0, 0);
 		window.Draw(s);
+		window.Display();
 		return;
 	}
+
+	window.SetView(view);
 	moveRight += moveRightDelta*(double)view.GetHalfSize().x/100;
 	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/100;
 	zoom      += 4*zoomDelta;
