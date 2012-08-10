@@ -16,7 +16,9 @@ GameScreen::GameScreen(Driver &driver_,
 		const char *serverAddress, uint16_t port,
 		const char *playerName_):
 		Screen(driver_),
-		view(), hudView(), universe(), id(0), client(0),
+		view(), hudView(),
+		windowWidth(0), windowHeight(0),
+		universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0),
 		moveDown(0), moveRight(0), zoom(0),
 		moveDownDelta(0), moveRightDelta(0), zoomDelta(0),
@@ -24,8 +26,12 @@ GameScreen::GameScreen(Driver &driver_,
 		playerName() {
 	strncpy(playerName, playerName_, sizeof playerName);
 	playerName[(sizeof playerName) - 1] = '\0';
+	windowWidth  = driver.getRenderWindow().GetWidth();
+	windowHeight = driver.getRenderWindow().GetHeight();
 	view.SetCenter(0, 0);
-	view.SetHalfSize(400.0*FIXED_ONE, 300.0*FIXED_ONE);
+	view.SetHalfSize(
+			(float)FIXED_ONE * (float)windowWidth  / 2,
+			(float)FIXED_ONE * (float)windowHeight / 2);
 	hudView.SetCenter(0, 0);
 	client = new Client(IPAddress(serverAddress), (short)port);
 	client->Launch();
@@ -266,6 +272,16 @@ void GameScreen::display() {
 	}
 
 	window.SetView(view);
+
+	if (windowWidth != window.GetWidth() || windowHeight != window.GetHeight()) {
+		view.Zoom((float)windowWidth / (float)window.GetWidth());
+		windowWidth  = window.GetWidth();
+		windowHeight = window.GetHeight();
+		view.SetHalfSize(
+				view.GetHalfSize().x,
+				view.GetHalfSize().x * (float)windowHeight / (float)windowWidth);
+	}
+
 	moveRight += moveRightDelta*(double)view.GetHalfSize().x/100;
 	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/100;
 	zoom      += 4*zoomDelta;

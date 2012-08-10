@@ -8,7 +8,8 @@ Driver::Driver(unsigned int resX, unsigned int resY, bool fullscreen):
 	VideoMode mode(resX, resY);
 	WindowSettings settings(24, 0, 2);
 	renderWindow = new RenderWindow(mode, "GraWell",
-			Style::Close | (fullscreen ? Style::Fullscreen : 0), settings);
+			Style::Close | (fullscreen ? Style::Fullscreen : Style::Resize),
+			settings);
 }
 
 Driver::~Driver() {
