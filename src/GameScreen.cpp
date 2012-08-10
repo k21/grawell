@@ -67,6 +67,9 @@ void GameScreen::handleKey(Event::KeyEvent e, bool pressed) {
 			if (pressed && state == SELECT_ACTION) {
 				int32_t strength = universe.ships[id].strength;
 				strength += 5 * changeAmount(e.Control, e.Shift);
+				if (strength > MAX_STRENGTH) {
+					strength = MAX_STRENGTH;
+				}
 				universe.ships[id].strength = strength;
 			}
 			break;

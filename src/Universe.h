@@ -13,6 +13,8 @@
 #include "Ship.h"
 #include "Trail.h"
 
+#define MAX_STRENGTH 25000
+
 class Universe {
 
 public:
