@@ -135,6 +135,10 @@ int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
 		if (universe.ships[client.id].ready) return 1;
 		if (m.type() == Message::ACTION) {
 			if (state != SELECT_ACTION) return 1;
+			if (m.direction() >= 36000) return 1;
+			if (m.strength() > MAX_STRENGTH) return 1;
+			if (m.direction() % 5 != 0) return 1;
+			if (m.strength() % 25 != 0) return 1;
 			universe.ships[client.id].direction = m.direction();
 			universe.ships[client.id].strength = m.strength();
 		} else if (m.type() == Message::ROUND_CHECKSUM) {
