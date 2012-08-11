@@ -25,7 +25,9 @@ public:
 	void owner(uint16_t pid) {
 		myOwner = pid;
 		sf::Color trailColor = Ship::getColorByID(pid);
-		trailColor.a = 96;
+		trailColor.r = (sf::Uint8)((float)trailColor.r * 0.4f);
+		trailColor.g = (sf::Uint8)((float)trailColor.g * 0.4f);
+		trailColor.b = (sf::Uint8)((float)trailColor.b * 0.4f);
 		trail.setColor(trailColor);
 	}
 

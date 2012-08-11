@@ -41,16 +41,17 @@ void Trail::setMaxSize(size_t size) {
 
 void Trail::draw(RenderTarget &target) const {
 	if (points.empty()) return;
-	float width = 8*FIXED_ONE;
+	float width = 6*FIXED_ONE;
+	float outlineWidth = 1*FIXED_ONE;
 	auto it1 = points.begin();
 	auto it2 = it1; ++it2;
 	while (it2 != points.end()) {
 		Shape line = Shape::Line((float)it1->x, (float)it1->y,
-				(float)it2->x, (float)it2->y, width, color);
+				(float)it2->x, (float)it2->y, width, color, outlineWidth, color);
 		target.Draw(line);
 		++it1; ++it2;
 	}
 	Shape line = Shape::Line((float)points.back().x, (float)points.back().y,
-			(float)last.x, (float)last.y, width, color);
+			(float)last.x, (float)last.y, width, color, outlineWidth, color);
 	target.Draw(line);
 }
