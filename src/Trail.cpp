@@ -20,7 +20,7 @@ void Trail::add(Point p) {
 			float dirChange = dir1 - dir2;
 			if (dirChange < 0) dirChange += (float)(2*M_PI);
 			if (dirChange > M_PI) dirChange = (float)(2*M_PI) - dirChange;
-			if ((float)v2.size() > (float)FIXED_ONE * 2 / dirChange) doAdd = true;
+			if ((float)v2.size() > (float)FIXED_ONE / dirChange) doAdd = true;
 		}
 	}
 
