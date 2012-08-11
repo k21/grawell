@@ -313,11 +313,11 @@ void GameScreen::display() {
 	for (Trail &t : trails) {
 		t.draw(window);
 	}
-	for (Planet &p : universe.planets) {
-		if (p.active()) p.draw(window);
-	}
 	for (Bullet &b : universe.bullets) {
 		if (b.active()) b.draw(window);
+	}
+	for (Planet &p : universe.planets) {
+		if (p.active()) p.draw(window);
 	}
 	for (Ship &s : universe.ships) {
 		if (s.alive) s.draw(window);
