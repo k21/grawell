@@ -296,8 +296,9 @@ void GameScreen::display() {
 				view.GetHalfSize().x * (float)windowHeight / (float)windowWidth);
 	}
 
-	moveRight += moveRightDelta*(double)view.GetHalfSize().x/100;
-	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/100;
+	float moveModifier = (view.GetHalfSize().x + view.GetHalfSize().y) / 200;
+	moveRight += moveRightDelta * moveModifier;
+	moveDown  += moveDownDelta  * moveModifier;
 	zoom      += 4*zoomDelta;
 	moveRight *= 0.85; moveDown *= 0.85; zoom *= 0.85;
 
