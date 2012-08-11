@@ -7,8 +7,8 @@ void Bullet::draw(RenderTarget &target) const {
 	Color c = Ship::getColorByID(myOwner);
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius, c);
-	target.Draw(circle);
 	trail.draw(target);
+	target.Draw(circle);
 }
 
 static Vector acceleration(const Point &pos, const Planet &pl) {
