@@ -42,7 +42,7 @@ protected:
 		ROUND, ROUND_DONE
 	} state;
 	int32_t roundCntr;
-	double moveDown, moveRight, zoom;
+	float moveDown, moveRight, zoom;
 	int8_t moveDownDelta, moveRightDelta, zoomDelta;
 	std::set<uint16_t> keepPlanets, keepBullets;
 	std::list<Trail> trails;
