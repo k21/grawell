@@ -63,6 +63,7 @@ int8_t Client::sendPending() {
 				status = socket.Send(buffer, size);
 			} while (status == Socket::NotReady);
 			if (status != Socket::Done) return -1;
+			LOG(DEBUG) << "Sent packet of size " << size;
 		}
 	}
 	return something;
@@ -75,6 +76,7 @@ int8_t Client::recvPending() {
 		char buffer[MAX_PACKET_SIZE]; size_t size;
 		status = socket.Receive(buffer, sizeof buffer, size);
 		if (status == Socket::Done) {
+			LOG(DEBUG) << "Received packet of size " << size;
 			something = true;
 			decoder.decode(buffer, size);
 			if (decoder.error()) {

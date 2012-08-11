@@ -115,7 +115,8 @@ void Server::sendToAll(const vector<Message> &m) {
 }
 
 int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
-	LOG(DEBUG) << "Server received packet type " << (uint16_t)m.type();
+	LOG(DEBUG) << "Server received message "
+			<< Message::typeToString((Message::Type)m.type());
 	if (m.fromServer()) {
 		return 1;
 	}
@@ -187,6 +188,7 @@ void Server::Run() {
 			status = client.socket.Receive(buffer, sizeof buffer, received);
 			bool error = false;
 			if (status == Socket::Done) {
+				LOG(DEBUG) << "Received packet of size " << received;
 				nothing = false;
 				client.decoder.decode(buffer, received);
 				if (client.decoder.error()) error = true;
@@ -211,6 +213,7 @@ void Server::Run() {
 			if (!error && client.pending) {
 				status = client.socket.Send(client.pending, client.pendingSize);
 				if (status == Socket::Done) {
+					LOG(DEBUG) << "Sent packet of size " << client.pendingSize;
 					client.pending = 0; client.pendingSize = 0;
 				} else if (status != Socket::NotReady) {
 					error = true;

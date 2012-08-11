@@ -118,7 +118,8 @@ void GameScreen::handleKey(Event::KeyEvent e, bool pressed) {
 }
 
 void GameScreen::handleMessage(const Message &m) {
-	LOG(DEBUG) << "Client received packet type " << (uint16_t)m.type();
+	LOG(DEBUG) << "Client received message "
+			<< Message::typeToString((Message::Type)m.type());
 	switch (m.type()) {
 		case Message::JOIN_RESPONSE:
 			if (!m.accepted()) {

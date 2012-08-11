@@ -27,6 +27,30 @@ public:
 		ACTION_INFO,
 	};
 
+	static const char *typeToString(Type t) {
+		static const char *clientStrings[] = {
+			"JOIN_REQUEST",
+			"ACTION",
+			"ROUND_CHECKSUM"
+		};
+		static const char *serverStrings[] = {
+			"JOIN_RESPONSE",
+			"GAME_SETTINGS",
+			"SHIP_INFO",
+			"PLANET_INFO",
+			"PLAYER_INFO",
+			"SCORE_INFO",
+			"BULLET_INFO",
+			"NEW_ROUND",
+			"PLAYER_READY",
+			"ACTION_INFO"
+		};
+		int ti = (int)t;
+		if (ti >= 0   && ti < 3  ) return clientStrings[ti      ];
+		if (ti >= 128 && ti < 138) return serverStrings[ti - 128];
+		return 0;
+	}
+
 	enum Field : uint8_t {
 		TYPE = 0,
 		VERSION,
