@@ -300,8 +300,15 @@ void GameScreen::display() {
 	moveDown  += moveDownDelta *(double)view.GetHalfSize().y/100;
 	zoom      += 4*zoomDelta;
 	moveRight *= 0.85; moveDown *= 0.85; zoom *= 0.85;
+
 	view.Move((float)moveRight, (float)moveDown);
-	view.Zoom((float)exp(zoom/250));
+	float zoomLevel = view.GetHalfSize().x / (float)windowWidth;
+	if ((zoomLevel > 50*FIXED_ONE && zoom < 0) ||
+			(zoomLevel < FIXED_ONE/16 && zoom > 0)) {
+		zoom = 0;
+	} else {
+		view.Zoom((float)exp(zoom/250));
+	}
 
 	for (Trail &t : trails) {
 		t.draw(window);
