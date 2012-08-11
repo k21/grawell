@@ -23,7 +23,7 @@ class SettingsFrame : public wxFrame {
 public:
 	SettingsFrame():
 			wxFrame(0, wxID_ANY, _("GraWell Settings"),
-					wxDefaultPosition, wxSize(200,200)) {
+					wxDefaultPosition, wxSize(400,200)) {
 		wxPanel *panel = new wxPanel(this, wxID_ANY);
 
 		wxBoxSizer *boxParts = new wxBoxSizer(wxVERTICAL);
@@ -177,7 +177,7 @@ class MainFrame : public wxFrame {
 public:
 	MainFrame():
 			wxFrame(0, wxID_ANY, _("GraWell Launcher"),
-					wxDefaultPosition, wxSize(200,200)) {
+					wxDefaultPosition, wxSize(400,200)) {
 		wxPanel *panel = new wxPanel(this, wxID_ANY);
 
 		wxBoxSizer *boxParts = new wxBoxSizer(wxVERTICAL);
