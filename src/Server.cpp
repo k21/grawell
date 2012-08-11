@@ -225,10 +225,12 @@ void Server::Run() {
 			}
 			if (error) {
 				uint16_t id = client.id;
-				if (client.active && universe.ships[id].inGame) {
-					if (!universe.ships[id].ready) --waitingForCnt;
+				if (client.active) {
 					universe.ships[id].connected = false;
-					universe.ships[id].ready = true;
+					if (universe.ships[id].inGame) {
+						if (!universe.ships[id].ready) --waitingForCnt;
+						universe.ships[id].ready = true;
+					}
 				}
 				client.socket.Close();
 				delete *it;
