@@ -56,8 +56,8 @@ bool Bullet::update(EntityManager<Planet> &planets,
 		if (s.alive && s.intersects(center)) {
 			uint16_t from = myOwner, to = s.id();
 			if (from != (uint16_t)-1) {
-				if (from == to) --ships[from].score;
-				else ++ships[from].score;
+				if (from == to) ships[from].score -= 2000;
+				else ships[from].score += 2000 - originalPower*8/100;
 			}
 			ships[to].alive = false;
 			hits.push_back(to);
