@@ -30,12 +30,14 @@ public:
 		trail.setColor(trailColor);
 	}
 
+	uint32_t originalPower;
+
 	Vector speed;
 
 	Trail trail;
 
 protected:
-	Bullet(uint16_t id_): Entity(id_), speed(),
+	Bullet(uint16_t id_): Entity(id_), originalPower(0), speed(),
 			trail(1000, sf::Color(0,0,0,0)), myOwner(65535) {
 		radius = 8*FIXED_ONE;
 	}

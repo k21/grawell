@@ -52,4 +52,5 @@ void Ship::shoot(EntityManager<Bullet> &bullets) const {
 	Vector speed = Vector::polar(direction, strength*FIXED_ONE/100);
 	Bullet &b = bullets.alloc();
 	b.owner(id()); b.center = pos; b.speed = speed;
+	b.originalPower = strength;
 }
