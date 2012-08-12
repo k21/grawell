@@ -168,7 +168,8 @@ void Server::Run() {
 	for (size_t i = 0; i < 10; ++i) {
 		int32_t size = placer.random(10,70)*FIXED_ONE;
 		Planet &p = universe.planets.alloc();
-		p.radius = size; p.mass = 256000000;
+		p.radius = size;
+		p.mass = placer.random(size*100, size*200);
 		placer.place(p);
 	}
 	while (!exit_) {
