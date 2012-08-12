@@ -273,7 +273,7 @@ void GameScreen::display() {
 		window.SetView(hudView);
 
 		String s(
-				state == client->isConnected()
+				client->isConnected()
 					? "Waiting for next round..."
 					: "Connecting...",
 				Font::GetDefaultFont(), 60);

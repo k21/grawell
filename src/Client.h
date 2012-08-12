@@ -43,7 +43,7 @@ private:
 	uint16_t port;
 	sf::SocketTCP socket;
 	volatile bool exit_;
-	bool isConnected_;
+	volatile bool isConnected_;
 	sf::Mutex mutexIn, mutexOut;
 	std::queue<Message> incoming, outgoing;
 	Encoder encoder;
