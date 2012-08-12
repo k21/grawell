@@ -316,6 +316,9 @@ void GameScreen::display() {
 		t.draw(window);
 	}
 	for (Bullet &b : universe.bullets) {
+		if (b.active()) b.trail.draw(window);
+	}
+	for (Bullet &b : universe.bullets) {
 		if (b.active()) b.draw(window);
 	}
 	for (Planet &p : universe.planets) {

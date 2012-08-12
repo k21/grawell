@@ -7,7 +7,6 @@ void Bullet::draw(RenderTarget &target) const {
 	Color c = Ship::getColorByID(myOwner);
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius, c);
-	trail.draw(target);
 	target.Draw(circle);
 }
 
