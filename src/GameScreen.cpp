@@ -329,7 +329,7 @@ void GameScreen::display() {
 		if (p.active()) p.draw(window);
 	}
 	for (Ship &s : universe.ships) {
-		if (s.alive) s.draw(window);
+		if (s.alive) s.draw(window, zoomLevel);
 	}
 	drawHud(window);
 	window.Display();

@@ -27,8 +27,7 @@ Color Ship::getColorByID(uint16_t id) {
 	return Color((Uint8)r, (Uint8)g, (Uint8)b);
 }
 
-void Ship::draw(RenderTarget &target) const {
-	Color whiteTransparent(255, 255, 255, 128);
+void Ship::draw(RenderTarget &target, float zoomLevel) const {
 	Color c = getColorByID(id());
 	Shape circle = Shape::Circle(
 			(float)center.x, (float)center.y, (float)radius, c);
@@ -40,8 +39,8 @@ void Ship::draw(RenderTarget &target) const {
 	target.Draw(line);
 	stringstream ss;
 	ss << name << " (" << score << ")";
-	String s(ss.str(), Font::GetDefaultFont(), 20*FIXED_ONE);
-	s.SetColor(whiteTransparent);
+	String s(ss.str(), Font::GetDefaultFont(), 32*zoomLevel);
+	s.SetColor(Color::White);
 	s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight());
 	s.SetPosition((float)center.x, (float)(center.y-radius-5));
 	target.Draw(s);

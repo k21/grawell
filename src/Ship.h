@@ -15,7 +15,7 @@ class Ship : public Entity {
 
 public:
 	void shoot(EntityManager<Bullet> &bullets) const;
-	void draw(sf::RenderTarget &target) const;
+	void draw(sf::RenderTarget &target, float zoomLevel) const;
 	void rotate(int32_t d) {
 		if (d == 0) return;
 		if (d > 0) {
