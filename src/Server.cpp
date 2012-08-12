@@ -59,8 +59,20 @@ void Server::changeState() {
 		for (Ship &s : universe.ships) {
 			if (s.inGame && !s.connected) {
 				removeShip(s.id());
+				for (size_t i = 0; i < 2; ++i) {
+					Planet &p = *(--universe.planets.end());
+					placer.remove(p);
+					universe.planets.free(p);
+				}
 			} else if (!s.inGame && s.connected) {
 				s.inGame = true;
+				for (size_t i = 0; i < 2; ++i) {
+					int32_t size = placer.random(10,70)*FIXED_ONE;
+					Planet &p = universe.planets.alloc();
+					p.radius = size;
+					p.mass = placer.random(size*100, size*200);
+					placer.place(p);
+				}
 			}
 			if (s.inGame && !s.alive) {
 				placer.place(s);
@@ -165,13 +177,6 @@ void Server::Run() {
 	serverSocket.SetBlocking(false);
 	IPAddress address;
 	SocketTCP clientSocket;
-	for (size_t i = 0; i < 10; ++i) {
-		int32_t size = placer.random(10,70)*FIXED_ONE;
-		Planet &p = universe.planets.alloc();
-		p.radius = size;
-		p.mass = placer.random(size*100, size*200);
-		placer.place(p);
-	}
 	while (!exit_) {
 		Socket::Status status = serverSocket.Accept(clientSocket, &address);
 		bool nothing = true;
