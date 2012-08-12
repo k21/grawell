@@ -254,11 +254,19 @@ void GameScreen::drawHud(RenderWindow &window) {
 	float sizeY = (float)driver.getRenderWindow().GetHeight();
 	hudView.SetHalfSize(sizeX / 2, sizeY / 2);
 	Ship &s = universe.ships[id];
-	char shipInfo[256];
-	sprintf(shipInfo, "Power: %03d.%02d   Direction: %03d.%02d",
-			s.strength / 100, s.strength % 100,
-			s.direction / 100, s.direction % 100);
-	String str(shipInfo, Font::GetDefaultFont(), 20);
+	char info[256] = {0};
+	if (state == SELECT_ACTION) {
+		sprintf(info, "Power: %03ld.%02ld    Direction: %03ld.%02ld",
+				(long)(s.strength / 100), (long)(s.strength % 100),
+				(long)(s.direction / 100), (long)(s.direction % 100));
+	}
+	if (state == ROUND) {
+		sprintf(info, "Round timer: %02ld", (long)(roundCntr/100));
+	}
+	if (state == SELECT_DONE || state == ROUND_DONE) {
+		strcpy(info, "Waiting for other players...");
+	}
+	String str(info, Font::GetDefaultFont(), 20);
 	str.SetColor(Color::White);
 	str.SetCenter(str.GetRect().GetWidth()/2, 0);
 	str.SetPosition(0, -sizeY/2);
