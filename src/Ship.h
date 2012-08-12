@@ -1,9 +1,8 @@
 #ifndef SHIP_H_
 #define SHIP_H_
 
-#include <string>
-
 #include <cstdint>
+#include <string>
 
 #include <SFML/Graphics.hpp>
 

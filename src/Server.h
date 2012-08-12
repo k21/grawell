@@ -1,11 +1,10 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include <cstdint>
 #include <list>
 #include <queue>
 #include <set>
-
-#include <cstdint>
 
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>

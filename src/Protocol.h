@@ -1,13 +1,12 @@
 #ifndef PROTOCOL_H_
 #define PROTOCOL_H_
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <queue>
 #include <utility>
 #include <vector>
-
-#include <cstdint>
 
 static const size_t MAX_PACKET_SIZE = 1024;
 static const uint16_t PROTOCOL_VERSION_DEV = 65535;

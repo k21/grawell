@@ -1,10 +1,9 @@
 #ifndef PLACER_H_
 #define PLACER_H_
 
+#include <cstdint>
 #include <set>
 #include <utility>
-
-#include <cstdint>
 
 class Entity;
 

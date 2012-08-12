@@ -1,9 +1,8 @@
 #ifndef BULLET_H_
 #define BULLET_H_
 
-#include <list>
-
 #include <cstdint>
+#include <list>
 
 #include <SFML/Graphics.hpp>
 

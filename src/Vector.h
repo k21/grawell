@@ -2,7 +2,6 @@
 #define VECTOR_H_
 
 #include <cmath>
-
 #include <cstdint>
 
 static const int32_t FIXED_ONE = 1<<16;

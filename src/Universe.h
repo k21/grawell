@@ -1,11 +1,10 @@
 #ifndef UNIVERSE_H_
 #define UNIVERSE_H_
 
+#include <cstdint>
 #include <list>
 #include <utility>
 #include <vector>
-
-#include <cstdint>
 
 #include "Bullet.h"
 #include "Planet.h"

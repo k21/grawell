@@ -1,10 +1,9 @@
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
+#include <cstdint>
 #include <queue>
 #include <string>
-
-#include <cstdint>
 
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>

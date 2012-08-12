@@ -1,9 +1,8 @@
 #ifndef ENTITY_MANAGER_H_
 #define ENTITY_MANAGER_H_
 
-#include <vector>
-
 #include <cstdint>
+#include <vector>
 
 #include "Vector.h"
 
