@@ -5,7 +5,7 @@ using namespace std;
 Universe::Universe():
 		settings(), planets(), ships(), bullets() {}
 
-void Universe::update(list<pair<uint16_t, uint16_t>> &hits, bool updateTrails,
+void Universe::update(list<uint16_t> &hits, bool updateTrails,
 		list<Trail> *trails) {
 	vector<size_t> toErase;
 	for (Bullet &b : bullets) {

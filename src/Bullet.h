@@ -16,7 +16,7 @@ class Bullet : public Entity {
 
 public:
 	bool update(EntityManager<Planet> &planets, EntityManager<Ship> &ships,
-			std::list<std::pair<uint16_t, uint16_t>> &hits,
+			std::list<uint16_t> &hits,
 			bool updateTrails);
 	void draw(sf::RenderTarget &target) const;
 

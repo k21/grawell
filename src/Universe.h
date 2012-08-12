@@ -19,7 +19,7 @@ class Universe {
 public:
 	Universe();
 
-	void update(std::list<std::pair<uint16_t, uint16_t>> &hits,
+	void update(std::list<uint16_t> &hits,
 			bool updateTrails, std::list<Trail> *trails);
 
 	Settings settings;

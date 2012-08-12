@@ -39,16 +39,10 @@ void Server::changeState() {
 		Message m = Message::actionInfo(Message::NO_PLAYER, 0, 0);
 		toSend.push_back(m);
 		sendToAll(toSend);
-		list<pair<uint16_t, uint16_t>> hits;
+		list<uint16_t> hits;
 		for (size_t i = 0; i < 8192; ++i) {
 			universe.update(hits, false, 0);
-			for (pair<uint16_t, uint16_t> p : hits) {
-				uint16_t from = p.first, to = p.second;
-				if (from != Message::NO_PLAYER) {
-					if (from == to) --universe.ships[from].score;
-					else ++universe.ships[from].score;
-				}
-				universe.ships[to].alive = false;
+			for (uint16_t to : hits) {
 				placer.remove(universe.ships[to]);
 			}
 			hits.clear();

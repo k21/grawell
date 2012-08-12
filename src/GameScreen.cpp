@@ -225,16 +225,9 @@ void GameScreen::logic(float elapsed) {
 		state = REQUEST_SENT;
 	}
 	if (state == ROUND) {
-		list<pair<uint16_t, uint16_t>> hits;
+		list<uint16_t> hits;
 		while (elapsed > 0) {
 			universe.update(hits, true, &trails);
-			for (pair<uint16_t, uint16_t> p : hits) {
-				if (p.first != Message::NO_PLAYER) {
-					if (p.first == p.second) --universe.ships[p.first].score;
-					else ++universe.ships[p.first].score;
-				}
-				universe.ships[p.second].alive = false;
-			}
 			hits.clear();
 			elapsed -= 1.0f/1024;
 			--roundCntr;
