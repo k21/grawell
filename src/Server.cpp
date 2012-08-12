@@ -166,7 +166,7 @@ void Server::Run() {
 	IPAddress address;
 	SocketTCP clientSocket;
 	for (size_t i = 0; i < 10; ++i) {
-		int32_t size = (uint32_t)(rand()%60+10)*FIXED_ONE;
+		int32_t size = placer.random(10,70)*FIXED_ONE;
 		Planet &p = universe.planets.alloc();
 		p.radius = size; p.mass = 256000000;
 		placer.place(p);

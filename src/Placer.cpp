@@ -11,8 +11,15 @@ static int32_t round(int32_t x, int32_t gridSize) {
 	return rx/gridSize - (rx < 0);
 }
 
+uint32_t Placer::random(uint32_t begin, uint32_t end) {
+	seed *= 0x5DEECE66D;
+	seed += 0xB;
+	seed &= 0xFFFFFF;
+	return (uint32_t)(begin + seed % (end - begin));
+}
+
 void Placer::place(Entity &e) {
-	int32_t i = (int32_t)(rand() % edge.size());
+	int32_t i = (int32_t)random(0, (uint32_t)edge.size());
 	auto it = edge.begin();
 	advance(it, i);
 	pair<int32_t, int32_t> p = *it;
@@ -25,9 +32,10 @@ void Placer::place(Entity &e) {
 	if (used.find( right) == used.end()) edge.insert( right);
 	if (used.find(   top) == used.end()) edge.insert(   top);
 	if (used.find(bottom) == used.end()) edge.insert(bottom);
-	int32_t range = gridSize - 2*e.radius;
-	e.center.x = x*gridSize-(gridSize/2)+(e.radius+rand()%range);
-	e.center.y = y*gridSize-(gridSize/2)+(e.radius+rand()%range);
+	e.center.x = x*gridSize-(gridSize/2);
+	e.center.y = y*gridSize-(gridSize/2);
+	e.center.x += random(e.radius, gridSize - e.radius);
+	e.center.y += random(e.radius, gridSize - e.radius);
 }
 
 void Placer::checkEdge(pair<int32_t, int32_t> p) {
