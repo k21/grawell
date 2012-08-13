@@ -35,6 +35,12 @@ void Driver::run() {
 			continue;
 		}
 		screen->logic(elapsed);
+		if (doExit) break;
+		if (toDelete) {
+			delete toDelete;
+			toDelete = 0;
+			continue;
+		}
 		screen->display();
 		elapsed = clock.GetElapsedTime();
 		if (elapsed < SPF) {

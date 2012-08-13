@@ -239,6 +239,7 @@ void GameScreen::logic(float elapsed) {
 			}
 		}
 	}
+	if (state != REQUEST_SENT && !client->isConnected()) driver.exit();
 }
 
 void GameScreen::drawHud(RenderWindow &window) {

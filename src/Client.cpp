@@ -31,16 +31,17 @@ void Client::Run() {
 		if (s == -1) {
 			//TODO: error
 			LOG(ERR) << "An error has occured when sending packets";
-			return;
+			break;
 		} else if (s == 1) nothing = false;
 		s = recvPending();
 		if (s == -1) {
 			//TODO: error
 			LOG(ERR) << "An error has occured when receiving packets";
-			return;
+			break;
 		} else if (s == 1) nothing = false;
 		if (nothing) Sleep(0.05f);
 	}
+	isConnected_ = false;
 }
 
 int8_t Client::sendPending() {
