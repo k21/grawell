@@ -282,6 +282,26 @@ public:
 		host = false;
 	}
 
+	bool CheckNameValidity() {
+		size_t len = strlen(textName->GetValue().utf8_str());
+		char name[len+1];
+		strcpy(name, textName->GetValue().utf8_str());
+		const char *src = name;
+		char *dst = name;
+		bool ret = true;
+		while (*src && dst-name < 32) {
+			if (*src >= 32 && *src <= 126) {
+				*dst = *src;
+				++dst;
+			} else ret = false;
+			++src;
+		}
+		if (*src) ret = false;
+		*dst = '\0';
+		textName->SetValue(wxString::FromUTF8(name));
+		return ret;
+	}
+
 	void OnButtonExitClick(wxCommandEvent &) {
 		Close();
 	}
@@ -293,6 +313,12 @@ public:
 	}
 
 	void OnButtonStartClick(wxCommandEvent &) {
+		if (!CheckNameValidity()) {
+			errorMessage("Please use a name that does not contain any characters "
+					"not representable in the ASCII encoding and which is no longer "
+					"than 32 characters");
+			return;
+		}
 		startGame = true;
 		Close();
 	}
