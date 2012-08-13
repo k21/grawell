@@ -19,6 +19,11 @@ static int32_t resolutionX;
 static int32_t resolutionY;
 static bool fullscreen;
 
+static void errorMessage(const char *str) {
+	wxMessageDialog *dialog = new wxMessageDialog(0, wxString::FromUTF8(str));
+	dialog->ShowModal();
+}
+
 class SettingsFrame : public wxFrame {
 public:
 	SettingsFrame():
@@ -117,13 +122,15 @@ public:
 				resolutionX = x;
 				resolutionY = y;
 				fullscreen = checkboxFullscreen->GetValue();
-				save(host, IPAddress, playerName, resolutionX, resolutionY, fullscreen);
+				int ret = save(host, IPAddress, playerName,
+						resolutionX, resolutionY, fullscreen);
+				if (ret) {
+					errorMessage("Could not save configuration");
+				}
 				AfterSaveOrUndo();
 			} else {
-				wxMessageDialog *dialog = new wxMessageDialog(this,
-						_("The resolution should contain "
-						"reasonably large numerical values"));
-				dialog->ShowModal();
+				errorMessage("The resolution should contain "
+						"reasonably large numerical values");
 			}
 		} else {
 			Close();
@@ -293,6 +300,11 @@ public:
 	void OnClose(wxCommandEvent &) {
 		IPAddress = textAddress->GetValue();
 		playerName = textName->GetValue();
+		int ret = save(host, IPAddress, playerName,
+				resolutionX, resolutionY, fullscreen);
+		if (ret) {
+			errorMessage("Could not save configuration");
+		}
 		Destroy();
 	}
 
@@ -308,6 +320,17 @@ public:
 
 class MenuApp : public wxApp {
 	bool OnInit() {
+		int ret = load(host, IPAddress, playerName,
+				resolutionX, resolutionY, fullscreen);
+		if (ret) {
+			errorMessage("Could not load configuration");
+			host = false;
+			IPAddress = _("");
+			playerName = _("");
+			resolutionX = 800;
+			resolutionY = 600;
+			fullscreen = false;
+		}
 		MainFrame *frame = new MainFrame();
 		frame->Show(true);
 		return true;
@@ -317,12 +340,8 @@ class MenuApp : public wxApp {
 IMPLEMENT_APP_NO_MAIN(MenuApp);
 
 int main(int argc, char **argv) {
-	/* TODO: check ret */
-	load(host, IPAddress, playerName, resolutionX, resolutionY, fullscreen);
 
 	wxEntry(argc, argv);
-
-	save(host, IPAddress, playerName, resolutionX, resolutionY, fullscreen);
 
 	if (!startGame) return 0;
 
