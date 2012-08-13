@@ -44,7 +44,7 @@ public:
 
 protected:
 	Ship(uint16_t id_): Entity(id_),
-			direction(0), strength(20000),
+			direction(0), strength(10000),
 			inGame(false), alive(false), connected(false),
 			ready(false),
 			name(), score(0) {
