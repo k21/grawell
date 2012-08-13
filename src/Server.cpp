@@ -5,6 +5,14 @@
 using namespace std;
 using namespace sf;
 
+bool Server::isValidName(string name) {
+	if (name.size() > 32) return false;
+	for (char ch : name) {
+		if (ch < 32 || ch > 126) return false;
+	}
+	return true;
+}
+
 void Server::removeShip(uint16_t id) {
 	for (Bullet &b : universe.bullets) {
 		if (b.owner() == id) b.owner(Message::NO_PLAYER);
@@ -131,7 +139,7 @@ int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
 		if (m.type() != Message::JOIN_REQUEST) {
 			return 1;
 		}
-		if (m.version() == PROTOCOL_VERSION) {
+		if (m.version() == PROTOCOL_VERSION && isValidName(m.text)) {
 			accept(client, m, toSend);
 		} else {
 			Message mm = Message::joinResponse(PROTOCOL_VERSION, false, 0);

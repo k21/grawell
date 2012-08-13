@@ -59,6 +59,8 @@ public:
 		LOG(INFO) << "Server terminated";
 	}
 
+	static bool isValidName(std::string name);
+
 private:
 	int8_t handleMessage(ClientInfo &client, const Message &m);
 	void accept(ClientInfo &client, const Message &m,
