@@ -19,7 +19,7 @@ void Client::Run() {
 		++r;
 	}
 	if (status != Socket::Done) {
-		//TODO: error
+		error_ = true;
 		LOG(ERR) << "Could not connect to server";
 		return;
 	}
@@ -29,13 +29,13 @@ void Client::Run() {
 		bool nothing = true;
 		int8_t s = sendPending();
 		if (s == -1) {
-			//TODO: error
+			error_ = true;
 			LOG(ERR) << "An error has occured when sending packets";
 			break;
 		} else if (s == 1) nothing = false;
 		s = recvPending();
 		if (s == -1) {
-			//TODO: error
+			error_ = true;
 			LOG(ERR) << "An error has occured when receiving packets";
 			break;
 		} else if (s == 1) nothing = false;

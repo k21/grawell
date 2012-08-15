@@ -172,7 +172,6 @@ int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
 void Server::Run() {
 	LOG(INFO) << "Starting server";
 	if (!serverSocket.Listen(port)) {
-		//TODO: error
 		LOG(ERR) << "Server cannot listen";
 		return;
 	}
@@ -189,7 +188,6 @@ void Server::Run() {
 			ClientInfo *client = new ClientInfo(address, clientSocket, -1);
 			clients.push_back(client);
 		} else if (status != Socket::NotReady) {
-			//TODO: error
 			LOG(ERR) << "An error occured when waiting for client";
 			return;
 		}

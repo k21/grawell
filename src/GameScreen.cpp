@@ -123,8 +123,8 @@ void GameScreen::handleMessage(const Message &m) {
 	switch (m.type()) {
 		case Message::JOIN_RESPONSE:
 			if (!m.accepted()) {
-				//TODO: error message
 				LOG(ERR) << "Server refused connection";
+				driver.exit();
 				return;
 			}
 			id = m.id();
@@ -172,8 +172,6 @@ void GameScreen::handleMessage(const Message &m) {
 				Ship &s = universe.ships[m.id()];
 				s.name = m.text;
 				s.inGame = true;
-			} else {
-				//TODO
 			}
 			break;
 		case Message::SCORE_INFO:
@@ -239,7 +237,7 @@ void GameScreen::logic(float elapsed) {
 			}
 		}
 	}
-	if (state != REQUEST_SENT && !client->isConnected()) driver.exit();
+	if (client->error()) driver.exit();
 }
 
 void GameScreen::drawHud(RenderWindow &window) {

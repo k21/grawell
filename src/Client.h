@@ -15,7 +15,8 @@ class Client : public sf::Thread {
 
 public:
 	Client(const sf::IPAddress &address_, int16_t port_):
-		address(address_), port(port_), socket(), exit_(false), isConnected_(false),
+		address(address_), port(port_), socket(),
+		exit_(false), isConnected_(false), error_(false),
 		mutexIn(), mutexOut(), incoming(), outgoing(), encoder(), decoder() {}
 	Client(const Client &) = delete;
 	Client &operator = (const Client &) = delete;
@@ -30,6 +31,9 @@ public:
 	bool isConnected() const {
 		return isConnected_;
 	}
+	bool error() const {
+		return error_;
+	}
 
 	void send(Message &message);
 	bool recv(Message &message);
@@ -43,6 +47,7 @@ private:
 	sf::SocketTCP socket;
 	volatile bool exit_;
 	volatile bool isConnected_;
+	volatile bool error_;
 	sf::Mutex mutexIn, mutexOut;
 	std::queue<Message> incoming, outgoing;
 	Encoder encoder;

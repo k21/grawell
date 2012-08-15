@@ -6,7 +6,6 @@
 
 static const int32_t FIXED_ONE = 1<<16;
 
-//TODO: handle overflow
 class Vector {
 
 public:
