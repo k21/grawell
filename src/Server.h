@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <list>
+#include <memory>
 #include <queue>
 #include <set>
 
@@ -17,16 +18,16 @@
 class ClientInfo {
 
 public:
-	ClientInfo(const sf::IPAddress &address_,
-			const sf::SocketTCP &socket_, uint16_t id_):
-			address(address_), socket(socket_), id(id_),
+	ClientInfo(const sf::IpAddress &address_,
+			std::unique_ptr<sf::TcpSocket> &&socket_, uint16_t id_):
+			address(address_), socket(std::move(socket_)), id(id_),
 			encoder(), decoder(),
 			pending(0), pendingSize(0),
 			active(false) {}
 	ClientInfo(const ClientInfo &) = delete;
 	ClientInfo &operator = (const ClientInfo &) = delete;
-	sf::IPAddress address;
-	sf::SocketTCP socket;
+	sf::IpAddress address;
+	std::unique_ptr<sf::TcpSocket> socket;
 	uint16_t id;
 	Encoder encoder;
 	Decoder decoder;
@@ -38,8 +39,10 @@ public:
 class Server : public sf::Thread {
 
 public:
-	Server(uint16_t port_): clients(), port(port_), exit_(false),
-			serverSocket(), universe(), state(SELECT_ACTION),
+	Server(uint16_t port_):
+			sf::Thread(&Server::run, this),
+			clients(), port(port_), exit_(false),
+			serverListener(), universe(), state(SELECT_ACTION),
 			checksum(0), waitingForCnt(0),
 			placer(200*FIXED_ONE) {}
 	Server(const Server &) = delete;
@@ -51,11 +54,11 @@ public:
 		}
 	}
 
-	void Run();
+	void run();
 	void exit() {
 		exit_ = true;
 		LOG(INFO) << "Waiting for server to terminate...";
-		this->Wait();
+		this->wait();
 		LOG(INFO) << "Server terminated";
 	}
 
@@ -72,7 +75,7 @@ private:
 	std::list<ClientInfo *> clients;
 	uint16_t port;
 	volatile bool exit_;
-	sf::SocketTCP serverSocket;
+	sf::TcpListener serverListener;
 	Universe universe;
 	enum {
 		SELECT_ACTION, ROUND

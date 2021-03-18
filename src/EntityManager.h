@@ -2,6 +2,7 @@
 #define ENTITY_MANAGER_H_
 
 #include <cstdint>
+#include <set>
 #include <vector>
 
 #include "Vector.h"

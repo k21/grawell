@@ -7,19 +7,19 @@ using namespace sf;
 void Screen::input() {
 	RenderWindow &window = driver.getRenderWindow();
 	Event event;
-	while (window.GetEvent(event)) {
-		switch (event.Type) {
+	while (window.pollEvent(event)) {
+		switch (event.type) {
 
 			case Event::Closed:
 				driver.exit();
 				break;
 
 			case Event::KeyPressed:
-				handleKey(event.Key, true);
+				handleKey(event.key, true);
 				break;
 
 			case Event::KeyReleased:
-				handleKey(event.Key, false);
+				handleKey(event.key, false);
 				break;
 
 			default:

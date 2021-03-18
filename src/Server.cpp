@@ -169,23 +169,23 @@ int8_t Server::handleMessage(ClientInfo &client, const Message &m) {
 	return 0;
 }
 
-void Server::Run() {
+void Server::run() {
 	LOG(INFO) << "Starting server";
-	if (!serverSocket.Listen(port)) {
+	if (serverListener.listen(port) != Socket::Status::Done) {
 		LOG(ERR) << "Server cannot listen";
 		return;
 	}
-	serverSocket.SetBlocking(false);
-	IPAddress address;
-	SocketTCP clientSocket;
+	serverListener.setBlocking(false);
 	while (!exit_) {
-		Socket::Status status = serverSocket.Accept(clientSocket, &address);
+		std::unique_ptr<TcpSocket> clientSocket(new TcpSocket());
+		Socket::Status status = serverListener.accept(*clientSocket);
+		IpAddress address = clientSocket->getRemoteAddress();
 		bool nothing = true;
 		if (status == Socket::Done) {
 			LOG(INFO) << "Client connected from " << address;
 			nothing = false;
-			clientSocket.SetBlocking(false);
-			ClientInfo *client = new ClientInfo(address, clientSocket, -1);
+			clientSocket->setBlocking(false);
+			ClientInfo *client = new ClientInfo(address, std::move(clientSocket), -1);
 			clients.push_back(client);
 		} else if (status != Socket::NotReady) {
 			LOG(ERR) << "An error occured when waiting for client";
@@ -195,7 +195,7 @@ void Server::Run() {
 		while (it != clients.end()) {
 			ClientInfo &client = **it;
 			char buffer[MAX_PACKET_SIZE]; size_t received;
-			status = client.socket.Receive(buffer, sizeof buffer, received);
+			status = client.socket->receive(buffer, sizeof buffer, received);
 			bool error = false;
 			if (status == Socket::Done) {
 				LOG(DEBUG) << "Received packet of size " << received;
@@ -221,7 +221,7 @@ void Server::Run() {
 				}
 			}
 			if (!error && client.pending) {
-				status = client.socket.Send(client.pending, client.pendingSize);
+				status = client.socket->send(client.pending, client.pendingSize);
 				if (status == Socket::Done) {
 					LOG(DEBUG) << "Sent packet of size " << client.pendingSize;
 					client.pending = 0; client.pendingSize = 0;
@@ -238,7 +238,7 @@ void Server::Run() {
 						universe.ships[id].ready = true;
 					}
 				}
-				client.socket.Close();
+				client.socket->disconnect();
 				delete *it;
 				it = clients.erase(it);
 				sendToAll(vector<Message>(
@@ -251,7 +251,7 @@ void Server::Run() {
 		if (waitingForCnt == 0) {
 			changeState();
 		}
-		if (nothing) Sleep(0.05f);
+		if (nothing) sf::sleep(seconds(0.05f));
 	}
-	serverSocket.Close();
+	serverListener.close();
 }

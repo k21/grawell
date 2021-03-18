@@ -374,7 +374,7 @@ int main(int argc, char **argv) {
 	Server *server = 0;
 	if (host) {
 		server = new Server(4920);
-		server->Launch();
+		server->launch();
 	}
 
 	Driver driver(resolutionX, resolutionY, fullscreen);

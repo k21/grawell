@@ -14,18 +14,19 @@
 class Client : public sf::Thread {
 
 public:
-	Client(const sf::IPAddress &address_, int16_t port_):
+	Client(const sf::IpAddress &address_, int16_t port_):
+		sf::Thread(&Client::run, this),
 		address(address_), port(port_), socket(),
 		exit_(false), isConnected_(false), error_(false),
 		mutexIn(), mutexOut(), incoming(), outgoing(), encoder(), decoder() {}
 	Client(const Client &) = delete;
 	Client &operator = (const Client &) = delete;
 
-	void Run();
+	void run();
 	void exit() {
 		exit_ = true;
 		LOG(INFO) << "Waiting for client to terminate...";
-		this->Wait();
+		this->wait();
 		LOG(INFO) << "Client terminated";
 	}
 	bool isConnected() const {
@@ -42,9 +43,9 @@ private:
 	int8_t sendPending();
 	int8_t recvPending();
 
-	sf::IPAddress address;
+	sf::IpAddress address;
 	uint16_t port;
-	sf::SocketTCP socket;
+	sf::TcpSocket socket;
 	volatile bool exit_;
 	volatile bool isConnected_;
 	volatile bool error_;

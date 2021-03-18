@@ -9,17 +9,17 @@ MenuScreen::MenuScreen(Driver &driver_): Screen(driver_) {}
 
 void MenuScreen::display() {
 	RenderWindow &window = driver.getRenderWindow();
-	window.Clear();
-	window.Display();
+	window.clear();
+	window.display();
 }
 
 void MenuScreen::handleKey(sf::Event::KeyEvent e, bool pressed) {
 	if (!pressed) return;
-	switch (e.Code) {
-		case Key::Escape:
+	switch (e.code) {
+		case Keyboard::Key::Escape:
 			driver.exit();
 			break;
-		case Key::Return:
+		case Keyboard::Key::Return:
 			driver.changeScreen(new GameScreen(driver, "127.0.0.1", 4920, "name"));
 			break;
 		default:

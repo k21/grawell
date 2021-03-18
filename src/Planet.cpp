@@ -5,7 +5,9 @@ using namespace sf;
 
 void Planet::draw(RenderTarget &target) const {
 	Color green(0, 255, 0);
-	Shape circle = Shape::Circle(
-			(float)center.x, (float)center.y, (float)radius, green);
-	target.Draw(circle);
+	CircleShape circle = CircleShape((float)radius);
+	circle.setOrigin((float)radius, (float)radius);
+	circle.setPosition((float)center.x, (float)center.y);
+	circle.setFillColor(green);
+	target.draw(circle);
 }

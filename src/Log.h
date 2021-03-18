@@ -28,7 +28,7 @@ public:
 
 		inline Instance(Level level_, const char *file, int line):
 				os(), level(level_) {
-			float now = clock.GetElapsedTime();
+			float now = clock.getElapsedTime().asSeconds();
 			os << '['
 					<< (long)now << '.'
 					<< std::setw(4) << std::setfill('0')

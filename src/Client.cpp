@@ -5,17 +5,17 @@
 using namespace std;
 using namespace sf;
 
-void Client::Run() {
+void Client::run() {
 	LOG(INFO) << "Connecting to server at " << address << ':' << port << "...";
 	static const int16_t RETRY = 10;
-	Socket::Status status = socket.Connect(port, address);
+	Socket::Status status = socket.connect(address, port);
 	int16_t r = 1;
 	while (status != Socket::Done && r < RETRY && !exit_) {
 		LOG(WARN) << "Connection attempt unsuccessful";
-		Sleep(1.f);
+		sf::sleep(seconds(1.f));
 		if (exit_) break;
 		LOG(WARN) << "Trying to connect again...";
-		status = socket.Connect(port, address);
+		status = socket.connect(address, port);
 		++r;
 	}
 	if (status != Socket::Done) {
@@ -24,7 +24,7 @@ void Client::Run() {
 		return;
 	}
 	isConnected_ = true;
-	socket.SetBlocking(false);
+	socket.setBlocking(false);
 	while (!exit_) {
 		bool nothing = true;
 		int8_t s = sendPending();
@@ -39,7 +39,7 @@ void Client::Run() {
 			LOG(ERR) << "An error has occured when receiving packets";
 			break;
 		} else if (s == 1) nothing = false;
-		if (nothing) Sleep(0.05f);
+		if (nothing) sf::sleep(seconds(0.05f));
 	}
 	isConnected_ = false;
 }
@@ -61,7 +61,7 @@ int8_t Client::sendPending() {
 		while (encoder.next(buffer, size)) {
 			Socket::Status status;
 			do {
-				status = socket.Send(buffer, size);
+				status = socket.send(buffer, size);
 			} while (status == Socket::NotReady);
 			if (status != Socket::Done) return -1;
 			LOG(DEBUG) << "Sent packet of size " << size;
@@ -75,7 +75,7 @@ int8_t Client::recvPending() {
 	Socket::Status status;
 	while (true) {
 		char buffer[MAX_PACKET_SIZE]; size_t size;
-		status = socket.Receive(buffer, sizeof buffer, size);
+		status = socket.receive(buffer, sizeof buffer, size);
 		if (status == Socket::Done) {
 			LOG(DEBUG) << "Received packet of size " << size;
 			something = true;

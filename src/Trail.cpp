@@ -39,6 +39,20 @@ void Trail::setMaxSize(size_t size) {
 	}
 }
 
+static RectangleShape line(
+		Vector p1, Vector p2, float width, float outlineWidth, Color color) {
+	Vector diff = p2 - p1;
+	float dist = (float)diff.size();
+	RectangleShape rect(Vector2f(dist, (float)width));
+	rect.setOrigin(0.0f, (float)width / 2.0f);
+	rect.setPosition((float)p1.x, (float)p1.y);
+	rect.rotate((float)(180.0f / M_PI * atan2((float)diff.y, (float)diff.x)));
+	rect.setOutlineThickness(outlineWidth);
+	rect.setFillColor(color);
+	rect.setOutlineColor(color);
+	return rect;
+}
+
 void Trail::draw(RenderTarget &target) const {
 	if (points.empty()) return;
 	float width = 6*FIXED_ONE;
@@ -46,12 +60,8 @@ void Trail::draw(RenderTarget &target) const {
 	auto it1 = points.begin();
 	auto it2 = it1; ++it2;
 	while (it2 != points.end()) {
-		Shape line = Shape::Line((float)it1->x, (float)it1->y,
-				(float)it2->x, (float)it2->y, width, color, outlineWidth, color);
-		target.Draw(line);
+		target.draw(line(*it1, *it2, width, outlineWidth, color));
 		++it1; ++it2;
 	}
-	Shape line = Shape::Line((float)points.back().x, (float)points.back().y,
-			(float)last.x, (float)last.y, width, color, outlineWidth, color);
-	target.Draw(line);
+	target.draw(line(points.back(), last, width, outlineWidth, color));
 }

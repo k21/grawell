@@ -29,14 +29,21 @@ Color Ship::getColorByID(uint16_t id) {
 
 void Ship::draw(RenderTarget &target, float zoomLevel) const {
 	Color c = getColorByID(id());
-	Shape circle = Shape::Circle(
-			(float)center.x, (float)center.y, (float)radius, c);
+	CircleShape circle = CircleShape((float)radius);
+	circle.setOrigin((float)radius, (float)radius);
+	circle.setPosition((float)center.x, (float)center.y);
+	circle.setFillColor(c);
 	float lineLength = 1.2f*(float)radius + (float)(strength*FIXED_ONE)/100.f;
-	Vector d = center + Vector::polar(direction, (Vector::T)lineLength);
-	Shape line = Shape::Line((float)center.x, (float)center.y,
-			(float)d.x, (float)d.y, 12*FIXED_ONE, c);
-	target.Draw(circle);
-	target.Draw(line);
+	RectangleShape line = RectangleShape(
+			Vector2f(lineLength, (float)12*FIXED_ONE));
+	line.setOrigin(0.0f, (float)6*FIXED_ONE);
+	line.setPosition((float)center.x, (float)center.y);
+	line.rotate(direction / 100.0f);
+	line.setFillColor(c);
+	target.draw(circle);
+	target.draw(line);
+	// TODO: Fix string rendering.
+	/*
 	stringstream ss;
 	ss << name << " (" << score << ")";
 	String s(ss.str(), Font::GetDefaultFont(), 32*zoomLevel);
@@ -44,6 +51,7 @@ void Ship::draw(RenderTarget &target, float zoomLevel) const {
 	s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight());
 	s.SetPosition((float)center.x, (float)(center.y-radius-5));
 	target.Draw(s);
+	*/
 }
 
 void Ship::shoot(EntityManager<Bullet> &bullets) const {

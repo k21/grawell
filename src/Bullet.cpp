@@ -5,9 +5,11 @@ using namespace sf;
 
 void Bullet::draw(RenderTarget &target) const {
 	Color c = Ship::getColorByID(myOwner);
-	Shape circle = Shape::Circle(
-			(float)center.x, (float)center.y, (float)radius, c);
-	target.Draw(circle);
+	CircleShape circle = CircleShape((float)radius);
+	circle.setOrigin((float)radius, (float)radius);
+	circle.setFillColor(c);
+	circle.setPosition((float)center.x, (float)center.y);
+	target.draw(circle);
 }
 
 static Vector acceleration(const Point &pos, const Planet &pl) {

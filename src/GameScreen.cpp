@@ -26,15 +26,15 @@ GameScreen::GameScreen(Driver &driver_,
 		playerName() {
 	strncpy(playerName, playerName_, sizeof playerName);
 	playerName[(sizeof playerName) - 1] = '\0';
-	windowWidth  = driver.getRenderWindow().GetWidth();
-	windowHeight = driver.getRenderWindow().GetHeight();
-	view.SetCenter(0, 0);
-	view.SetHalfSize(
-			(float)FIXED_ONE * (float)windowWidth  / 2,
-			(float)FIXED_ONE * (float)windowHeight / 2);
-	hudView.SetCenter(0, 0);
-	client = new Client(IPAddress(serverAddress), (short)port);
-	client->Launch();
+	windowWidth  = driver.getRenderWindow().getSize().x;
+	windowHeight = driver.getRenderWindow().getSize().y;
+	view.setCenter(0, 0);
+	view.setSize(
+			(float)FIXED_ONE * (float)windowWidth,
+			(float)FIXED_ONE * (float)windowHeight);
+	hudView.setCenter(0, 0);
+	client = new Client(IpAddress(serverAddress), (short)port);
+	client->launch();
 }
 
 GameScreen::~GameScreen() {
@@ -68,51 +68,51 @@ static int32_t powerChangeAmount(bool control, bool shift) {
 }
 
 void GameScreen::handleKey(Event::KeyEvent e, bool pressed) {
-	switch (e.Code) {
-		case Key::Escape: driver.exit(); break;
-		case Key::Up:
+	switch (e.code) {
+		case Keyboard::Key::Escape: driver.exit(); break;
+		case Keyboard::Key::Up:
 			if (pressed && state == SELECT_ACTION) {
 				int32_t strength = universe.ships[id].strength;
-				strength += powerChangeAmount(e.Control, e.Shift);
+				strength += powerChangeAmount(e.control, e.shift);
 				if (strength > MAX_STRENGTH) {
 					strength = MAX_STRENGTH;
 				}
 				universe.ships[id].strength = strength;
 			}
 			break;
-		case Key::Down:
+		case Keyboard::Key::Down:
 			if (pressed && state == SELECT_ACTION) {
 				int32_t strength = universe.ships[id].strength;
-				strength -= powerChangeAmount(e.Control, e.Shift);
+				strength -= powerChangeAmount(e.control, e.shift);
 				if (strength < 0) {
 					strength = 0;
 				}
 				universe.ships[id].strength = strength;
 			}
 			break;
-		case Key::Left:
+		case Keyboard::Key::Left:
 			if (pressed && state == SELECT_ACTION) {
-				int32_t r = rotateAmount(e.Control, e.Shift);
+				int32_t r = rotateAmount(e.control, e.shift);
 				universe.ships[id].rotate(-r);
 			}
 			break;
-		case Key::Right:
+		case Keyboard::Key::Right:
 			if (pressed && state == SELECT_ACTION) {
-				int32_t r = rotateAmount(e.Control, e.Shift);
+				int32_t r = rotateAmount(e.control, e.shift);
 				universe.ships[id].rotate(+r);
 			}
 			break;
-		case Key::Space:
+		case Keyboard::Key::Space:
 			if (pressed && state == SELECT_ACTION) {
 				shoot();
 			}
 			break;
-		case Key::W: moveDownDelta  = (int8_t)-pressed; break;
-		case Key::S: moveDownDelta  = (int8_t) pressed; break;
-		case Key::A: moveRightDelta = (int8_t)-pressed; break;
-		case Key::D: moveRightDelta = (int8_t) pressed; break;
-		case Key::Q: zoomDelta = (int8_t)-pressed; break;
-		case Key::E: zoomDelta = (int8_t) pressed; break;
+		case Keyboard::Key::W: moveDownDelta  = (int8_t)-pressed; break;
+		case Keyboard::Key::S: moveDownDelta  = (int8_t) pressed; break;
+		case Keyboard::Key::A: moveRightDelta = (int8_t)-pressed; break;
+		case Keyboard::Key::D: moveRightDelta = (int8_t) pressed; break;
+		case Keyboard::Key::Q: zoomDelta = (int8_t)-pressed; break;
+		case Keyboard::Key::E: zoomDelta = (int8_t) pressed; break;
 		default: break;
 	}
 }
@@ -241,10 +241,10 @@ void GameScreen::logic(float elapsed) {
 }
 
 void GameScreen::drawHud(RenderWindow &window) {
-	window.SetView(hudView);
-	float sizeX = (float)driver.getRenderWindow().GetWidth();
-	float sizeY = (float)driver.getRenderWindow().GetHeight();
-	hudView.SetHalfSize(sizeX / 2, sizeY / 2);
+	window.setView(hudView);
+	float sizeX = (float)driver.getRenderWindow().getSize().x;
+	float sizeY = (float)driver.getRenderWindow().getSize().y;
+	hudView.setSize(sizeX, sizeY);
 	Ship &s = universe.ships[id];
 	char info[256] = {0};
 	if (state == SELECT_ACTION) {
@@ -258,20 +258,25 @@ void GameScreen::drawHud(RenderWindow &window) {
 	if (state == SELECT_DONE || state == ROUND_DONE) {
 		strcpy(info, "Waiting for other players...");
 	}
+	// TODO: Fix text rendering.
+	/*
 	String str(info, Font::GetDefaultFont(), 20);
 	str.SetColor(Color::White);
 	str.SetCenter(str.GetRect().GetWidth()/2, 0);
 	str.SetPosition(0, -sizeY/2);
 	window.Draw(str);
+	*/
 }
 
 void GameScreen::display() {
 	RenderWindow &window = driver.getRenderWindow();
-	window.Clear();
+	window.clear();
 
 	if (state == NOTHING || state == REQUEST_SENT || state == WAITING) {
-		window.SetView(hudView);
+		window.setView(hudView);
 
+		// TODO: Fix text rendering.
+		/*
 		String s(
 				client->isConnected()
 					? "Waiting for next round..."
@@ -281,34 +286,35 @@ void GameScreen::display() {
 		s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight()/2);
 		s.SetPosition(0, 0);
 		window.Draw(s);
-		window.Display();
+		*/
+		window.display();
 		return;
 	}
 
-	window.SetView(view);
+	window.setView(view);
 
-	if (windowWidth != window.GetWidth() || windowHeight != window.GetHeight()) {
-		view.Zoom((float)windowWidth / (float)window.GetWidth());
-		windowWidth  = window.GetWidth();
-		windowHeight = window.GetHeight();
-		view.SetHalfSize(
-				view.GetHalfSize().x,
-				view.GetHalfSize().x * (float)windowHeight / (float)windowWidth);
+	if (windowWidth != window.getSize().x || windowHeight != window.getSize().y) {
+		view.zoom((float)windowWidth / (float)window.getSize().x);
+		windowWidth  = window.getSize().x;
+		windowHeight = window.getSize().y;
+		view.setSize(
+				view.getSize().x,
+				view.getSize().x * (float)windowHeight / (float)windowWidth);
 	}
 
-	float moveModifier = (view.GetHalfSize().x + view.GetHalfSize().y) / 200;
+	float moveModifier = (view.getSize().x + view.getSize().y) / 400;
 	moveRight += moveRightDelta * moveModifier;
 	moveDown  += moveDownDelta  * moveModifier;
 	zoom      += 4*(float)zoomDelta;
 	moveRight *= 0.85f; moveDown *= 0.85f; zoom *= 0.85f;
 
-	view.Move((float)moveRight, (float)moveDown);
-	float zoomLevel = view.GetHalfSize().x / (float)windowWidth;
+	view.move((float)moveRight, (float)moveDown);
+	float zoomLevel = view.getSize().x / (float)windowWidth / 2.0f;
 	if ((zoomLevel > 50*FIXED_ONE && zoom < 0) ||
 			(zoomLevel < FIXED_ONE/16 && zoom > 0)) {
 		zoom = 0;
 	} else {
-		view.Zoom((float)exp(zoom/250));
+		view.zoom((float)exp(zoom/250));
 	}
 
 	for (Trail &t : trails) {
@@ -327,5 +333,5 @@ void GameScreen::display() {
 		if (s.alive) s.draw(window, zoomLevel);
 	}
 	drawHud(window);
-	window.Display();
+	window.display();
 }
