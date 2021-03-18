@@ -32,6 +32,7 @@ protected:
 	void drawHud(sf::RenderWindow &window);
 
 	sf::View view, hudView;
+	sf::Font font;
 	uint32_t windowWidth, windowHeight;
 	Universe universe;
 	uint16_t id;
