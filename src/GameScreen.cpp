@@ -17,6 +17,7 @@ GameScreen::GameScreen(Driver &driver_,
 		const char *playerName_):
 		Screen(driver_),
 		view(), hudView(),
+		font(),
 		windowWidth(0), windowHeight(0),
 		universe(), id(0), client(0),
 		state(NOTHING), roundCntr(0),
@@ -33,6 +34,9 @@ GameScreen::GameScreen(Driver &driver_,
 			(float)FIXED_ONE * (float)windowWidth,
 			(float)FIXED_ONE * (float)windowHeight);
 	hudView.setCenter(0, 0);
+	if (!font.loadFromFile("fonts/OpenSans-Regular.ttf")) {
+		LOG(ERR) << "Font cannot be loaded.";
+	}
 	client = new Client(IpAddress(serverAddress), (short)port);
 	client->launch();
 }
@@ -258,14 +262,14 @@ void GameScreen::drawHud(RenderWindow &window) {
 	if (state == SELECT_DONE || state == ROUND_DONE) {
 		strcpy(info, "Waiting for other players...");
 	}
-	// TODO: Fix text rendering.
-	/*
-	String str(info, Font::GetDefaultFont(), 20);
-	str.SetColor(Color::White);
-	str.SetCenter(str.GetRect().GetWidth()/2, 0);
-	str.SetPosition(0, -sizeY/2);
-	window.Draw(str);
-	*/
+	Text text;
+	text.setFont(font);
+	text.setString(info);
+	text.setCharacterSize(20);
+	text.setFillColor(Color::White);
+	text.setOrigin(text.getLocalBounds().width/2, 0);
+	text.setPosition(0, -sizeY/2);
+	window.draw(text);
 }
 
 void GameScreen::display() {
@@ -275,18 +279,16 @@ void GameScreen::display() {
 	if (state == NOTHING || state == REQUEST_SENT || state == WAITING) {
 		window.setView(hudView);
 
-		// TODO: Fix text rendering.
-		/*
-		String s(
+		Text text;
+		text.setFont(font);
+		text.setString(
 				client->isConnected()
 					? "Waiting for next round..."
-					: "Connecting...",
-				Font::GetDefaultFont(), 60);
-		s.SetColor(Color::White);
-		s.SetCenter(s.GetRect().GetWidth()/2, s.GetRect().GetHeight()/2);
-		s.SetPosition(0, 0);
-		window.Draw(s);
-		*/
+					: "Connecting...");
+		text.setFillColor(Color::White);
+		text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
+		text.setPosition(0, 0);
+		window.draw(text);
 		window.display();
 		return;
 	}
